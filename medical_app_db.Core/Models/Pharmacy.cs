@@ -6,7 +6,7 @@
         public string ArName { get; set; }
         public string EnName { get; set; }
         public string Logo { get; set; }
-        public virtual ICollection<Branch> Branches { get; set; }
-        public virtual ICollection<Account> Accounts { get; set; }
+        public ICollection<Branch> Branches { get; set; }
+        public ICollection<Account> Accounts { get; set; }
     }
 }
