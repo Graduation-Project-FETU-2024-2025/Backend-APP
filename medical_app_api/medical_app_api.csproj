@@ -20,4 +20,8 @@
     <ProjectReference Include="..\medical_app_db.EF\medical_app_db.EF.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>
