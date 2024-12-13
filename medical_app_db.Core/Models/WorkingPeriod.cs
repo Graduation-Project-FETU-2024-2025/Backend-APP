@@ -3,7 +3,7 @@
     public class WorkingPeriod
     {
         public Guid BranchId { get; set; }
-        public virtual Branch Branch { get; set; } = null!;
+        public Branch Branch { get; set; } = null!;
         public TimeOnly Start { get; set; }
         public TimeOnly End { get; set; }
     }
