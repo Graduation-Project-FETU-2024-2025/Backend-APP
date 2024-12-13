@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using medical_app_db.Core.Models;
 
-namespace medical_app_db.EF.Data.Configurations
+public class UserConfiguration : IEntityTypeConfiguration<User>
 {
-    internal class UserConfigrations
+    public void Configure(EntityTypeBuilder<User> builder)
     {
+        builder.Property(e => e.Phone)
+            .IsRequired(false) 
+            .HasMaxLength(15);
+
+        builder.HasMany(e => e.Orders)
+            .WithOne(o => o.User)
+            .HasForeignKey(o => o.UserId);
     }
 }
