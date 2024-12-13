@@ -5,7 +5,9 @@ namespace medical_app_db.Core.Models
     public class Account:IdentityUser<Guid>
     {
         public Guid PharmacyId { get; set; }
-        public virtual Pharmacy Pharmacy { get; set; }
-        public string Image { get; set; }
+        public virtual Pharmacy Pharmacy { get; set; } = null!;
+        public string? Image { get; set; }
+
+        public ICollection<AccountBranch>? Branches { get; set; }
     }
 }
