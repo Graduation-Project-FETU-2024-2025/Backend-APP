@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "F3ZEhS/VCJBEw1eizLtClUFgd75fYTcnbZ34TGpVX2E=",
+  "Source": "medical_app_api",
+  "BasePath": "_content/medical_app_api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
