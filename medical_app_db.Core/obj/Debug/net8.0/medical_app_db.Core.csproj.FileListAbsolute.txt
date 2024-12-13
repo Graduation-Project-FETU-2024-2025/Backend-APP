@@ -1,0 +1,13 @@
+F:\graduation Project\Backend-APP\medical_app_db.Core\bin\Debug\net8.0\medical_app_db.Core.deps.json
+F:\graduation Project\Backend-APP\medical_app_db.Core\bin\Debug\net8.0\medical_app_db.Core.dll
+F:\graduation Project\Backend-APP\medical_app_db.Core\bin\Debug\net8.0\medical_app_db.Core.pdb
+F:\graduation Project\Backend-APP\medical_app_db.Core\obj\Debug\net8.0\medical_app_db.Core.csproj.AssemblyReference.cache
+F:\graduation Project\Backend-APP\medical_app_db.Core\obj\Debug\net8.0\medical_app_db.Core.GeneratedMSBuildEditorConfig.editorconfig
+F:\graduation Project\Backend-APP\medical_app_db.Core\obj\Debug\net8.0\medical_app_db.Core.AssemblyInfoInputs.cache
+F:\graduation Project\Backend-APP\medical_app_db.Core\obj\Debug\net8.0\medical_app_db.Core.AssemblyInfo.cs
+F:\graduation Project\Backend-APP\medical_app_db.Core\obj\Debug\net8.0\medical_app_db.Core.csproj.CoreCompileInputs.cache
+F:\graduation Project\Backend-APP\medical_app_db.Core\obj\Debug\net8.0\medical_app_db.Core.sourcelink.json
+F:\graduation Project\Backend-APP\medical_app_db.Core\obj\Debug\net8.0\medical_app_db.Core.dll
+F:\graduation Project\Backend-APP\medical_app_db.Core\obj\Debug\net8.0\refint\medical_app_db.Core.dll
+F:\graduation Project\Backend-APP\medical_app_db.Core\obj\Debug\net8.0\medical_app_db.Core.pdb
+F:\graduation Project\Backend-APP\medical_app_db.Core\obj\Debug\net8.0\ref\medical_app_db.Core.dll
