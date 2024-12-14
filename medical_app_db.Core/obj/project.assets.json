@@ -954,24 +954,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ooooooo\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\Soft LapTop\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\graduation project\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj",
+      "projectUniqueName": "F:\\graduation Project\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj",
       "projectName": "medical_app_db.Core",
-      "projectPath": "D:\\graduation project\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj",
-      "packagesPath": "C:\\Users\\ooooooo\\.nuget\\packages\\",
-      "outputPath": "D:\\graduation project\\Backend-APP\\medical_app_db.Core\\obj\\",
+      "projectPath": "F:\\graduation Project\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj",
+      "packagesPath": "C:\\Users\\Soft LapTop\\.nuget\\packages\\",
+      "outputPath": "F:\\graduation Project\\Backend-APP\\medical_app_db.Core\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\ooooooo\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\Soft LapTop\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -1032,7 +1027,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300-preview.24203.14/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

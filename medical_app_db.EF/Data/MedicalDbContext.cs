@@ -34,8 +34,11 @@ namespace medical_app_db.EF.Data
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(SystemProductConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(BranchProductConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AccountBranchConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ItemConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
 
-			base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
         }
 
       
