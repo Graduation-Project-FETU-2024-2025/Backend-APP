@@ -174,3 +174,5 @@ F:\graduation Project\Backend-APP\medical_app_api\obj\Debug\net8.0\refint\medica
 F:\graduation Project\Backend-APP\medical_app_api\obj\Debug\net8.0\medical_app_api.pdb
 F:\graduation Project\Backend-APP\medical_app_api\obj\Debug\net8.0\medical_app_api.genruntimeconfig.cache
 F:\graduation Project\Backend-APP\medical_app_api\obj\Debug\net8.0\ref\medical_app_api.dll
+F:\Graduation Project\Backend-APP\medical_app_api\bin\Debug\net8.0\medical_app_db.Core.dll
+F:\Graduation Project\Backend-APP\medical_app_api\bin\Debug\net8.0\medical_app_db.Core.pdb

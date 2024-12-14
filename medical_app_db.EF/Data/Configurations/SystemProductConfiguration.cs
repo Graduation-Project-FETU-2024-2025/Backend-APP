@@ -8,7 +8,7 @@ namespace medical_app_db.EF.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<SystemProduct> builder)
         {
-            builder.HasKey(a => new { a.Code });
+            builder.HasKey(a => a.Code);
             builder.Property(a => a.AR_Name).IsRequired();
         }
     }

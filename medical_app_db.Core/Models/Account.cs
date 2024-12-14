@@ -8,6 +8,6 @@ namespace medical_app_db.Core.Models
         public Pharmacy Pharmacy { get; set; } = null!;
         public string? Image { get; set; }
 
-        public ICollection<AccountBranch>? Branches { get; set; }
+        public ICollection<AccountBranch>? AccountBranches { get; set; }
     }
 }

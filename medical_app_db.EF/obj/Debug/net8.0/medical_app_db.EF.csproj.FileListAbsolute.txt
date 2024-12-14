@@ -11,3 +11,6 @@ F:\graduation Project\Backend-APP\medical_app_db.EF\obj\Debug\net8.0\medical_app
 F:\graduation Project\Backend-APP\medical_app_db.EF\obj\Debug\net8.0\refint\medical_app_db.EF.dll
 F:\graduation Project\Backend-APP\medical_app_db.EF\obj\Debug\net8.0\medical_app_db.EF.pdb
 F:\graduation Project\Backend-APP\medical_app_db.EF\obj\Debug\net8.0\ref\medical_app_db.EF.dll
+F:\Graduation Project\Backend-APP\medical_app_db.EF\bin\Debug\net8.0\medical_app_db.Core.dll
+F:\Graduation Project\Backend-APP\medical_app_db.EF\bin\Debug\net8.0\medical_app_db.Core.pdb
+F:\Graduation Project\Backend-APP\medical_app_db.EF\obj\Debug\net8.0\medical_.87966D9D.Up2Date

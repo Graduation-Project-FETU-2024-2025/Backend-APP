@@ -11,8 +11,8 @@ namespace medical_app_db.Core.Models
         public Guid OrderId { get; set; }
         public Order Order { get; set; } = null!;
 
-        //public Guid Code { get; set; }
-        //public SystemProduct SystemProduct { get; set; }
+        public Guid Code { get; set; }
+        public SystemProduct SystemProduct { get; set; } =  null!;
     }
 }
 

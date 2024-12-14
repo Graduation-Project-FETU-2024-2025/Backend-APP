@@ -13,7 +13,7 @@ namespace medical_app_db.EF.Data.Configurations
             builder.Property(wp => wp.Start).IsRequired();
             builder.Property(wp => wp.End).IsRequired();
 
-            builder.HasOne(wp => wp.Branch).WithMany(b => b.WorkingPeriods).HasForeignKey(wp => wp.BranchId);
+            builder.HasOne(wp => wp.Branch).WithMany(b => b.WorkingPeriods).HasForeignKey(wp => wp.BranchId).HasPrincipalKey(b => b.Id);
         }
     }
 }

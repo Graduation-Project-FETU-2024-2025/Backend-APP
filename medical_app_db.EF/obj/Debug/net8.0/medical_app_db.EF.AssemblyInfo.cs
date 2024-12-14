@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("medical_app_db.EF")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d693005d8092362ab5b2aa08a70b6c3a7af65fd0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25539c0b11d4829d75bbb2bf72f7e1451474ba80")]
 [assembly: System.Reflection.AssemblyProductAttribute("medical_app_db.EF")]
 [assembly: System.Reflection.AssemblyTitleAttribute("medical_app_db.EF")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
