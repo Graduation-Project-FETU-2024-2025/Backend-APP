@@ -3113,11 +3113,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\Graduation Project\\Backend-APP\\medical_app_db.EF\\medical_app_db.EF.csproj",
+      "projectUniqueName": "F:\\graduation Project\\Backend-APP1\\medical_app_db.EF\\medical_app_db.EF.csproj",
       "projectName": "medical_app_db.EF",
-      "projectPath": "F:\\Graduation Project\\Backend-APP\\medical_app_db.EF\\medical_app_db.EF.csproj",
+      "projectPath": "F:\\graduation Project\\Backend-APP1\\medical_app_db.EF\\medical_app_db.EF.csproj",
       "packagesPath": "C:\\Users\\Soft LapTop\\.nuget\\packages\\",
-      "outputPath": "F:\\graduation Project\\Backend-APP\\medical_app_db.EF\\obj\\",
+      "outputPath": "F:\\graduation Project\\Backend-APP1\\medical_app_db.EF\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Soft LapTop\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -3135,8 +3135,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "F:\\Graduation Project\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj": {
-              "projectPath": "F:\\Graduation Project\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj"
+            "F:\\graduation Project\\Backend-APP1\\medical_app_db.Core\\medical_app_db.Core.csproj": {
+              "projectPath": "F:\\graduation Project\\Backend-APP1\\medical_app_db.Core\\medical_app_db.Core.csproj"
             }
           }
         }

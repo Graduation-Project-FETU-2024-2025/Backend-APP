@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Hp5ivfwoIUo=",
+  "dgSpecHash": "RdX1jvXV3ag=",
   "success": true,
-  "projectFilePath": "F:\\Graduation Project\\Backend-APP\\medical_app_db.EF\\medical_app_db.EF.csproj",
+  "projectFilePath": "F:\\graduation Project\\Backend-APP1\\medical_app_db.EF\\medical_app_db.EF.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Soft LapTop\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Soft LapTop\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

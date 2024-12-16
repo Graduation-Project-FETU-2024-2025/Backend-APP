@@ -959,11 +959,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\graduation Project\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj",
+      "projectUniqueName": "F:\\graduation Project\\Backend-APP1\\medical_app_db.Core\\medical_app_db.Core.csproj",
       "projectName": "medical_app_db.Core",
-      "projectPath": "F:\\graduation Project\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj",
+      "projectPath": "F:\\graduation Project\\Backend-APP1\\medical_app_db.Core\\medical_app_db.Core.csproj",
       "packagesPath": "C:\\Users\\Soft LapTop\\.nuget\\packages\\",
-      "outputPath": "F:\\graduation Project\\Backend-APP\\medical_app_db.Core\\obj\\",
+      "outputPath": "F:\\graduation Project\\Backend-APP1\\medical_app_db.Core\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Soft LapTop\\AppData\\Roaming\\NuGet\\NuGet.Config",
