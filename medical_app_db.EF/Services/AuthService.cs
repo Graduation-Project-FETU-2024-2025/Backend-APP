@@ -65,7 +65,7 @@ namespace medical_app_db.EF.Services
             if(!result.Succeeded)
                 return new AuthModel 
                 { 
-                    Message = "Failed to create account", 
+                    Message = "Failed to Create Account", 
                     Status = HttpStatusCode.BadRequest 
                 };
 
