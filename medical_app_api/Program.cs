@@ -1,5 +1,7 @@
 ﻿using medical_app_db.Core.Models;
 using medical_app_api.Extentions;
+using medical_app_db.Core.Interfaces;
+using medical_app_db.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,7 @@ builder.Services
     .AddAuthService()
     .AddEmailService()
     .AddEmailConfiguration(builder.Configuration);
+builder.Services.AddScoped<IBranchService, BranchService>();
 
 builder.Services.AddMemoryCache(); // to add cach
 builder.Services.AddControllers();
@@ -31,5 +34,4 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-
 

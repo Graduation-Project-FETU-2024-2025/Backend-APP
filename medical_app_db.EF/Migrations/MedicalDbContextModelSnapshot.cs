@@ -237,8 +237,20 @@ namespace medical_app_db.EF.Migrations
                     b.Property<Guid>("PharmacyId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ArBranchName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("DeliveryRange")
                         .HasColumnType("int");
+
+                    b.Property<string>("EnBranchName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Lat")
                         .HasColumnType("float");
@@ -249,6 +261,10 @@ namespace medical_app_db.EF.Migrations
                     b.Property<decimal>("MinDeliveryPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PricePerKilo")
                         .HasPrecision(18, 2)
@@ -368,20 +384,6 @@ namespace medical_app_db.EF.Migrations
                     b.ToTable("Pharmacies");
                 });
 
-            modelBuilder.Entity("medical_app_db.Core.Models.PhoneNumber", b =>
-                {
-                    b.Property<Guid>("BranchId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Phone")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.HasKey("BranchId", "Phone");
-
-                    b.ToTable("PhoneNumbers");
-                });
-
             modelBuilder.Entity("medical_app_db.Core.Models.SystemProduct", b =>
                 {
                     b.Property<Guid>("Code")
@@ -392,10 +394,18 @@ namespace medical_app_db.EF.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ActivePrincipal")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("EN_Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Code");
@@ -642,18 +652,6 @@ namespace medical_app_db.EF.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("medical_app_db.Core.Models.PhoneNumber", b =>
-                {
-                    b.HasOne("medical_app_db.Core.Models.Branch", "Branch")
-                        .WithMany("PhoneNumbers")
-                        .HasForeignKey("BranchId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
             modelBuilder.Entity("medical_app_db.Core.Models.WorkingPeriod", b =>
                 {
                     b.HasOne("medical_app_db.Core.Models.Branch", "Branch")
@@ -674,8 +672,6 @@ namespace medical_app_db.EF.Migrations
             modelBuilder.Entity("medical_app_db.Core.Models.Branch", b =>
                 {
                     b.Navigation("AccountBranches");
-
-                    b.Navigation("PhoneNumbers");
 
                     b.Navigation("Products");
 

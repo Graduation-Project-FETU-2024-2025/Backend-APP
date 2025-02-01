@@ -23,8 +23,4 @@
 	  <ProjectReference Include="..\medical_app_db.Core\medical_app_db.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
