@@ -1,17 +1,19 @@
-﻿using medical_app_db.EF.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using medical_app_db.Core.Models;
+﻿using medical_app_db.Core.Models;
+using medical_app_api.Extentions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<MedicalDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services
+    .InjectDbContext(builder.Configuration)
+    .InjectIdentityCore<User>()
+    .InjectIdentity<Account>()
+    .AddJWTAuth(builder.Configuration)
+    .AddJWTConfiguration(builder.Configuration)
+    .AddAuthService()
+    .AddEmailService()
+    .AddEmailConfiguration(builder.Configuration);
 
-builder.Services.AddIdentity<User, IdentityRole<Guid>>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<MedicalDbContext>()
-    .AddDefaultTokenProviders();
-
+builder.Services.AddMemoryCache(); // to add cach
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
