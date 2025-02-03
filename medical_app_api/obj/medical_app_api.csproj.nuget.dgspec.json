@@ -32,6 +32,9 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
+              "F:\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj": {
+                "projectPath": "F:\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj"
+              },
               "F:\\Backend-APP\\medical_app_db.EF\\medical_app_db.EF.csproj": {
                 "projectPath": "F:\\Backend-APP\\medical_app_db.EF\\medical_app_db.EF.csproj"
               }
@@ -54,6 +57,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.11, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[9.0.0, )"
@@ -148,7 +155,7 @@
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[8.0.11, )"
+              "version": "[9.0.0, )"
             },
             "Microsoft.Extensions.Identity.Stores": {
               "target": "Package",

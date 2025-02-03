@@ -29,7 +29,7 @@ namespace medical_app_db.EF.Data.Configurations
 
             builder.HasOne(o => o.Branch)
                 .WithMany()
-                .HasForeignKey(o => o.BranchId);
+                .HasForeignKey(o => o.BranchId).HasPrincipalKey(b => b.Id);
 
             builder.HasMany(o => o.Items)
                 .WithOne(i => i.Order)
