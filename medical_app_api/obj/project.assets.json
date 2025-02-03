@@ -5489,19 +5489,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Soft LapTop\\.nuget\\packages\\": {}
+    "C:\\Users\\Soft LapTop\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\graduation Project\\Backend-APP\\medical_app_api\\medical_app_api.csproj",
+      "projectUniqueName": "F:\\Backend-APP\\medical_app_api\\medical_app_api.csproj",
       "projectName": "medical_app_api",
-      "projectPath": "F:\\graduation Project\\Backend-APP\\medical_app_api\\medical_app_api.csproj",
+      "projectPath": "F:\\Backend-APP\\medical_app_api\\medical_app_api.csproj",
       "packagesPath": "C:\\Users\\Soft LapTop\\.nuget\\packages\\",
-      "outputPath": "F:\\graduation Project\\Backend-APP\\medical_app_api\\obj\\",
+      "outputPath": "F:\\Backend-APP\\medical_app_api\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
         "C:\\Users\\Soft LapTop\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -5509,15 +5514,14 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "F:\\graduation Project\\Backend-APP\\medical_app_db.EF\\medical_app_db.EF.csproj": {
-              "projectPath": "F:\\graduation Project\\Backend-APP\\medical_app_db.EF\\medical_app_db.EF.csproj"
+            "F:\\Backend-APP\\medical_app_db.EF\\medical_app_db.EF.csproj": {
+              "projectPath": "F:\\Backend-APP\\medical_app_db.EF\\medical_app_db.EF.csproj"
             }
           }
         }
@@ -5531,7 +5535,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
       "net8.0": {
@@ -5575,7 +5580,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
