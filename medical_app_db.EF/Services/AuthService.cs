@@ -181,6 +181,7 @@ namespace medical_app_db.EF.Services
                 new Claim(JwtRegisteredClaimNames.Email , account.Email ?? ""),
                 new Claim(JwtRegisteredClaimNames.Iss , "healthApp"),
                 new Claim(ClaimTypes.Name, account.UserName ?? ""),
+                new Claim("PharmacyID", account.PharmacyId.ToString() ?? ""),
             }.Union(accountClaims).Union(roleClaims);
 
             var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_Jwt.SecurityKey ?? "healthApp"));

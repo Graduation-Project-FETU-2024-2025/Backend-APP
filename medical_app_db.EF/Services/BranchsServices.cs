@@ -16,7 +16,7 @@ public class BranchService : IBranchService
         _context = context;
     }
 
-    public async Task<IEnumerable<BranchDTO>> GetAllBranchesAsync()
+    public async Task<IEnumerable<BranchDTO>> GetAllBranchesAsync(int page = 1 , int pageSize = 3)
     {
         var branches = await _context.Branches
             .Include(b => b.WorkingPeriods)
@@ -37,7 +37,7 @@ public class BranchService : IBranchService
                         End = w.End.ToString("hh:mm tt")
                     }).ToList()
                     : new List<WorkingPeriodDTO>()
-            })
+            }).Skip((page - 1) * pageSize).Take(pageSize) 
             .ToListAsync();
 
         return branches;

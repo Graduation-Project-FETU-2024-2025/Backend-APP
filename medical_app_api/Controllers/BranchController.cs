@@ -17,7 +17,7 @@ public class BranchController : ControllerBase
 
     //GET: api/Branch
     [HttpGet]
-    public async Task<IActionResult> GetAllBranches()
+    public async Task<IActionResult> GetAllBranches(int page = 1, int pageSize = 3)
     {
         var lang = Request.Headers["lang"].ToString().ToLower();
 
@@ -26,7 +26,7 @@ public class BranchController : ControllerBase
             return BadRequest(new { message = "Language not provided in the header.", statusCode = (int)HttpStatusCode.BadRequest });
         }
 
-        var branches = await _branchService.GetAllBranchesAsync();
+        var branches = await _branchService.GetAllBranchesAsync(page, pageSize);
 
         if (branches == null || !branches.Any())
         {
