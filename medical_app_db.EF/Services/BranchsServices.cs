@@ -3,8 +3,10 @@ using medical_app_db.Core.Interfaces;
 using medical_app_db.Core.Models;
 using medical_app_db.EF.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
+using System.IO;
 namespace medical_app_db.Services;
-
 public class BranchService : IBranchService
 {
     private readonly MedicalDbContext _context;
@@ -31,7 +33,7 @@ public class BranchService : IBranchService
                 WorkingHours = b.WorkingPeriods != null
                     ? b.WorkingPeriods.Select(w => new WorkingPeriodDTO
                     {
-                        Start = w.Start.ToString("hh:mm tt"), // التغيير هنا ليتناسب مع AM/PM
+                        Start = w.Start.ToString("hh:mm tt"),
                         End = w.End.ToString("hh:mm tt")
                     }).ToList()
                     : new List<WorkingPeriodDTO>()
@@ -67,11 +69,71 @@ public class BranchService : IBranchService
             }).ToList()
         };
     }
+    private void ValidateBranchData(BranchDTO branchDto)
+    {
+        if (!Regex.IsMatch(branchDto.AR_BranchName, @"^[\u0600-\u06FF\s]+$"))
+        {
+            throw new ArgumentException("AR_BranchName must contain only Arabic letters.");
+        }
+
+        if (!Regex.IsMatch(branchDto.EN_BranchName, @"^[A-Za-z\s]+$"))
+        {
+            throw new ArgumentException("EN_BranchName must contain only English letters.");
+        }
+
+        if (!Regex.IsMatch(branchDto.PhoneNumber, @"^\d+$"))
+        {
+            throw new ArgumentException("PhoneNumber must contain only digits.");
+        }
+
+        string[] allowedExtensions = { ".png", ".jpg", ".jpeg", ".gif" };
+        string imageExtension = Path.GetExtension(branchDto.Image)?.ToLower();
+
+        if (!allowedExtensions.Contains(imageExtension))
+        {
+            throw new ArgumentException("Invalid image format. Allowed formats: PNG, JPG, JPEG, GIF.");
+        }
+
+        if (branchDto.Lat < -90 || branchDto.Lat > 90)
+        {
+            throw new ArgumentException("Latitude must be between -90 and 90.");
+        }
+
+        if (branchDto.Long < -180 || branchDto.Long > 180)
+        {
+            throw new ArgumentException("Longitude must be between -180 and 180.");
+        }
+
+        if (branchDto.WorkingHours != null)
+        {
+            foreach (var workHour in branchDto.WorkingHours)
+            {
+                try
+                {
+                    TimeOnly startTime = ParseTime(workHour.Start);
+                    TimeOnly endTime = ParseTime(workHour.End);
+
+                    if (startTime >= endTime)
+                    {
+                        throw new ArgumentException("Start time must be earlier than end time.");
+                    }
+                }
+                catch (FormatException ex)
+                {
+                    throw new ArgumentException("Invalid working hours format: " + ex.Message);
+                }
+            }
+        }
+    }
+
+
 
     public async Task<BranchDTO> AddBranchAsync(BranchDTO branchDto)
     {
         try
         {
+            ValidateBranchData(branchDto);
+
             var branch = new Branch
             {
                 Id = Guid.NewGuid(),
@@ -88,7 +150,6 @@ public class BranchService : IBranchService
                 PhoneNumber = branchDto.PhoneNumber,
                 WorkingPeriods = branchDto.WorkingHours?.Select(w =>
                 {
-
                     TimeOnly startTime = ParseTime(w.Start);
                     TimeOnly endTime = ParseTime(w.End);
 
@@ -106,44 +167,64 @@ public class BranchService : IBranchService
             branchDto.Id = branch.Id;
             return branchDto;
         }
+        catch (ArgumentException argEx)
+        {
+            throw new Exception("Validation error: " + argEx.Message);
+        }
         catch (Exception ex)
         {
             throw new Exception("Error occurred while adding branch: " + ex.Message);
         }
     }
 
+
     public async Task<BranchDTO> UpdateBranchAsync(Guid id, BranchDTO branchDto)
     {
-        var branch = await _context.Branches.Include(b => b.WorkingPeriods).FirstOrDefaultAsync(b => b.Id == id);
-        if (branch == null)
-            return null;
-
-        branch.AR_BranchName = branchDto.AR_BranchName;
-        branch.EN_BranchName = branchDto.EN_BranchName;
-        branch.Lat = branchDto.Lat;
-        branch.Long = branchDto.Long;
-        branch.DeliveryRange = branchDto.DeliveryRange;
-        branch.PricePerKilo = branchDto.PricePerKilo;
-        branch.MinDeliveryPrice = branchDto.MinDeliveryPrice;
-        branch.Status = branchDto.Status;
-        branch.Image = branchDto.Image;
-        branch.PhoneNumber = branchDto.PhoneNumber;
-        branch.WorkingPeriods = branchDto.WorkingHours?.Select(w =>
+        try
         {
-            TimeOnly startTime = ParseTime(w.Start);
-            TimeOnly endTime = ParseTime(w.End);
+            var branch = await _context.Branches
+                .Include(b => b.WorkingPeriods)
+                .FirstOrDefaultAsync(b => b.Id == id);
 
-            return new WorkingPeriod
+            if (branch == null)
+                return null;
+
+            ValidateBranchData(branchDto);
+
+            branch.AR_BranchName = branchDto.AR_BranchName;
+            branch.EN_BranchName = branchDto.EN_BranchName;
+            branch.Lat = branchDto.Lat;
+            branch.Long = branchDto.Long;
+            branch.DeliveryRange = branchDto.DeliveryRange;
+            branch.PricePerKilo = branchDto.PricePerKilo;
+            branch.MinDeliveryPrice = branchDto.MinDeliveryPrice;
+            branch.Status = branchDto.Status;
+            branch.Image = branchDto.Image;
+            branch.PhoneNumber = branchDto.PhoneNumber;
+            branch.WorkingPeriods = branchDto.WorkingHours?.Select(w =>
             {
-                Start = startTime,
-                End = endTime
-            };
-        }).ToList();
+                TimeOnly startTime = ParseTime(w.Start);
+                TimeOnly endTime = ParseTime(w.End);
 
-        await _context.SaveChangesAsync();
-        return branchDto;
+                return new WorkingPeriod
+                {
+                    Start = startTime,
+                    End = endTime
+                };
+            }).ToList();
+
+            await _context.SaveChangesAsync();
+            return branchDto;
+        }
+        catch (ArgumentException argEx)
+        {
+            throw new Exception("Validation error: " + argEx.Message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error occurred while updating branch: " + ex.Message);
+        }
     }
-
     private TimeOnly ParseTime(string timeString)
     {
         try
@@ -179,3 +260,4 @@ public class BranchService : IBranchService
         return true;
     }
 }
+
