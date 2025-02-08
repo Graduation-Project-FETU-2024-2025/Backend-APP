@@ -14,7 +14,9 @@ builder.Services
     .AddAuthService()
     .AddEmailService()
     .AddEmailConfiguration(builder.Configuration);
+
 builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IProductService, ProductsServices>();
 
 builder.Services.AddMemoryCache(); // to add cach
 builder.Services.AddControllers();
