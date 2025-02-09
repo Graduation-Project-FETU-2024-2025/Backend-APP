@@ -1,4 +1,5 @@
-﻿using medical_app_db.Core.Interfaces;
+﻿using medical_app_db.Core.DTOs;
+using medical_app_db.Core.Interfaces;
 using medical_app_db.EF.Migrations;
 using medical_app_db.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -46,6 +47,32 @@ namespace medical_app_api.Controllers
 			});
 
 			return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
+		}
+		
+		[Authorize]
+		[HttpPost]
+		public async Task<IActionResult> AddBranchProduct(ProductDTO productDto)
+		{
+			if (productDto == null)
+			{
+				return BadRequest(new { message = "Invalid product data", statusCode = (int)HttpStatusCode.BadRequest });
+			}
+
+			try
+			{
+				var createBranchProduct = await _productService.AddBranchProductAsync(productDto);
+
+				return Ok(					
+					new {
+						message = "Branch Product has been added successfully",
+						statusCode = (int)HttpStatusCode.Created,
+						data = productDto
+					});
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "Failed to add branch product", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
+			}
 		}
 
 		[Authorize]
