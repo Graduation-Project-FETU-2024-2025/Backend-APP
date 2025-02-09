@@ -4,21 +4,42 @@ using medical_app_db.Core.Models;
 using medical_app_db.EF.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
-using System.Text.RegularExpressions;
-using System.IO;
+using Microsoft.AspNetCore.Http;
 namespace medical_app_db.Services;
 public class BranchService : IBranchService
 {
     private readonly MedicalDbContext _context;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public BranchService(MedicalDbContext context)
+    public BranchService(MedicalDbContext context, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<IEnumerable<BranchDTO>> GetAllBranchesAsync(int page = 1 , int pageSize = 3)
     {
+        var httpContext = _httpContextAccessor.HttpContext;
+
+        if (httpContext == null)
+        {
+            throw new UnauthorizedAccessException("HttpContext is not available.");
+        }
+
+        var pharmacyIdClaim = httpContext.User.FindFirst("PharmacyID")?.Value;
+
+        if (string.IsNullOrEmpty(pharmacyIdClaim))
+        {
+            throw new UnauthorizedAccessException("PharmacyId not found in token.");
+        }
+
+        if (!Guid.TryParse(pharmacyIdClaim, out var pharmacyId))
+        {
+            throw new UnauthorizedAccessException("Invalid PharmacyId format.");
+        }
+
         var branches = await _context.Branches
+            .Where(b => b.PharmacyId == pharmacyId)
             .Include(b => b.WorkingPeriods)
             .Select(b => new BranchDTO
             {
@@ -37,7 +58,9 @@ public class BranchService : IBranchService
                         End = w.End.ToString("hh:mm tt")
                     }).ToList()
                     : new List<WorkingPeriodDTO>()
-            }).Skip((page - 1) * pageSize).Take(pageSize) 
+            })
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize) 
             .ToListAsync();
 
         return branches;

@@ -1,5 +1,6 @@
 ﻿using medical_app_db.Core.DTOs;
 using medical_app_db.Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 namespace medical_app_db.API.Controllers;
@@ -16,6 +17,7 @@ public class BranchController : ControllerBase
     }
 
     //GET: api/Branch
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAllBranches(int page = 1, int pageSize = 3)
     {

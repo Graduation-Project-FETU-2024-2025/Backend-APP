@@ -12,6 +12,7 @@ builder.Services
     .AddJWTAuth(builder.Configuration)
     .AddJWTConfiguration(builder.Configuration)
     .AddAuthService()
+    .AddHttpContextAccessor()
     .AddEmailService()
     .AddEmailConfiguration(builder.Configuration);
 builder.Services.AddScoped<IBranchService, BranchService>();

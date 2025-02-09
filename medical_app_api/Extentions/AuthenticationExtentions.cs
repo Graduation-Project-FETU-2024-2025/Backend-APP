@@ -32,8 +32,8 @@ namespace medical_app_api.Extentions
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ValidAudience = configuration["JWT:AudienceIP"],
                     ValidIssuer = configuration["JWT:IssureIP"],
                     ClockSkew = TimeSpan.Zero,
