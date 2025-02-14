@@ -99,10 +99,38 @@ public class ProductsServices : IProductService
 			throw new Exception("Error occurred while adding branch: " + ex.Message);
 		}
 	}
-	public async Task<bool> DeleteBranchProductAsync(Guid branch_id, Guid product_id)
+	public async Task<ProductDTO> UpdateBranchProductAsync(Guid branch_id, Guid product_code, ProductDTO productDto)
+	{
+		try
+		{
+			var branchProduct = await _context.BranchProducts
+				.FirstOrDefaultAsync(b => b.BranchId == branch_id && b.SystemProductCode == product_code);
+
+			if (branchProduct == null)
+				return null;
+
+			ValidateBranchProductData(productDto);
+
+			branchProduct.price = productDto.price;
+			branchProduct.visibility = productDto.visibility;
+			branchProduct.stock = productDto.stock;
+
+			await _context.SaveChangesAsync();
+			return productDto;
+		}
+		catch (ArgumentException argEx)
+		{
+			throw new Exception("Validation error: " + argEx.Message);
+		}
+		catch (Exception ex)
+		{
+			throw new Exception("Error occurred while updating branch product: " + ex.Message);
+		}
+	}
+	public async Task<bool> DeleteBranchProductAsync(Guid branch_id, Guid product_code)
 	{
 		var product = await _context.BranchProducts
-			.FirstOrDefaultAsync(p => p.BranchId == branch_id && p.SystemProductCode == product_id);
+			.FirstOrDefaultAsync(p => p.BranchId == branch_id && p.SystemProductCode == product_code);
 
 		if (product == null)
 			return false;
@@ -110,6 +138,34 @@ public class ProductsServices : IProductService
 		_context.BranchProducts.Remove(product);
 		await _context.SaveChangesAsync();
 		return true;
+	}
+
+	public async Task<ProductDTO> GetBranchProductAsync(Guid branchID, Guid productCode)
+	{
+		var branchProduct = await _context.BranchProducts.FirstOrDefaultAsync(b => b.BranchId == branchID && b.SystemProductCode == productCode);
+		if (branchProduct == null)
+			throw new KeyNotFoundException("Branch Product not found");
+
+		var systemProduct = await _context.SystemProducts.Where(b => b.Code == productCode).FirstOrDefaultAsync();
+
+		return new ProductDTO
+		{
+			BranchId = branchID,
+			SystemProductCode = productCode,
+			stock = branchProduct.stock,
+			price = branchProduct.price,
+			visibility = branchProduct.visibility,
+			productDTO = new SystemProductDTO
+			{
+				Code = productCode,
+				AR_Name = systemProduct!.AR_Name,
+				EN_Name = systemProduct.EN_Name,
+				Image = systemProduct.Image,
+				Type = systemProduct.Type,
+				Active_principal = systemProduct.Active_principal,
+				Company_Name = systemProduct.Company_Name,
+			}
+		};
 	}
 }
 
