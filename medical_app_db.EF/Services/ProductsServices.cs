@@ -46,7 +46,36 @@ public class ProductsServices : IProductService
 		return SystemProducts;
 	}
 
-	private void ValidateBranchProductData(ProductDTO productDto)
+    public async Task<IEnumerable<SystemProductDTO>> GetOutOfStockProductsAsync(int page, int pageSize)
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+
+        if (httpContext == null)
+        {
+            throw new UnauthorizedAccessException("HttpContext is not available.");
+        }
+
+		var outOfStckProducts = await _context.BranchProducts
+			.Where(p => p.stock <= 5)
+			.OrderBy(p => p.SystemProductCode)
+            .Select(b => new SystemProductDTO
+            {
+                Code = b.SystemProductCode,
+                AR_Name = b.SystemProduct.AR_Name,
+                EN_Name = b.SystemProduct.EN_Name,
+                Image = b.SystemProduct.Image,
+                Type = b.SystemProduct.Type,
+                Active_principal = b.SystemProduct.Active_principal,
+                Company_Name = b.SystemProduct.Company_Name
+            })
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+		return outOfStckProducts;
+    }
+
+    private void ValidateBranchProductData(ProductDTO productDto)
 	{
 		if(productDto.stock < 0)
 		{
