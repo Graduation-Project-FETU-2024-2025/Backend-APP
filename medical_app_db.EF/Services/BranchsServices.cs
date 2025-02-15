@@ -17,7 +17,7 @@ public class BranchService : IBranchService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<IEnumerable<BranchDTO>> GetAllBranchesAsync(int page = 1 , int pageSize = 3)
+    public async Task<IEnumerable<BranchDTO>> GetAllBranchesAsync(int page = 1, int pageSize = 3)
     {
         var httpContext = _httpContextAccessor.HttpContext;
 
@@ -60,7 +60,7 @@ public class BranchService : IBranchService
                     : new List<WorkingPeriodDTO>()
             })
             .Skip((page - 1) * pageSize)
-            .Take(pageSize) 
+            .Take(pageSize)
             .ToListAsync();
 
         return branches;
@@ -148,6 +148,29 @@ public class BranchService : IBranchService
             }
         }
     }
+    private Guid GetPharmacyIdFromToken()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+
+        if (httpContext == null)
+        {
+            throw new UnauthorizedAccessException("HttpContext is not available.");
+        }
+
+        var pharmacyIdClaim = httpContext.User.FindFirst("PharmacyID")?.Value;
+
+        if (string.IsNullOrEmpty(pharmacyIdClaim))
+        {
+            throw new UnauthorizedAccessException("PharmacyId not found in token.");
+        }
+
+        if (!Guid.TryParse(pharmacyIdClaim, out var pharmacyId))
+        {
+            throw new UnauthorizedAccessException("Invalid PharmacyId format.");
+        }
+
+        return pharmacyId;
+    }
 
 
 
@@ -157,10 +180,12 @@ public class BranchService : IBranchService
         {
             ValidateBranchData(branchDto);
 
+            var pharmacyId = GetPharmacyIdFromToken();
+
             var branch = new Branch
             {
                 Id = Guid.NewGuid(),
-                PharmacyId = branchDto.PharmacyId,
+                PharmacyId = pharmacyId,
                 AR_BranchName = branchDto.AR_BranchName,
                 EN_BranchName = branchDto.EN_BranchName,
                 Lat = branchDto.Lat,
@@ -283,4 +308,3 @@ public class BranchService : IBranchService
         return true;
     }
 }
-

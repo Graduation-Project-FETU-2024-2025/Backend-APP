@@ -52,6 +52,7 @@ public class BranchController : ControllerBase
     }
 
     // api/Branch/{id}
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetBranchById(Guid id)
     {
@@ -93,6 +94,7 @@ public class BranchController : ControllerBase
     }
 
     // POST: api/Branch
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> AddBranch(BranchDTO branchDto)
     {
@@ -119,6 +121,7 @@ public class BranchController : ControllerBase
     }
 
     // PUT: api/Branch/{id}
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateBranch(Guid id, BranchDTO branchDto)
     {
@@ -150,6 +153,7 @@ public class BranchController : ControllerBase
     }
 
     // DELETE: api/Branch/{id}
+    [Authorize]
     [HttpDelete("{id}")]
    
     public async Task<IActionResult> DeleteBranch(Guid id)
