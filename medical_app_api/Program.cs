@@ -7,8 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .InjectDbContext(builder.Configuration)
-    .InjectIdentityCore<User>()
-    .InjectIdentity<Account>()
+    .InjectIdentity<ApplicationUser>()
     .AddJWTAuth(builder.Configuration)
     .AddJWTConfiguration(builder.Configuration)
     .AddAuthService()
