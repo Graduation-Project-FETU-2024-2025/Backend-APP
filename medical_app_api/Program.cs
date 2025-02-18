@@ -6,14 +6,14 @@ using medical_app_db.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .InjectDbContext(builder.Configuration)
+    .InjectDbContext(builder.Configuration, builder.Environment)
     .InjectIdentity<ApplicationUser>()
     .AddJWTAuth(builder.Configuration)
     .AddJWTConfiguration(builder.Configuration)
     .AddAuthService()
     .AddHttpContextAccessor()
     .AddEmailService()
-    .AddEmailConfiguration(builder.Configuration);
+    .AddEmailConfiguration(builder.Configuration, builder.Environment);
 
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IProductService, ProductsServices>();
