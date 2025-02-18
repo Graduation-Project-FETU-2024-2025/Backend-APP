@@ -13,6 +13,10 @@ namespace medical_app_db.EF.Data.Configurations
             builder.Property(a => a.Image).IsRequired(false);
 
             builder.HasOne(a => a.Pharmacy).WithMany(p => p.Accounts).HasForeignKey(a => a.PharmacyId);
+            builder.HasOne(a => a.ApplicationUser)
+                .WithOne(u => u.Account)
+                .HasForeignKey<Account>(a => a.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

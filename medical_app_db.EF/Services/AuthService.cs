@@ -11,21 +11,22 @@ using medical_app_db.Core.Helpers;
 using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
+using Microsoft.EntityFrameworkCore;
 namespace medical_app_db.EF.Services
 {
     public class AuthService : IAuthService
     {
         private readonly MedicalDbContext _context;
-        private readonly UserManager<Account> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailService _emailService;
         private IMemoryCache _cach;
         private readonly JWT _Jwt;
 
         public AuthService(
             MedicalDbContext context,
-            UserManager<Account> userManager,
+            UserManager<ApplicationUser> userManager,
             IEmailService emailService,
-            IOptions<JWT> jwtOptions, 
+            IOptions<JWT> jwtOptions,
             IMemoryCache cache)
         {
             _context = context;
@@ -38,59 +39,75 @@ namespace medical_app_db.EF.Services
         public async Task<AuthModel> Register(RegisterationDTO model)
         {
             if (await _userManager.FindByEmailAsync(model.Email!) != null)
-                return new AuthModel 
-                { 
-                    Message = "Email already exists", 
-                    Status = HttpStatusCode.BadRequest 
-                };
-
-            if (await _userManager.FindByNameAsync(model.UserName!) != null)
-                return new AuthModel 
-                { 
-                    Message = "UserName already exists" , 
+                return new AuthModel
+                {
+                    Message = "Email already exists",
                     Status = HttpStatusCode.BadRequest
                 };
 
-            var account = new Account
-            {
-                Id =  Guid.NewGuid() ,
-                UserName = model.UserName,
-                Email = model.Email,
-                Image = model.Image,
-                PharmacyId = model.PharmacyId
-            };
-
-            var result = await _userManager.CreateAsync(account, model.Password!);
-
-            if(!result.Succeeded)
-                return new AuthModel 
-                { 
-                    Message = "Failed to Create Account", 
-                    Status = HttpStatusCode.BadRequest 
+            if (await _userManager.FindByNameAsync(model.UserName!) != null)
+                return new AuthModel
+                {
+                    Message = "UserName already exists",
+                    Status = HttpStatusCode.BadRequest
                 };
 
-            return new AuthModel 
-            { 
-                Message = "Account Created Successfully" , 
-                IsAuthuntecated = true, 
-                Status = HttpStatusCode.Created 
+            var newUser = new ApplicationUser()
+            {
+                UserName = model.UserName,
+                Email = model.Email,
+            };
+
+            try
+            {
+                var result = await _userManager.CreateAsync(newUser, model.Password!);
+
+                if (!result.Succeeded)
+                    throw new Exception();
+
+                var account = new Account
+                {
+                    Id = Guid.NewGuid(),
+                    ApplicationUser = newUser,
+                    ApplicationUserId = newUser.Id,
+                    Image = model.Image,
+                    PharmacyId = model.PharmacyId
+                };
+
+                await _context.Accounts.AddAsync(account);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return new AuthModel
+                {
+                    Message = "Failed to Create Account",
+                    Status = HttpStatusCode.InternalServerError
+                };
+            }
+
+            return new AuthModel
+            {
+                Message = "Account Created Successfully",
+                IsAuthuntecated = true,
+                Status = HttpStatusCode.Created
             };
         }
         public async Task<AuthModel> Login(LoginDTO model)
         {
-            if(model.Email.IsNullOrEmpty())
-                return new AuthModel 
-                { 
-                    Message = "Email is required" , 
-                    Status = HttpStatusCode.BadRequest 
-                }; 
+            if (model.Email.IsNullOrEmpty())
+                return new AuthModel
+                {
+                    Message = "Email is required",
+                    Status = HttpStatusCode.BadRequest
+                };
 
-            var account = await _userManager.FindByEmailAsync(model.Email!);
+            var user = await _userManager.FindByEmailAsync(model.Email!);
 
-            if(account is null)
-                return new AuthModel 
-                { 
-                    Message = "User not found" ,
+            if (user is null)
+                return new AuthModel
+                {
+                    Message = "User not found",
                     Status = HttpStatusCode.NotFound
                 };
 
@@ -98,22 +115,22 @@ namespace medical_app_db.EF.Services
 
             try
             {
-                await _emailService.SendEmailAsync(account.Email, "Login Confimatation", otp);
-                _cach.Set(account.Email!, otp, TimeSpan.FromMinutes(5));
+                await _emailService.SendEmailAsync(user.Email, "Login Confimatation", otp);
+                _cach.Set(user.Email!, otp, TimeSpan.FromMinutes(5));
             }
             catch
             {
-                return new AuthModel 
-                { 
-                    Message = "Coudn't Send Email, Plaese Try again" , 
-                    Status = HttpStatusCode.BadRequest 
+                return new AuthModel
+                {
+                    Message = "Coudn't Send Email, Plaese Try again",
+                    Status = HttpStatusCode.BadRequest
                 };
             }
 
-            return new AuthModel 
-            { 
-                Message = "OTP sent to your email", 
-                Status = HttpStatusCode.OK 
+            return new AuthModel
+            {
+                Message = "OTP sent to your email",
+                Status = HttpStatusCode.OK
             };
         }
         public async Task<AuthModel> VerifytOtp(TestOtpDTO model)
@@ -123,50 +140,52 @@ namespace medical_app_db.EF.Services
             if (model.OTP.IsNullOrEmpty())
                 return new AuthModel { Message = "OTP is required" };
 
-            var account = await _userManager.FindByEmailAsync(model.Email!);
+            var user = await _userManager.FindByEmailAsync(model.Email!);
 
-            if (account is null)
-                return new AuthModel 
-                { 
-                    Message = "Email Not Found" , 
-                    Status = HttpStatusCode.BadRequest 
+            if (user is null)
+                return new AuthModel
+                {
+                    Message = "Email Not Found",
+                    Status = HttpStatusCode.BadRequest
                 };
 
             _cach.TryGetValue(model.Email!, out string? chachedOtp);
 
             if (chachedOtp is null)
-                return new AuthModel 
-                { 
-                    Message = "OTP Expired, Try Agian" , 
+                return new AuthModel
+                {
+                    Message = "OTP Expired, Try Agian",
                     Status = HttpStatusCode.BadRequest
                 };
 
             if (chachedOtp != model.OTP)
-                return new AuthModel 
-                { 
-                    Message = "OTP Is Not Correct, Please Check your Email and try again" , 
-                    Status = HttpStatusCode.BadRequest 
+                return new AuthModel
+                {
+                    Message = "OTP Is Not Correct, Please Check your Email and try again",
+                    Status = HttpStatusCode.BadRequest
                 };
 
-            var token = await GenerateJwtToken(account);
+            var token = await GenerateJwtToken(user);
+
             var result = new AuthModel
             {
                 Message = "Login Successful",
                 IsAuthuntecated = true,
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 ExpiresOn = token.ValidTo,
-                Email = account.Email,
-                UserName = account.UserName,
-                Roles = _userManager.GetRolesAsync(account).Result,
+                Email = user.Email,
+                UserName = user.UserName,
+                Roles = _userManager.GetRolesAsync(user).Result,
                 Status = HttpStatusCode.OK
             };
 
             return result;
         }
-        private async Task<JwtSecurityToken> GenerateJwtToken(Account account)
+        private async Task<JwtSecurityToken> GenerateJwtToken(ApplicationUser user)
         {
-            var accountClaims = await _userManager.GetClaimsAsync(account);
-            var roles = await _userManager.GetRolesAsync(account);
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.ApplicationUserId == user.Id);
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
 
             var roleClaims = new List<Claim>();
             foreach (var claim in roles)
@@ -176,13 +195,13 @@ namespace medical_app_db.EF.Services
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email , account.Email ?? ""),
+                new Claim(JwtRegisteredClaimNames.Email , user.Email ?? ""),
                 new Claim(JwtRegisteredClaimNames.Iss , "healthApp"),
-                new Claim(ClaimTypes.Name, account.UserName ?? ""),
-                new Claim("PharmacyID", account.PharmacyId.ToString() ?? ""),
-            }.Union(accountClaims).Union(roleClaims);
+                new Claim(ClaimTypes.Name, user.UserName ?? ""),
+                new Claim("PharmacyID", account?.PharmacyId.ToString() ?? ""),
+            }.Union(userClaims).Union(roleClaims);
 
             var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_Jwt.SecurityKey ?? "healthApp"));
             var signInCredentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
@@ -204,6 +223,6 @@ namespace medical_app_db.EF.Services
 
             return randomNumber.ToString("0000");
         }
-        
+
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using medical_app_db.EF.Data;
 
@@ -11,9 +12,11 @@ using medical_app_db.EF.Data;
 namespace medical_app_db.EF.Migrations
 {
     [DbContext(typeof(MedicalDbContext))]
-    partial class MedicalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250209113731_updatingModels")]
+    partial class updatingModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,43 +164,6 @@ namespace medical_app_db.EF.Migrations
                     b.Property<Guid>("PharmacyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ApplicationUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id", "PharmacyId");
-
-                    b.HasIndex("ApplicationUserId")
-                        .IsUnique();
-
-                    b.HasIndex("PharmacyId");
-
-                    b.ToTable("Accounts");
-                });
-
-            modelBuilder.Entity("medical_app_db.Core.Models.AccountBranch", b =>
-                {
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("BranchId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("AccountId", "BranchId");
-
-                    b.HasIndex("BranchId");
-
-                    b.ToTable("AccountBranches");
-                });
-
-            modelBuilder.Entity("medical_app_db.Core.Models.ApplicationUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
@@ -209,6 +175,9 @@ namespace medical_app_db.EF.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -237,17 +206,29 @@ namespace medical_app_db.EF.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id", "PharmacyId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("PharmacyId");
 
-                    b.ToTable("ApplicationUser");
+                    b.ToTable("Accounts");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.AccountBranch", b =>
+                {
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BranchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AccountId", "BranchId");
+
+                    b.HasIndex("BranchId");
+
+                    b.ToTable("AccountBranches");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Branch", b =>
@@ -311,21 +292,12 @@ namespace medical_app_db.EF.Migrations
                     b.Property<Guid>("BranchId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("SystemProductCode")
+                    b.Property<Guid>("SystemProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<float>("price")
-                        .HasColumnType("real");
+                    b.HasKey("BranchId", "SystemProductId");
 
-                    b.Property<int>("stock")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("visibility")
-                        .HasColumnType("bit");
-
-                    b.HasKey("BranchId", "SystemProductCode");
-
-                    b.HasIndex("SystemProductCode");
+                    b.HasIndex("SystemProductId");
 
                     b.ToTable("BranchProducts");
                 });
@@ -595,19 +567,11 @@ namespace medical_app_db.EF.Migrations
 
             modelBuilder.Entity("medical_app_db.Core.Models.Account", b =>
                 {
-                    b.HasOne("medical_app_db.Core.Models.ApplicationUser", "ApplicationUser")
-                        .WithOne("Account")
-                        .HasForeignKey("medical_app_db.Core.Models.Account", "ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("medical_app_db.Core.Models.Pharmacy", "Pharmacy")
                         .WithMany("Accounts")
                         .HasForeignKey("PharmacyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ApplicationUser");
 
                     b.Navigation("Pharmacy");
                 });
@@ -633,15 +597,6 @@ namespace medical_app_db.EF.Migrations
                     b.Navigation("Branch");
                 });
 
-            modelBuilder.Entity("medical_app_db.Core.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("medical_app_db.Core.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("medical_app_db.Core.Models.Branch", b =>
                 {
                     b.HasOne("medical_app_db.Core.Models.Pharmacy", "Pharmacy")
@@ -664,7 +619,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasOne("medical_app_db.Core.Models.SystemProduct", "SystemProduct")
                         .WithMany("BranchProducts")
-                        .HasForeignKey("SystemProductCode")
+                        .HasForeignKey("SystemProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -727,11 +682,6 @@ namespace medical_app_db.EF.Migrations
             modelBuilder.Entity("medical_app_db.Core.Models.Account", b =>
                 {
                     b.Navigation("AccountBranches");
-                });
-
-            modelBuilder.Entity("medical_app_db.Core.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Branch", b =>

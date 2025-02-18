@@ -4,17 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace medical_app_db.Core.Models
+namespace medical_app_db.Core.DTOs
 {
-	public class BranchProduct
+	public class ProductDTO
 	{
 		public Guid BranchId { get; set; }
-		public Branch Branch { get; set; } = null!;
-
 		public Guid SystemProductCode { get; set; }
-		public SystemProduct SystemProduct { get; set; } = null!;
-		public int stock {  get; set; }
+		public int stock { get; set; }
 		public float price { get; set; }
 		public bool visibility { get; set; } = false;
+
+		public SystemProductDTO? productDTO { get; set; } = null;
 	}
 }

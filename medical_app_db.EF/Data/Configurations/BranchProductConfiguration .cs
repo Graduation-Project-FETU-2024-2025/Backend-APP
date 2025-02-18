@@ -8,10 +8,10 @@ namespace medical_app_db.EF.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<BranchProduct> builder)
         {
-            builder.HasKey(a => new { a.BranchId , a.SystemProductId });
+            builder.HasKey(a => new { a.BranchId , a.SystemProductCode });
 
             builder.HasOne(a => a.Branch).WithMany(p => p.Products).HasForeignKey(a => a.BranchId).HasPrincipalKey(b => b.Id);
-            builder.HasOne(a => a.SystemProduct).WithMany(p => p.BranchProducts).HasForeignKey(ab => ab.SystemProductId);
+            builder.HasOne(a => a.SystemProduct).WithMany(p => p.BranchProducts).HasForeignKey(ab => ab.SystemProductCode);
 		}
 	}
 }

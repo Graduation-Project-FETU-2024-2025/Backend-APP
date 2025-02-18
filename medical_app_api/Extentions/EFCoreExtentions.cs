@@ -7,10 +7,11 @@ namespace medical_app_api.Extentions
     {
         public static IServiceCollection InjectDbContext(
             this IServiceCollection services, 
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IHostEnvironment hostEnvironment)
         {
             services.AddDbContext<MedicalDbContext>(options =>
-                    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                    options.UseSqlServer(configuration.GetConnectionString(hostEnvironment.IsDevelopment() ? "DefaultConnection" : "ProductionDbConnection")));
             return services;
         }
     }
