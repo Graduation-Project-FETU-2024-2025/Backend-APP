@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 namespace medical_app_db.API.Controllers;
 
-[Route("api/[controller]")]
+[Authorize]
+[Route("api/secure/[controller]")]
 [ApiController]
 public class BranchController : ControllerBase
 {
@@ -15,9 +16,6 @@ public class BranchController : ControllerBase
     {
         _branchService = branchService;
     }
-
-    //GET: api/Branch
-    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAllBranches(int page = 1, int pageSize = 3)
     {
@@ -50,9 +48,6 @@ public class BranchController : ControllerBase
 
         return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
     }
-
-    // api/Branch/{id}
-    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetBranchById(Guid id)
     {
@@ -92,9 +87,6 @@ public class BranchController : ControllerBase
             return StatusCode(500, new { message = "Internal server error", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
         }
     }
-
-    // POST: api/Branch
-    [Authorize]
     [HttpPost]
     public async Task<IActionResult> AddBranch(BranchDTO branchDto)
     {
@@ -119,9 +111,6 @@ public class BranchController : ControllerBase
             return StatusCode(500, new { message = "Failed to create branch", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
         }
     }
-
-    // PUT: api/Branch/{id}
-    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateBranch(Guid id, BranchDTO branchDto)
     {
@@ -151,11 +140,7 @@ public class BranchController : ControllerBase
             return StatusCode(500, new { message = "Failed to update branch", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
         }
     }
-
-    // DELETE: api/Branch/{id}
-    [Authorize]
     [HttpDelete("{id}")]
-   
     public async Task<IActionResult> DeleteBranch(Guid id)
     {
         try
@@ -174,8 +159,6 @@ public class BranchController : ControllerBase
             return StatusCode(500, new { message = "Failed to delete branch", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
         }
     }
-
-
 }
 
 

@@ -9,7 +9,8 @@ using System.Net;
 
 namespace medical_app_api.Controllers
 {
-	[Route("api/[controller]")]
+	[Authorize]
+	[Route("api/secure/[controller]")]
 	[ApiController]
 	public class ProductController : ControllerBase
 	{
@@ -128,7 +129,6 @@ namespace medical_app_api.Controllers
 			}
 		}
 
-		[Authorize]
 		[HttpPost]
 		public async Task<IActionResult> AddBranchProduct(ProductDTO productDto)
 		{
@@ -184,7 +184,6 @@ namespace medical_app_api.Controllers
 			}
 		}
 
-		[Authorize]
 		[HttpDelete("{branch_id}/{product_id}")]
 		public async Task<IActionResult> DeleteBranchProduct(Guid branch_id, Guid product_id)
 		{

@@ -2,6 +2,7 @@
 using medical_app_api.Extentions;
 using medical_app_db.Core.Interfaces;
 using medical_app_db.Services;
+using medical_app_api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,10 +31,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<GetPharmacyIdMiddleware>();
 app.MapControllers();
 app.Run();
 

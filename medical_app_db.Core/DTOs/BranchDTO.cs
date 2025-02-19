@@ -5,7 +5,6 @@ namespace medical_app_db.Core.DTOs
     public class BranchDTO
     {
         public Guid? Id { get; set; }
-        [JsonIgnore]
         public Guid PharmacyId { get; set; }
         public string AR_BranchName { get; set; } = null!;
         public string? EN_BranchName { get; set; }
