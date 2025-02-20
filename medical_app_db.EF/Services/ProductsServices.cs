@@ -46,7 +46,43 @@ public class ProductsServices : IProductService
 		return SystemProducts;
 	}
 
-    public async Task<IEnumerable<SystemProductDTO>> GetOutOfStockProductsAsync(int page, int pageSize)
+	public async Task<IEnumerable<ProductDTO>> GetAllBranchProductsAsync(Guid branchID, int page = 1, int pageSize = 3, String search = "")
+	{
+		var httpContext = _httpContextAccessor.HttpContext;
+
+		if (httpContext == null)
+		{
+			throw new UnauthorizedAccessException("HttpContext is not available.");
+		}
+
+		var BranchProducts = await _context.BranchProducts
+			.Where(b => b.SystemProduct.AR_Name.Contains(search) || b.SystemProduct.EN_Name.Contains(search))
+			.Select(b => new ProductDTO
+			{
+				BranchId = branchID,
+				SystemProductCode = b.SystemProductCode,
+				stock = b.stock,
+				price = b.price,
+				visibility = b.visibility,
+				productDTO = new SystemProductDTO
+				{
+					Code = b.SystemProduct.Code,
+					AR_Name = b.SystemProduct.AR_Name,
+					EN_Name = b.SystemProduct.EN_Name,
+					Image = b.SystemProduct.Image,
+					Type = b.SystemProduct.Type,
+					Active_principal = b.SystemProduct.Active_principal,
+					Company_Name = b.SystemProduct.Company_Name
+				}
+			})
+			.Skip((page - 1) * pageSize)
+			.Take(pageSize)
+			.ToListAsync();
+
+		return BranchProducts;
+	}
+
+	public async Task<IEnumerable<SystemProductDTO>> GetOutOfStockProductsAsync(int page, int pageSize)
     {
         var httpContext = _httpContextAccessor.HttpContext;
 
@@ -173,7 +209,6 @@ public class ProductsServices : IProductService
 
 	public async Task<ProductDTO> GetBranchProductAsync(Guid branchID, Guid productCode)
 	{
-		// validate branch product is available to the account
 		var branchProduct = await _context.BranchProducts.FirstOrDefaultAsync(b => b.BranchId == branchID && b.SystemProductCode == productCode);
 		if (branchProduct == null)
 			return null;

@@ -51,6 +51,46 @@ namespace medical_app_api.Controllers
 			return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
 		}
 
+		[HttpGet("{branch_id}")]
+		public async Task<IActionResult> getBranchProducts(Guid branch_id, int page = 1, int pageSize = 3, string search = "")
+		{
+			var lang = Request.Headers["lang"].ToString().ToLower();
+
+			if (string.IsNullOrEmpty(lang))
+			{
+				return BadRequest(new { message = "Language not provided in the header.", statusCode = (int)HttpStatusCode.BadRequest });
+			}
+
+			var branchProducts = await _productService.GetAllBranchProductsAsync(branch_id, page, pageSize, search);
+
+			if (branchProducts == null || !branchProducts.Any())
+			{
+				return NoContent();
+			}
+
+			var result = branchProducts.Select(b => new
+			{
+				BranchId = branch_id,
+				Name = lang == "ar" ? b.productDTO.AR_Name : b.productDTO.EN_Name,
+				SystemProductCode = b.SystemProductCode,
+				stock = b.stock,
+				price = b.price,
+				visibility = b.visibility,
+				productDTO = new SystemProductDTO
+				{
+					Code = b.productDTO.Code,
+					AR_Name = b.productDTO.AR_Name,
+					EN_Name = b.productDTO.EN_Name,
+					Image = b.productDTO.Image,
+					Type = b.productDTO.Type,
+					Active_principal = b.productDTO.Active_principal,
+					Company_Name = b.productDTO.Company_Name
+				}
+			});
+
+			return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
+		}
+
 		[HttpGet("out-of-stock")]
 		public async Task<IActionResult> GetOutOfStockProducts(int page = 1, int pageSize = 3)
 		{
