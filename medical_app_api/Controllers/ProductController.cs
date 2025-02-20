@@ -137,6 +137,9 @@ namespace medical_app_api.Controllers
 				return BadRequest(new { message = "Invalid product data", statusCode = (int)HttpStatusCode.BadRequest });
 			}
 
+			// Validate that branch product isn't already added
+			// Validate that branch id available for the account
+
 			try
 			{
 				var createBranchProduct = await _productService.AddBranchProductAsync(productDto);
@@ -161,6 +164,8 @@ namespace medical_app_api.Controllers
 			{
 				return BadRequest(new { message = "Invalid branch product data", statusCode = (int)HttpStatusCode.BadRequest });
 			}
+
+			// Validate that branch id available to the account
 
 			try
 			{
@@ -187,6 +192,7 @@ namespace medical_app_api.Controllers
 		[HttpDelete("{branch_id}/{product_id}")]
 		public async Task<IActionResult> DeleteBranchProduct(Guid branch_id, Guid product_id)
 		{
+			// validate that branch available to the account
 			try
 			{
 				var result = await _productService.DeleteBranchProductAsync(branch_id, product_id); // مرر الـ BranchId فقط
