@@ -173,7 +173,7 @@ public class ProductsServices : IProductService
 	{
 		var branchProduct = await _context.BranchProducts.FirstOrDefaultAsync(b => b.BranchId == branchID && b.SystemProductCode == productCode);
 		if (branchProduct == null)
-			throw new KeyNotFoundException("Branch Product not found");
+			return null;
 
 		var systemProduct = await _context.SystemProducts.Where(b => b.Code == productCode).FirstOrDefaultAsync();
 
