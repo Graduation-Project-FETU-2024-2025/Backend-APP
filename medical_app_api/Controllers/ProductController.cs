@@ -83,7 +83,7 @@ namespace medical_app_api.Controllers
 		}
 
 		[HttpGet("{branch_id}/{product_code}")]
-		public async Task<IActionResult> GetBranchById(Guid branch_id, Guid product_code)
+		public async Task<IActionResult> GetBranchProductById(Guid branch_id, Guid product_code)
 		{
 			var lang = Request.Headers["lang"].ToString().ToLower();
 
