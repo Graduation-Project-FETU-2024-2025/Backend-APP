@@ -2,6 +2,7 @@
 using medical_app_db.Core.Interfaces;
 using medical_app_db.Core.Models;
 using medical_app_db.EF.Data;
+using medical_app_db.EF.Migrations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
@@ -82,7 +83,7 @@ public class ProductsServices : IProductService
 		return BranchProducts;
 	}
 
-	public async Task<IEnumerable<SystemProductDTO>> GetOutOfStockProductsAsync(int page, int pageSize)
+	public async Task<IEnumerable<ProductDTO>> GetOutOfStockProductsAsync(int page, int pageSize)
     {
         var httpContext = _httpContextAccessor.HttpContext;
 
@@ -94,15 +95,23 @@ public class ProductsServices : IProductService
 		var outOfStckProducts = await _context.BranchProducts
 			.Where(p => p.stock <= 5)
 			.OrderBy(p => p.SystemProductCode)
-            .Select(b => new SystemProductDTO
+            .Select(b => new ProductDTO
             {
-                Code = b.SystemProductCode,
-                AR_Name = b.SystemProduct.AR_Name,
-                EN_Name = b.SystemProduct.EN_Name,
-                Image = b.SystemProduct.Image,
-                Type = b.SystemProduct.Type,
-                Active_principal = b.SystemProduct.Active_principal,
-                Company_Name = b.SystemProduct.Company_Name
+                BranchId = b.BranchId,
+                SystemProductCode = b.SystemProductCode,
+                stock = b.stock,
+                price = b.price,
+                visibility = b.visibility,
+                productDTO = new SystemProductDTO
+                {
+                    Code = b.SystemProduct.Code,
+                    AR_Name = b.SystemProduct.AR_Name,
+                    EN_Name = b.SystemProduct.EN_Name,
+                    Image = b.SystemProduct.Image,
+                    Type = b.SystemProduct.Type,
+                    Active_principal = b.SystemProduct.Active_principal,
+                    Company_Name = b.SystemProduct.Company_Name
+                }
             })
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
