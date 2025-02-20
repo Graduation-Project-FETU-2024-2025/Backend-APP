@@ -111,12 +111,22 @@ namespace medical_app_api.Controllers
 
             var result = outOfStckProducts.Select(b => new
             {
-                Code = b.Code,
-                Name = lang == "ar" ? b.AR_Name : b.EN_Name,
-                Image = b.Image,
-                Type = b.Type,
-                Active_principal = b.Active_principal,
-                Company_Name = b.Company_Name
+                BranchId = b.BranchId,
+                Name = lang == "ar" ? b.productDTO.AR_Name : b.productDTO.EN_Name,
+                SystemProductCode = b.SystemProductCode,
+                stock = b.stock,
+                price = b.price,
+                visibility = b.visibility,
+                productDTO = new SystemProductDTO
+                {
+                    Code = b.productDTO.Code,
+                    AR_Name = b.productDTO.AR_Name,
+                    EN_Name = b.productDTO.EN_Name,
+                    Image = b.productDTO.Image,
+                    Type = b.productDTO.Type,
+                    Active_principal = b.productDTO.Active_principal,
+                    Company_Name = b.productDTO.Company_Name
+                }
             });
 
             return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
