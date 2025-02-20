@@ -132,7 +132,7 @@ public class ProductsServices : IProductService
 			throw new InvalidDataException("Price must be greate or equal than 0");
 		}
 
-		Boolean isValidBranchId = _context.BranchProducts.Where(p => p.BranchId == productDto.BranchId).Count() > 0;
+		Boolean isValidBranchId = _context.Branches.Where(p => p.Id == productDto.BranchId).Count() > 0;
 		if (!isValidBranchId)
 		{
 			throw new InvalidDataException("Branch isn't exists");
