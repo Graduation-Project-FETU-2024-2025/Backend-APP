@@ -130,6 +130,7 @@ public class ProductsServices : IProductService
 	}
 	public async Task<ProductDTO> UpdateBranchProductAsync(Guid branch_id, Guid product_code, ProductDTO productDto)
 	{
+		// validate that branch is available to the account
 		try
 		{
 			var branchProduct = await _context.BranchProducts
@@ -158,6 +159,7 @@ public class ProductsServices : IProductService
 	}
 	public async Task<bool> DeleteBranchProductAsync(Guid branch_id, Guid product_code)
 	{
+		// validate that branch is available to the account
 		var product = await _context.BranchProducts
 			.FirstOrDefaultAsync(p => p.BranchId == branch_id && p.SystemProductCode == product_code);
 
@@ -171,6 +173,7 @@ public class ProductsServices : IProductService
 
 	public async Task<ProductDTO> GetBranchProductAsync(Guid branchID, Guid productCode)
 	{
+		// validate branch product is available to the account
 		var branchProduct = await _context.BranchProducts.FirstOrDefaultAsync(b => b.BranchId == branchID && b.SystemProductCode == productCode);
 		if (branchProduct == null)
 			return null;
