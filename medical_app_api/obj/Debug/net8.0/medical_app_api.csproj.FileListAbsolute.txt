@@ -174,10 +174,11 @@ F:\Backend-APP\medical_app_api\obj\Debug\net8.0\staticwebassets\msbuild.build.me
 F:\Backend-APP\medical_app_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.medical_app_api.props
 F:\Backend-APP\medical_app_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.medical_app_api.props
 F:\Backend-APP\medical_app_api\obj\Debug\net8.0\staticwebassets.pack.json
-F:\Backend-APP\medical_app_api\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 F:\Backend-APP\medical_app_api\obj\Debug\net8.0\medical_.0BC1B3D2.Up2Date
 F:\Backend-APP\medical_app_api\obj\Debug\net8.0\medical_app_api.dll
 F:\Backend-APP\medical_app_api\obj\Debug\net8.0\refint\medical_app_api.dll
 F:\Backend-APP\medical_app_api\obj\Debug\net8.0\medical_app_api.pdb
 F:\Backend-APP\medical_app_api\obj\Debug\net8.0\medical_app_api.genruntimeconfig.cache
 F:\Backend-APP\medical_app_api\obj\Debug\net8.0\ref\medical_app_api.dll
+F:\Backend-APP\medical_app_api\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
+F:\Backend-APP\medical_app_api\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

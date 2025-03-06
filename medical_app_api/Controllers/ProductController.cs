@@ -209,7 +209,7 @@ namespace medical_app_api.Controllers
 		}
 
 		[HttpPut("{branch_id}/{product_code}")]
-		public async Task<IActionResult> UpdateBranch(Guid branch_id, Guid product_code, ProductDTO productDTO)
+		public async Task<IActionResult> UpdateBranchProduct(Guid branch_id, Guid product_code, ProductDTO productDTO)
 		{
 			if (productDTO == null)
 			{

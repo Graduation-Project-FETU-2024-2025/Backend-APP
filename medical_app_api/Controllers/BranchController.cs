@@ -37,6 +37,7 @@ public class BranchController : ControllerBase
         {
             Id = b.Id,
             PharmacyId = b.PharmacyId,
+            b.Address,
             BranchName = lang == "ar" ? b.AR_BranchName : b.EN_BranchName,
             PhoneNumber = b.PhoneNumber,
             Image = b.Image,
@@ -71,6 +72,7 @@ public class BranchController : ControllerBase
             {
                 Id = branch.Id,
                 PharmacyId = branch.PharmacyId,
+                branch.Address,
                 BranchName = lang == "ar" ? branch.AR_BranchName : branch.EN_BranchName,
                 PhoneNumber = branch.PhoneNumber,
                 Image = branch.Image,

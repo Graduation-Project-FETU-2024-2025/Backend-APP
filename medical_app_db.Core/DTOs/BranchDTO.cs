@@ -16,6 +16,7 @@ namespace medical_app_db.Core.DTOs
         public string? PhoneNumber { get; set; }
         public double Lat { get; set; }
         public double Long { get; set; }
+        public string? Address { get; set; }
         public IEnumerable<WorkingPeriodDTO>? WorkingHours { get; set; }
     }
 

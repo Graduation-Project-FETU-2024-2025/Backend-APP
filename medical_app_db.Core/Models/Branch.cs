@@ -11,6 +11,7 @@ namespace medical_app_db.Core.Models
         public string? EN_BranchName { get; set; }
         public double Long { get; set; }
         public double Lat { get; set; }
+        public string? Address { get; set; }
         public int DeliveryRange { get; set; }
         public decimal PricePerKilo { get; set; }
         public decimal MinDeliveryPrice { get; set; }
