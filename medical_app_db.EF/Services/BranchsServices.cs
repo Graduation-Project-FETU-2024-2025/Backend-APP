@@ -34,6 +34,7 @@ public class BranchService : IBranchService
                 Status = b.Status,
                 Lat = b.Lat,
                 Long = b.Long,
+                Address = b.Address,
                 WorkingHours = b.WorkingPeriods != null
                     ? b.WorkingPeriods.Select(w => new WorkingPeriodDTO
                     {
@@ -65,6 +66,7 @@ public class BranchService : IBranchService
             EN_BranchName = lang == "en" ? branch.EN_BranchName : branch.AR_BranchName,
             Lat = branch.Lat,
             Long = branch.Long,
+            Address = branch.Address,
             DeliveryRange = branch.DeliveryRange,
             PricePerKilo = branch.PricePerKilo,
             MinDeliveryPrice = branch.MinDeliveryPrice,
@@ -96,6 +98,7 @@ public class BranchService : IBranchService
                 EN_BranchName = branchDto.EN_BranchName,
                 Lat = branchDto.Lat,
                 Long = branchDto.Long,
+                Address = branchDto.Address,
                 DeliveryRange = branchDto.DeliveryRange,
                 PricePerKilo = branchDto.PricePerKilo,
                 MinDeliveryPrice = branchDto.MinDeliveryPrice,
@@ -156,6 +159,7 @@ public class BranchService : IBranchService
             Start = ParseTime(w.Start),
             End = ParseTime(w.End)
         }).ToList();
+        branch.Address = branchDto.Address;
 
         await _context.SaveChangesAsync();
         return branchDto;
