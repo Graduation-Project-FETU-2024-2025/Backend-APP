@@ -196,6 +196,7 @@ namespace medical_app_db.EF.Services
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim("AccountId", account?.Id.ToString() ?? ""),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email , user.Email ?? ""),
                 new Claim(JwtRegisteredClaimNames.Iss , "healthApp"),

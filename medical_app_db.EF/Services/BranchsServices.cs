@@ -20,9 +20,10 @@ public class BranchService : IBranchService
     public async Task<IEnumerable<BranchDTO>> GetAllBranchesAsync(int page = 1, int pageSize = 3)
     {
         var pharmacyId = (Guid)_httpContextAccessor.HttpContext.Items["PharmacyId"];
-
+        //var branchesId = await GetAccountBranchIds();
         var branches = await _context.Branches
             .Where(b => b.PharmacyId == pharmacyId)
+            //.Where(b => b.PharmacyId == pharmacyId && branchesId.Contains(b.Id))
             .Include(b => b.WorkingPeriods)
             .Select(b => new BranchDTO
             {
@@ -80,8 +81,22 @@ public class BranchService : IBranchService
             }).ToList()
         };
     }
+    private async Task<IReadOnlyList<Guid>> GetAccountBranchIds()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        _ = Guid.TryParse(httpContext.User.FindFirst("AccountId")?.Value, out Guid accountId);
+
+        var branchesId = await _context.AccountBranches
+            .Where(ab => ab.AccountId == accountId)
+            .Select(ab => ab.BranchId)
+            .ToListAsync();
+
+        return branchesId;
+    }
     public async Task<BranchDTO> AddBranchAsync(BranchDTO branchDto)
     {
+        var httpContext = _httpContextAccessor.HttpContext;
+        _ = Guid.TryParse(httpContext.User.FindFirst("AccountId")?.Value, out Guid accountId);
         try
         {
             ValidateBranchData(branchDto);
@@ -118,7 +133,15 @@ public class BranchService : IBranchService
                 }).ToList()
             };
 
-            _context.Branches.Add(branch);
+            await _context.Branches.AddAsync(branch);
+
+            var accountBrnach = new AccountBranch()
+            {
+                AccountId = accountId,
+                BranchId = branch.Id
+            };
+            await _context.AccountBranches.AddAsync(accountBrnach);
+
             await _context.SaveChangesAsync();
 
             branchDto.Id = branch.Id;
