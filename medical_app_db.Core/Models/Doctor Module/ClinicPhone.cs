@@ -1,4 +1,5 @@
-﻿using System;
+﻿using medical_app_db.Core.Models.Doctor_Module;
+using System;
 
 namespace medical_app_db.Core.Models
 {

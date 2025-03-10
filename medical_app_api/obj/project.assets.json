@@ -5424,23 +5424,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Soft LapTop\\.nuget\\packages\\": {},
+    "C:\\Users\\XPRISTO\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\Backend-APP\\medical_app_api\\medical_app_api.csproj",
+      "projectUniqueName": "C:\\Users\\XPRISTO\\Desktop\\Graduation_Project2025\\APP\\medical_app_api\\medical_app_api.csproj",
       "projectName": "medical_app_api",
-      "projectPath": "F:\\Backend-APP\\medical_app_api\\medical_app_api.csproj",
-      "packagesPath": "C:\\Users\\Soft LapTop\\.nuget\\packages\\",
-      "outputPath": "F:\\Backend-APP\\medical_app_api\\obj\\",
+      "projectPath": "C:\\Users\\XPRISTO\\Desktop\\Graduation_Project2025\\APP\\medical_app_api\\medical_app_api.csproj",
+      "packagesPath": "C:\\Users\\XPRISTO\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\XPRISTO\\Desktop\\Graduation_Project2025\\APP\\medical_app_api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Soft LapTop\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\XPRISTO\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -5455,11 +5455,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "F:\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj": {
-              "projectPath": "F:\\Backend-APP\\medical_app_db.Core\\medical_app_db.Core.csproj"
+            "C:\\Users\\XPRISTO\\Desktop\\Graduation_Project2025\\APP\\medical_app_db.Core\\medical_app_db.Core.csproj": {
+              "projectPath": "C:\\Users\\XPRISTO\\Desktop\\Graduation_Project2025\\APP\\medical_app_db.Core\\medical_app_db.Core.csproj"
             },
-            "F:\\Backend-APP\\medical_app_db.EF\\medical_app_db.EF.csproj": {
-              "projectPath": "F:\\Backend-APP\\medical_app_db.EF\\medical_app_db.EF.csproj"
+            "C:\\Users\\XPRISTO\\Desktop\\Graduation_Project2025\\APP\\medical_app_db.EF\\medical_app_db.EF.csproj": {
+              "projectPath": "C:\\Users\\XPRISTO\\Desktop\\Graduation_Project2025\\APP\\medical_app_db.EF\\medical_app_db.EF.csproj"
             }
           }
         }
@@ -5522,7 +5522,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.103/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
