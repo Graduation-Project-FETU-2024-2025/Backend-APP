@@ -8,6 +8,6 @@
         public Guid DoctorId { get; set; }
         public Doctor Doctor { get; set; } = new();
         public Guid AppointmentId { get; set; }
-        public Appointment Appointment { get; set; } = new();
+        public Appointment Appointment { get; set; } = null!;
     }
 }
