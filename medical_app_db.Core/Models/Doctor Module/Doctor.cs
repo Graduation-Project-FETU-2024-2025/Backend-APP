@@ -11,5 +11,8 @@
         public string? Specialization { get; set; }
         public string? Gnder { get; set; }
         public string? SSN { get; set; }
+        public ICollection<Appointment>? Appointments { get; set; }
+        public ICollection<Prescription>? Prescriptions { get; set; }
+        public DoctorClinic? DoctorClinic { get; set; }
     }
 }

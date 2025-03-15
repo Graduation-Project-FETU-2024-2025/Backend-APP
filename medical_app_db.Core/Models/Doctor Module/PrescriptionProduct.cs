@@ -13,7 +13,7 @@ namespace medical_app_db.Core.Models.Doctor_Module
 		public Prescription Prescription { get; set; } = null!;
 		public Guid SystemProductCode { get; set; }
 		public SystemProduct SystemProduct { get; set; } = null!;
-		public String? Description { get; set; }
+		public string? Description { get; set; }
 
 	}
 }
