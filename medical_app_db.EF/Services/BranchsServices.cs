@@ -68,9 +68,6 @@ public class BranchService : IBranchService
             Lat = branch.Lat,
             Long = branch.Long,
             Address = branch.Address,
-            DeliveryRange = branch.DeliveryRange,
-            PricePerKilo = branch.PricePerKilo,
-            MinDeliveryPrice = branch.MinDeliveryPrice,
             Status = branch.Status,
             Image = branch.Image,
             PhoneNumber = branch.PhoneNumber,
@@ -219,14 +216,7 @@ public class BranchService : IBranchService
             throw new ArgumentException("PhoneNumber must contain only digits.");
         }
 
-        string[] allowedExtensions = { ".png", ".jpg", ".jpeg", ".gif" };
-        string imageExtension = Path.GetExtension(branchDto.Image)?.ToLower();
-
-        if (!allowedExtensions.Contains(imageExtension))
-        {
-            throw new ArgumentException("Invalid image format. Allowed formats: PNG, JPG, JPEG, GIF.");
-        }
-
+      
         if (branchDto.Lat < -90 || branchDto.Lat > 90)
         {
             throw new ArgumentException("Latitude must be between -90 and 90.");
