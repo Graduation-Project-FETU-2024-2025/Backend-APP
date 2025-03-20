@@ -36,6 +36,9 @@ public class BranchService : IBranchService
                 Lat = b.Lat,
                 Long = b.Long,
                 Address = b.Address,
+                DeliveryRange = b.DeliveryRange,
+                PricePerKilo = b.PricePerKilo,
+                MinDeliveryPrice = b.MinDeliveryPrice,
                 WorkingHours = b.WorkingPeriods != null
                     ? b.WorkingPeriods.Select(w => new WorkingPeriodDTO
                     {
@@ -69,6 +72,9 @@ public class BranchService : IBranchService
             Long = branch.Long,
             Address = branch.Address,
             Status = branch.Status,
+            DeliveryRange = branch.DeliveryRange,
+            PricePerKilo = branch.PricePerKilo,
+            MinDeliveryPrice = branch.MinDeliveryPrice,
             Image = branch.Image,
             PhoneNumber = branch.PhoneNumber,
             WorkingHours = branch.WorkingPeriods?.Select(w => new WorkingPeriodDTO

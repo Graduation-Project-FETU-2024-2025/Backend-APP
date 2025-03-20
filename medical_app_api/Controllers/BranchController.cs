@@ -42,6 +42,9 @@ public class BranchController : ControllerBase
             PhoneNumber = b.PhoneNumber,
             Image = b.Image,
             Status = b.Status,
+            DeliveryRange = b.DeliveryRange,
+            PricePerKilo = b.PricePerKilo,
+            MinDeliveryPrice = b.MinDeliveryPrice,
             Lat = b.Lat,
             Long = b.Long,
             WorkingHours = b.WorkingHours
@@ -79,6 +82,9 @@ public class BranchController : ControllerBase
                 Status = branch.Status,
                 Lat = branch.Lat,
                 Long = branch.Long,
+                DeliveryRange = branch.DeliveryRange,
+                PricePerKilo = branch.PricePerKilo,
+                MinDeliveryPrice = branch.MinDeliveryPrice,
                 WorkingHours = branch.WorkingHours
             };
 
