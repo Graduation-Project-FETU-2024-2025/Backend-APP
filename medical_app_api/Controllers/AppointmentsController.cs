@@ -55,6 +55,49 @@ namespace medical_app_api.Controllers
             });
         }
 
+        [HttpPut("accept/{id}")]
+        public async Task<IActionResult> Accept([FromRoute] Guid id)
+        {
+            var result = await _appointmentService.AcceptApointment(id);
+            if(!result) 
+                return BadRequest(
+                    new { 
+                        data = result,
+                        message = "Bad Request",
+                        StatusCode = HttpStatusCode.BadRequest
+                    });
+
+            return Ok(
+                new
+                {
+                    data = result,
+                    message = "Appointment Accepted",
+                    StatusCode = HttpStatusCode.OK
+                });
+        }
+
+        [HttpPut("decline/{id}")]
+        public async Task<IActionResult> Decline([FromRoute] Guid id)
+        {
+            var result = await _appointmentService.DeclineApointment(id);
+            if (!result)
+                return BadRequest(
+                    new
+                    {
+                        data = result,
+                        message = "Bad Request",
+                        StatusCode = HttpStatusCode.BadRequest
+                    });
+
+            return Ok(
+                new
+                {
+                    data = result,
+                    message = "Appointment Declined",
+                    StatusCode = HttpStatusCode.OK
+                });
+        }
+
         [HttpPost("add-prescription")]
         public async Task<IActionResult> AddPrescription(PrescriptionDTO model)
         {

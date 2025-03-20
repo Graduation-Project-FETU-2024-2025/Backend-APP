@@ -43,6 +43,49 @@ public class AppointmentService : IAppointmentService
 
         return appointment;
     }
+    public async Task<bool> AcceptApointment(Guid id)
+    {
+        Guid ClinicId = GetClinicId();
+
+        var appointment = await _context.Set<Appointment>()
+            .Where(a => a.ClinicId == ClinicId && a.Status == AppointmentStatus.Pending)
+            .Include(a => a.Clinic)
+            .SingleOrDefaultAsync(a => a.Id == id);
+
+        if (appointment is null)
+            return false;
+
+        appointment.Status = AppointmentStatus.Accepted;
+
+        var result = await _context.SaveChangesAsync();
+
+        if (result < 1)
+            return false;
+
+        return true;
+    }
+    public async Task<bool> DeclineApointment(Guid id)
+    {
+        Guid ClinicId = GetClinicId();
+
+        var appointment = await _context.Set<Appointment>()
+            .Where(a => a.ClinicId == ClinicId && a.Status == AppointmentStatus.Pending)
+            .Include(a => a.Clinic)
+            .SingleOrDefaultAsync(a => a.Id == id);
+
+        if (appointment is null)
+            return false;
+
+        appointment.Status = AppointmentStatus.Decliened;
+
+        var result = await _context.SaveChangesAsync();
+
+        if (result < 1)
+            return false;
+
+        return true;
+    }
+
     public async Task<Prescription?> AddPrescriptionAsync(PrescriptionDTO model)
     {
         var doctor = await _context.Set<Doctor>()

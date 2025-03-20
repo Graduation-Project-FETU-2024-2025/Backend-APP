@@ -7,6 +7,8 @@ namespace medical_app_db.Core.Interfaces
     {
         Task<IReadOnlyList<Appointment>> GetAppointmentsAsync(DateTime? appointmentDate);
         Task<Appointment?> GetAppointmentAsync(Guid id);
+        Task<bool> AcceptApointment(Guid id);
+        Task<bool> DeclineApointment(Guid id);
         Task<Prescription?> AddPrescriptionAsync(PrescriptionDTO model);
     }
 }

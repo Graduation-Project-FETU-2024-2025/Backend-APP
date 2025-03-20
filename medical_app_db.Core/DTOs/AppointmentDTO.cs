@@ -6,7 +6,7 @@ namespace medical_app_db.Core.DTOs
     {
         public Guid Id { get; set; }
         public DateTime Date { get; set; }
-        public string Status { get; set; } = null!;
+        public string Status { get; set; }
         public Guid ClinicId { get; set; }
         [Display(Name = "Clinic Name")]
         public string? ClinicName { get; set; }

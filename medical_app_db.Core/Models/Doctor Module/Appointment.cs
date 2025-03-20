@@ -4,7 +4,7 @@
     {
 		public Guid Id { get; set; }
 		public DateTime Date { get; set; }
-		public string Status { get; set; } = null!;
+		public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
 		public Guid ClinicId { get; set; }
 
 		public Clinic? Clinic { get; set; }
