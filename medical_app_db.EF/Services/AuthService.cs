@@ -189,8 +189,9 @@ namespace medical_app_db.EF.Services
 
             var doctor = await _context.Set<Doctor>()
                 .FirstOrDefaultAsync(a => a.ApplicationUserId == user.Id);
-
-            var clinic = await _context.Set<DoctorClinic>()
+            var clinic = new DoctorClinic();
+            if (doctor is not null)
+            clinic = await _context.Set<DoctorClinic>()
                 .FirstOrDefaultAsync(c => c.DoctorId == doctor.Id);
 
             var userClaims = await _userManager.GetClaimsAsync(user);

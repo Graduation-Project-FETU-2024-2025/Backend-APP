@@ -4,6 +4,7 @@ using medical_app_db.Core.Interfaces;
 using medical_app_db.Services;
 using medical_app_api.Middleware;
 using medical_app_db.Core.Helpers;
+using medical_app_db.EF.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,8 @@ builder.Services
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IProductService, ProductsServices>();
 builder.Services.AddScoped(typeof(IAppointmentService),typeof(AppointmentService));
+builder.Services.AddScoped(typeof(IImageService),typeof(CloudinaryService));
+builder.Services.Configure<CloudinatuSettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
 builder.Services.AddAutoMapper(options => options.AddProfile(new MappingProfile()));
 builder.Services.AddMemoryCache(); // to add cach

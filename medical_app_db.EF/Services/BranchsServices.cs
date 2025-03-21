@@ -10,11 +10,13 @@ public class BranchService : IBranchService
 {
     private readonly MedicalDbContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IImageService _imageService;
 
-    public BranchService(MedicalDbContext context, IHttpContextAccessor httpContextAccessor)
+    public BranchService(MedicalDbContext context, IHttpContextAccessor httpContextAccessor, IImageService imageService)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
+        _imageService = imageService;
     }
 
     public async Task<IEnumerable<BranchDTO>> GetAllBranchesAsync(int page = 1, int pageSize = 3)
@@ -93,7 +95,7 @@ public class BranchService : IBranchService
 
         return branchesId;
     }
-    public async Task<BranchDTO> AddBranchAsync(BranchDTO branchDto)
+    public async Task<BranchDTO> AddBranchAsync(BranchDTO branchDto, IFormFile? image)
     {
         var httpContext = _httpContextAccessor.HttpContext;
         _ = Guid.TryParse(httpContext.User.FindFirst("AccountId")?.Value, out Guid accountId);
@@ -118,7 +120,7 @@ public class BranchService : IBranchService
                 PricePerKilo = branchDto.PricePerKilo,
                 MinDeliveryPrice = branchDto.MinDeliveryPrice,
                 Status = branchDto.Status,
-                Image = branchDto.Image,
+                Image = await _imageService.UploadImageAsync(image),
                 PhoneNumber = branchDto.PhoneNumber,
                 WorkingPeriods = branchDto.WorkingHours?.Select(w =>
                 {
@@ -145,6 +147,7 @@ public class BranchService : IBranchService
             await _context.SaveChangesAsync();
 
             branchDto.Id = branch.Id;
+            branchDto.Image = branch.Image;
             return branchDto;
         }
         catch (ArgumentException argEx)
@@ -156,7 +159,7 @@ public class BranchService : IBranchService
             throw new Exception("Error occurred while adding branch: " + ex.Message);
         }
     }
-    public async Task<BranchDTO> UpdateBranchAsync(Guid id, BranchDTO branchDto)
+    public async Task<BranchDTO> UpdateBranchAsync(Guid id, BranchDTO branchDto, IFormFile? image)
     {
         var pharmacyId = (Guid)_httpContextAccessor.HttpContext.Items["PharmacyId"];
         var branch = await _context.Branches.Include(b => b.WorkingPeriods)
@@ -175,7 +178,12 @@ public class BranchService : IBranchService
         branch.PricePerKilo = branchDto.PricePerKilo;
         branch.MinDeliveryPrice = branchDto.MinDeliveryPrice;
         branch.Status = branchDto.Status;
-        branch.Image = branchDto.Image;
+
+        if (branch.Image != branchDto.Image)
+        {
+            branch.Image = await _imageService.UploadImageAsync(image);
+        }
+
         branch.PhoneNumber = branchDto.PhoneNumber;
         branch.WorkingPeriods = branchDto.WorkingHours?.Select(w => new WorkingPeriod
         {
@@ -185,6 +193,8 @@ public class BranchService : IBranchService
         branch.Address = branchDto.Address;
 
         await _context.SaveChangesAsync();
+        branchDto.Id = id;
+        branchDto.Image = branch.Image;
         return branchDto;
     }
     public async Task<bool> DeleteBranchAsync(Guid branchId)
@@ -219,13 +229,13 @@ public class BranchService : IBranchService
             throw new ArgumentException("PhoneNumber must contain only digits.");
         }
 
-        string[] allowedExtensions = { ".png", ".jpg", ".jpeg", ".gif" };
-        string imageExtension = Path.GetExtension(branchDto.Image)?.ToLower();
+        //string[] allowedExtensions = { ".png", ".jpg", ".jpeg", ".gif" };
+        //string imageExtension = Path.GetExtension(branchDto.Image)?.ToLower();
 
-        if (!allowedExtensions.Contains(imageExtension))
-        {
-            throw new ArgumentException("Invalid image format. Allowed formats: PNG, JPG, JPEG, GIF.");
-        }
+        //if (!allowedExtensions.Contains(imageExtension))
+        //{
+        //    throw new ArgumentException("Invalid image format. Allowed formats: PNG, JPG, JPEG, GIF.");
+        //}
 
         if (branchDto.Lat < -90 || branchDto.Lat > 90)
         {
