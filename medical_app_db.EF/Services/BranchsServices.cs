@@ -38,6 +38,9 @@ public class BranchService : IBranchService
                 Lat = b.Lat,
                 Long = b.Long,
                 Address = b.Address,
+                DeliveryRange = b.DeliveryRange,
+                PricePerKilo = b.PricePerKilo,
+                MinDeliveryPrice = b.MinDeliveryPrice,
                 WorkingHours = b.WorkingPeriods != null
                     ? b.WorkingPeriods.Select(w => new WorkingPeriodDTO
                     {
@@ -70,10 +73,10 @@ public class BranchService : IBranchService
             Lat = branch.Lat,
             Long = branch.Long,
             Address = branch.Address,
+            Status = branch.Status,
             DeliveryRange = branch.DeliveryRange,
             PricePerKilo = branch.PricePerKilo,
             MinDeliveryPrice = branch.MinDeliveryPrice,
-            Status = branch.Status,
             Image = branch.Image,
             PhoneNumber = branch.PhoneNumber,
             WorkingHours = branch.WorkingPeriods?.Select(w => new WorkingPeriodDTO
@@ -228,14 +231,6 @@ public class BranchService : IBranchService
         {
             throw new ArgumentException("PhoneNumber must contain only digits.");
         }
-
-        //string[] allowedExtensions = { ".png", ".jpg", ".jpeg", ".gif" };
-        //string imageExtension = Path.GetExtension(branchDto.Image)?.ToLower();
-
-        //if (!allowedExtensions.Contains(imageExtension))
-        //{
-        //    throw new ArgumentException("Invalid image format. Allowed formats: PNG, JPG, JPEG, GIF.");
-        //}
 
         if (branchDto.Lat < -90 || branchDto.Lat > 90)
         {
