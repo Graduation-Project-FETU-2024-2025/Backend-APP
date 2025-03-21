@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using medical_app_db.EF.Data;
 
@@ -11,9 +12,11 @@ using medical_app_db.EF.Data;
 namespace medical_app_db.EF.Migrations
 {
     [DbContext(typeof(MedicalDbContext))]
-    partial class MedicalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250319133932_UpdatingPriceConstrant")]
+    partial class UpdatingPriceConstrant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,7 +177,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("PharmacyId");
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.AccountBranch", b =>
@@ -189,7 +192,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("AccountBranches", (string)null);
+                    b.ToTable("AccountBranches");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.ApplicationUser", b =>
@@ -247,7 +250,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ApplicationUser", (string)null);
+                    b.ToTable("ApplicationUser");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.AppointmentDates", b =>
@@ -269,7 +272,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("ClinicId");
 
-                    b.ToTable("AppointmentDates", (string)null);
+                    b.ToTable("AppointmentDates");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Branch", b =>
@@ -328,7 +331,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("PharmacyId");
 
-                    b.ToTable("Branches", (string)null);
+                    b.ToTable("Branches");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.BranchProduct", b =>
@@ -352,7 +355,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("SystemProductCode");
 
-                    b.ToTable("BranchProducts", (string)null);
+                    b.ToTable("BranchProducts");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.ClinicPhone", b =>
@@ -365,7 +368,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasKey("C_ID", "PhoneNumber");
 
-                    b.ToTable("ClinicPhone", (string)null);
+                    b.ToTable("ClinicPhone");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Appointment", b =>
@@ -409,7 +412,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Appointment", (string)null);
+                    b.ToTable("Appointment");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Clinic", b =>
@@ -436,7 +439,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clinic", (string)null);
+                    b.ToTable("Clinic");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Doctor", b =>
@@ -470,7 +473,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Doctor", (string)null);
+                    b.ToTable("Doctor");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.DoctorClinic", b =>
@@ -489,7 +492,7 @@ namespace medical_app_db.EF.Migrations
                     b.HasIndex("DoctorId")
                         .IsUnique();
 
-                    b.ToTable("DoctorClinic", (string)null);
+                    b.ToTable("DoctorClinic");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Prescription", b =>
@@ -516,7 +519,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Prescription", (string)null);
+                    b.ToTable("Prescription");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.PrescriptionProduct", b =>
@@ -534,7 +537,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("SystemProductCode");
 
-                    b.ToTable("PrescriptionProduct", (string)null);
+                    b.ToTable("PrescriptionProduct");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Item", b =>
@@ -558,7 +561,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("Code");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Order", b =>
@@ -598,7 +601,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Pharmacy", b =>
@@ -622,7 +625,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pharmacies", (string)null);
+                    b.ToTable("Pharmacies");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.SystemProduct", b =>
@@ -660,7 +663,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasKey("Code");
 
-                    b.ToTable("SystemProducts", (string)null);
+                    b.ToTable("SystemProducts");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.User", b =>
@@ -746,7 +749,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasKey("BranchId", "Start", "End");
 
-                    b.ToTable("WorkingPeriods", (string)null);
+                    b.ToTable("WorkingPeriods");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.WorkingPeriodInClinic", b =>
@@ -762,7 +765,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasKey("AppointmentDateId", "StartTime", "EndTime");
 
-                    b.ToTable("WorkingPeriodInClinic", (string)null);
+                    b.ToTable("WorkingPeriodInClinic");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

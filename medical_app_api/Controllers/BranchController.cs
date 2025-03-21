@@ -2,7 +2,9 @@
 using medical_app_db.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System.Net;
+using System.Text.Json;
 namespace medical_app_db.API.Controllers;
 
 [Authorize]
@@ -95,8 +97,9 @@ public class BranchController : ControllerBase
             return StatusCode(500, new { message = "Internal server error", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
         }
     }
+    
     [HttpPost]
-    public async Task<IActionResult> AddBranch(BranchDTO branchDto)
+    public async Task<IActionResult> AddBranch([FromForm]BranchDTO branchDto,IFormFile? image,[FromForm] string? workingHours)
     {
         if (branchDto == null)
         {
@@ -105,7 +108,12 @@ public class BranchController : ControllerBase
 
         try
         {
-            var createdBranch = await _branchService.AddBranchAsync(branchDto);
+            if (!string.IsNullOrEmpty(workingHours))
+            {
+                branchDto.WorkingHours = JsonSerializer.Deserialize<List<WorkingPeriodDTO>>(workingHours);
+            }
+
+            var createdBranch = await _branchService.AddBranchAsync(branchDto ,image);
 
             return CreatedAtAction(nameof(GetBranchById), new { id = createdBranch.Id }, new
             {
@@ -120,7 +128,7 @@ public class BranchController : ControllerBase
         }
     }
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateBranch(Guid id, BranchDTO branchDto)
+    public async Task<IActionResult> UpdateBranch([FromRoute]Guid id, [FromForm]BranchDTO branchDto,IFormFile? image, [FromForm] string? workingHours)
     {
         if (branchDto == null)
         {
@@ -129,7 +137,11 @@ public class BranchController : ControllerBase
 
         try
         {
-            var updatedBranch = await _branchService.UpdateBranchAsync(id, branchDto);
+            if (!string.IsNullOrEmpty(workingHours))
+            {
+                branchDto.WorkingHours = JsonSerializer.Deserialize<List<WorkingPeriodDTO>>(workingHours);
+            }
+            var updatedBranch = await _branchService.UpdateBranchAsync(id, branchDto,image);
 
             if (updatedBranch == null)
             {

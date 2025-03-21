@@ -12,6 +12,7 @@ using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
+using medical_app_db.Core.Models.Doctor_Module;
 namespace medical_app_db.EF.Services
 {
     public class AuthService : IAuthService
@@ -183,7 +184,16 @@ namespace medical_app_db.EF.Services
         }
         private async Task<JwtSecurityToken> GenerateJwtToken(ApplicationUser user)
         {
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.ApplicationUserId == user.Id);
+            var account = await _context.Accounts
+                .FirstOrDefaultAsync(a => a.ApplicationUserId == user.Id);
+
+            var doctor = await _context.Set<Doctor>()
+                .FirstOrDefaultAsync(a => a.ApplicationUserId == user.Id);
+            var clinic = new DoctorClinic();
+            if (doctor is not null)
+            clinic = await _context.Set<DoctorClinic>()
+                .FirstOrDefaultAsync(c => c.DoctorId == doctor.Id);
+
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -197,6 +207,8 @@ namespace medical_app_db.EF.Services
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim("AccountId", account?.Id.ToString() ?? ""),
+                new Claim("ClinicId", clinic?.ClinicId.ToString() ?? ""),
+                new Claim("DoctorId", doctor?.Id.ToString() ?? ""),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email , user.Email ?? ""),
                 new Claim(JwtRegisteredClaimNames.Iss , "healthApp"),
