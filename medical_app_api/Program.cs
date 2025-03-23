@@ -5,9 +5,7 @@ using medical_app_db.Services;
 using medical_app_api.Middleware;
 using medical_app_db.EF.Data;
 using Microsoft.EntityFrameworkCore;
-using medical_app_db.Infrastructure.Data;
 using medical_app_db.EF.Services;
-
 using medical_app_db.Core.Helpers;
 using medical_app_db.EF.Services;
 
@@ -15,8 +13,8 @@ using medical_app_db.EF.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.InjectDbContext(builder.Configuration, builder.Environment);
-builder.Services.AddDbContext<DoctorDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DoctorDatabase")));
+builder.Services.AddDbContext<MedicalDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.InjectIdentity<ApplicationUser>()
     .AddJWTAuth(builder.Configuration)

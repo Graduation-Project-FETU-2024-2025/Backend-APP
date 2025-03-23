@@ -1,19 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using medical_app_db.Core.DTOs;
 using medical_app_db.Core.Interfaces;
-using medical_app_db.Infrastructure.Data;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using medical_app_db.Core.Models.Doctor_Module;
+using medical_app_db.EF.Data;
 
 namespace medical_app_db.EF.Services
 {
     public class ClinicStatisticsService : IClinicStatisticsService
     {
-        private readonly DoctorDbContext _context;
+        private readonly MedicalDbContext _context;
 
-        public ClinicStatisticsService(DoctorDbContext context)
+        public ClinicStatisticsService(MedicalDbContext context)
         {
             _context = context;
         }

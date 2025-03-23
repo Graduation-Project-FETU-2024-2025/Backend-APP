@@ -4,13 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using medical_app_db.Infrastructure.Data;
+
+using medical_app_db.EF.Data;
 
 #nullable disable
 
 namespace medical_app_db.EF.Migrations.DoctorDb
 {
-    [DbContext(typeof(DoctorDbContext))]
+    [DbContext(typeof(MedicalDbContext))]
     partial class DoctorDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

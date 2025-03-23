@@ -7,16 +7,15 @@ using medical_app_db.EF.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using medical_app_db.Infrastructure.Data;
 
 namespace medical_app_db.Services
 {
     public class ProfilesServices : IDoctorProfileServices
     {
-        private readonly DoctorDbContext _context;
+        private readonly MedicalDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ProfilesServices(DoctorDbContext context, IHttpContextAccessor httpContextAccessor)
+        public ProfilesServices(MedicalDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
