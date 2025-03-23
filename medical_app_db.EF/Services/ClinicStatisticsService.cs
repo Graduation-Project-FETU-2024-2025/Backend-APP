@@ -5,6 +5,7 @@ using medical_app_db.Infrastructure.Data;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using medical_app_db.Core.Models.Doctor_Module;
 
 namespace medical_app_db.EF.Services
 {
@@ -22,17 +23,19 @@ namespace medical_app_db.EF.Services
             var appointments = await _context.Appointments
                 .Where(a => a.ClinicId == clinicId)
                 .ToListAsync();
-
             return new ClinicStatisticsDTO
             {
-                ReVisitCount = appointments.Count(a => a.Status == "ReVisit"),
-                NewVisitCount = appointments.Count(a => a.Status == "NewVisit"),
-                CheckupCount = appointments.Count(a => a.Status == "Checkup"),
-                PendingAppointments = appointments.Count(a => a.Status == "pending"),
-                ConfirmedAppointments = appointments.Count(a => a.Status == "confirmed"),
-                CanceledAppointments = appointments.Count(a => a.Status == "canceled"),
-                TotalIncome = appointments.Any() ? appointments.Sum(a => a.Price) : 0
+                ReVisitCount = appointments.Count(a => a.Type == AppointmentType.ReVisit),
+                NewVisitCount = appointments.Count(a => a.Type == AppointmentType.NewVisit),
+                CheckupCount = appointments.Count(a => a.Type == AppointmentType.Checkup),
+                PendingAppointments = appointments.Count(a => a.Status == AppointmentStatus.Pending),
+                ConfirmedAppointments = appointments.Count(a => a.Status == AppointmentStatus.Accepted),
+                CanceledAppointments = appointments.Count(a => a.Status == AppointmentStatus.Decliened),
+                TotalIncome = appointments
+                    .Where(a => a.Status == AppointmentStatus.Completed) 
+                    .Sum(a => a.Price) 
             };
+
         }
     }
 }

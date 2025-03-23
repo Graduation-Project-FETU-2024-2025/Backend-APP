@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using medical_app_db.Infrastructure.Data;
 using medical_app_db.EF.Services;
 
+using medical_app_db.Core.Helpers;
+using medical_app_db.EF.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,10 +28,19 @@ builder.Services.InjectIdentity<ApplicationUser>()
 
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IProductService, ProductsServices>();
+
 builder.Services.AddScoped<IDoctorProfileServices, ProfilesServices>();
 builder.Services.AddScoped<IClinicStatisticsService, ClinicStatisticsService>();
 
 builder.Services.AddMemoryCache();
+
+builder.Services.AddScoped(typeof(IAppointmentService),typeof(AppointmentService));
+builder.Services.AddScoped(typeof(IImageService),typeof(CloudinaryService));
+builder.Services.Configure<CloudinatuSettings>(builder.Configuration.GetSection("CloudinarySettings"));
+
+builder.Services.AddAutoMapper(options => options.AddProfile(new MappingProfile()));
+builder.Services.AddMemoryCache(); // to add cach
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
