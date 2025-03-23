@@ -3,12 +3,19 @@ using medical_app_api.Extentions;
 using medical_app_db.Core.Interfaces;
 using medical_app_db.Services;
 using medical_app_api.Middleware;
+using medical_app_db.EF.Data;
+using Microsoft.EntityFrameworkCore;
+using medical_app_db.Infrastructure.Data;
+using medical_app_db.EF.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .InjectDbContext(builder.Configuration, builder.Environment)
-    .InjectIdentity<ApplicationUser>()
+builder.Services.InjectDbContext(builder.Configuration, builder.Environment);
+builder.Services.AddDbContext<DoctorDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DoctorDatabase")));
+
+builder.Services.InjectIdentity<ApplicationUser>()
     .AddJWTAuth(builder.Configuration)
     .AddJWTConfiguration(builder.Configuration)
     .AddAuthService()
@@ -18,8 +25,10 @@ builder.Services
 
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IProductService, ProductsServices>();
+builder.Services.AddScoped<IDoctorProfileServices, ProfilesServices>();
+builder.Services.AddScoped<IClinicStatisticsService, ClinicStatisticsService>();
 
-builder.Services.AddMemoryCache(); // to add cach
+builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -31,10 +40,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<GetPharmacyIdMiddleware>();
 app.MapControllers();
+
 app.Run();
 
