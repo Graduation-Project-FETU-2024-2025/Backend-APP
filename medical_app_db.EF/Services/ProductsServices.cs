@@ -57,6 +57,7 @@ public class ProductsServices : IProductService
 		}
 
 		var BranchProducts = await _context.BranchProducts
+			.Where(b => b.BranchId == branchID)
 			.Where(b => b.SystemProduct.AR_Name.Contains(search) || b.SystemProduct.EN_Name.Contains(search))
 			.Select(b => new ProductDTO
 			{
@@ -83,7 +84,7 @@ public class ProductsServices : IProductService
 		return BranchProducts;
 	}
 
-	public async Task<IEnumerable<ProductDTO>> GetOutOfStockProductsAsync(int page, int pageSize)
+	public async Task<IEnumerable<ProductDTO>> GetOutOfStockProductsAsync(Guid branchID, int page, int pageSize)
     {
         var httpContext = _httpContextAccessor.HttpContext;
 
@@ -93,6 +94,7 @@ public class ProductsServices : IProductService
         }
 
 		var outOfStckProducts = await _context.BranchProducts
+			.Where(p => p.BranchId == branchID)
 			.Where(p => p.stock <= 5)
 			.OrderBy(p => p.SystemProductCode)
             .Select(b => new ProductDTO
@@ -120,7 +122,42 @@ public class ProductsServices : IProductService
 		return outOfStckProducts;
     }
 
-    private void ValidateBranchProductData(ProductDTO productDto)
+	public async Task<IEnumerable<ProductDTO>> GetLastAddedProductsAsync(Guid branchID)
+	{
+		var httpContext = _httpContextAccessor.HttpContext;
+
+		if (httpContext == null)
+		{
+			throw new UnauthorizedAccessException("HttpContext is not available.");
+		}
+
+		var outOfStckProducts = await _context.BranchProducts
+			.Where(p => p.BranchId == branchID)
+			.Select(b => new ProductDTO
+			{
+				BranchId = b.BranchId,
+				SystemProductCode = b.SystemProductCode,
+				stock = b.stock,
+				price = b.price,
+				visibility = b.visibility,
+				productDTO = new SystemProductDTO
+				{
+					Code = b.SystemProduct.Code,
+					AR_Name = b.SystemProduct.AR_Name,
+					EN_Name = b.SystemProduct.EN_Name,
+					Image = b.SystemProduct.Image,
+					Type = b.SystemProduct.Type,
+					Active_principal = b.SystemProduct.Active_principal,
+					Company_Name = b.SystemProduct.Company_Name
+				}
+			})
+			.Take(5)
+			.ToListAsync();
+
+		return outOfStckProducts;
+	}
+
+	private void ValidateBranchProductData(ProductDTO productDto)
 	{
 		if(productDto.stock < 0)
 		{
