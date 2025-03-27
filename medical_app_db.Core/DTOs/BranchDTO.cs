@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System.Text.Json.Serialization;
 
 namespace medical_app_db.Core.DTOs
@@ -7,7 +7,8 @@ namespace medical_app_db.Core.DTOs
     {
         public Guid? Id { get; set; }
         public Guid PharmacyId { get; set; }
-        public string AR_BranchName { get; set; } = null!;
+        public string BranchName { get; set; }
+        public string AR_BranchName { get; set; } 
         public string? EN_BranchName { get; set; }
         public int DeliveryRange { get; set; }
         public decimal PricePerKilo { get; set; }
@@ -27,3 +28,4 @@ namespace medical_app_db.Core.DTOs
         public string End { get; set; } = null!;
     }
 }
+
