@@ -1,10 +1,11 @@
-﻿using medical_app_db.Core.DTOs;
+using medical_app_db.Core.DTOs;
 using medical_app_db.Core.Interfaces;
 using medical_app_db.Core.Models;
 using medical_app_db.EF.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using medical_app_db.EF.Migrations;
 namespace medical_app_db.Services;
 public class BranchService : IBranchService
 {
@@ -19,17 +20,18 @@ public class BranchService : IBranchService
         _imageService = imageService;
     }
 
-    public async Task<IEnumerable<BranchDTO>> GetAllBranchesAsync(int page = 1, int pageSize = 3)
+    public async Task<IEnumerable<BranchDTO>> GetAllBranchesAsync(string lang, int page = 1, int pageSize = 3)
     {
         var pharmacyId = (Guid)_httpContextAccessor.HttpContext.Items["PharmacyId"];
-        //var branchesId = await GetAccountBranchIds();
+        var branchesId = await GetAccountBranchIds();
+
         var branches = await _context.Branches
-            .Where(b => b.PharmacyId == pharmacyId)
-            //.Where(b => b.PharmacyId == pharmacyId && branchesId.Contains(b.Id))
+            .Where(b => b.PharmacyId == pharmacyId && branchesId.Contains(b.Id))
             .Include(b => b.WorkingPeriods)
             .Select(b => new BranchDTO
             {
                 Id = b.Id,
+                BranchName = lang == "ar" ? b.AR_BranchName : b.EN_BranchName,
                 AR_BranchName = b.AR_BranchName,
                 EN_BranchName = b.EN_BranchName,
                 PhoneNumber = b.PhoneNumber,
@@ -55,6 +57,7 @@ public class BranchService : IBranchService
 
         return branches;
     }
+
     public async Task<BranchDTO> GetBranchByIdAsync(Guid id, string lang)
     {
         var pharmacyId = (Guid)_httpContextAccessor.HttpContext.Items["PharmacyId"];
@@ -68,8 +71,9 @@ public class BranchService : IBranchService
         return new BranchDTO
         {
             Id = branch.Id,
-            AR_BranchName = lang == "ar" ? branch.AR_BranchName : branch.EN_BranchName,
-            EN_BranchName = lang == "en" ? branch.EN_BranchName : branch.AR_BranchName,
+            BranchName = lang == "ar" ? branch.AR_BranchName : branch.EN_BranchName, 
+            AR_BranchName = branch.AR_BranchName, 
+            EN_BranchName = branch.EN_BranchName,
             Lat = branch.Lat,
             Long = branch.Long,
             Address = branch.Address,
@@ -86,6 +90,7 @@ public class BranchService : IBranchService
             }).ToList()
         };
     }
+
     private async Task<IReadOnlyList<Guid>> GetAccountBranchIds()
     {
         var httpContext = _httpContextAccessor.HttpContext;
@@ -284,4 +289,6 @@ public class BranchService : IBranchService
             throw new FormatException("Error parsing time: " + ex.Message);
         }
     }
+
+
 }
