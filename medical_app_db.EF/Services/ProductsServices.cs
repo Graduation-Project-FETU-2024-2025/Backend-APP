@@ -133,6 +133,7 @@ public class ProductsServices : IProductService
 
 		var outOfStckProducts = await _context.BranchProducts
 			.Where(p => p.BranchId == branchID)
+			.OrderByDescending(p => p.AdditionDate)
 			.Select(b => new ProductDTO
 			{
 				BranchId = b.BranchId,
@@ -140,6 +141,7 @@ public class ProductsServices : IProductService
 				stock = b.stock,
 				price = b.price,
 				visibility = b.visibility,
+				AdditionDate = b.AdditionDate,
 				productDTO = new SystemProductDTO
 				{
 					Code = b.SystemProduct.Code,
