@@ -39,7 +39,7 @@ public class BranchService : IBranchService
                 Status = b.Status,
                 Lat = b.Lat,
                 Long = b.Long,
-                Address = b.Address,
+                Address = lang == "ar" ? b.AR_Address : b.EN_Address,
                 DeliveryRange = b.DeliveryRange,
                 PricePerKilo = b.PricePerKilo,
                 MinDeliveryPrice = b.MinDeliveryPrice,
@@ -76,7 +76,7 @@ public class BranchService : IBranchService
             EN_BranchName = branch.EN_BranchName,
             Lat = branch.Lat,
             Long = branch.Long,
-            Address = branch.Address,
+            Address = lang == "ar" ? branch.AR_Address : branch.EN_Address,
             Status = branch.Status,
             DeliveryRange = branch.DeliveryRange,
             PricePerKilo = branch.PricePerKilo,
@@ -123,7 +123,8 @@ public class BranchService : IBranchService
                 EN_BranchName = branchDto.EN_BranchName,
                 Lat = branchDto.Lat,
                 Long = branchDto.Long,
-                Address = branchDto.Address,
+                AR_Address = branchDto.AR_Address,
+                EN_Address = branchDto.EN_Address,
                 DeliveryRange = branchDto.DeliveryRange,
                 PricePerKilo = branchDto.PricePerKilo,
                 MinDeliveryPrice = branchDto.MinDeliveryPrice,
@@ -198,7 +199,8 @@ public class BranchService : IBranchService
             Start = ParseTime(w.Start),
             End = ParseTime(w.End)
         }).ToList();
-        branch.Address = branchDto.Address;
+        branch.AR_Address = branchDto.AR_Address;
+        branch.EN_Address = branchDto.EN_Address;
 
         await _context.SaveChangesAsync();
         branchDto.Id = id;
