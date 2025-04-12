@@ -7,9 +7,9 @@ namespace medical_app_db.Core.DTOs
     {
         public Guid? Id { get; set; }
         public Guid PharmacyId { get; set; }
-        public string BranchName { get; set; }
+        public string? BranchName { get; set; }
         public string AR_BranchName { get; set; } 
-        public string? EN_BranchName { get; set; }
+        public string EN_BranchName { get; set; }
         public int DeliveryRange { get; set; }
         public decimal PricePerKilo { get; set; }
         public decimal MinDeliveryPrice { get; set; }
@@ -19,8 +19,8 @@ namespace medical_app_db.Core.DTOs
         public double Lat { get; set; }
         public double Long { get; set; }
         public string? Address { get; set; }
-        public string? AR_Address { get; set; }
-        public string? EN_Address { get; set; }
+        public string AR_Address { get; set; }
+        public string EN_Address { get; set; }
         public IEnumerable<WorkingPeriodDTO>? WorkingHours { get; set; }
     }
 

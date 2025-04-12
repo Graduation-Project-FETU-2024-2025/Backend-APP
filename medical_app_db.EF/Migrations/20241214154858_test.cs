@@ -259,7 +259,7 @@ namespace medical_app_db.EF.Migrations
                         column: x => x.AccountId,
                         principalTable: "Accounts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AccountBranches_Branches_BranchId",
                         column: x => x.BranchId,

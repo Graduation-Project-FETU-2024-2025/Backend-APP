@@ -92,7 +92,8 @@ public class BranchController : ControllerBase
         {
             return BadRequest(new { message = "Invalid branch data", statusCode = (int)HttpStatusCode.BadRequest });
         }
-
+        if (image is null)
+            return BadRequest(new { message = "Image is Required", statusCode = (int)HttpStatusCode.BadRequest });
         try
         {
             if (!string.IsNullOrEmpty(workingHours))
@@ -111,7 +112,7 @@ public class BranchController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Failed to create branch", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
+            return StatusCode(500, new { message = "Failed to create branch", statusCode = (int) HttpStatusCode.InternalServerError, details = ex.Message });
         }
     }
     [HttpPut("{id}")]

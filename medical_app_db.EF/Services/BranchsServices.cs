@@ -115,9 +115,11 @@ public class BranchService : IBranchService
             if (branchDto.PharmacyId != pharmacyId)
                 throw new UnauthorizedAccessException("Unauthorized to add a Branch Ti this Pharmacy");
 
+            var branchId = Guid.NewGuid();
+
             var branch = new Branch
             {
-                Id = Guid.NewGuid(),
+                Id = branchId,
                 PharmacyId = pharmacyId,
                 AR_BranchName = branchDto.AR_BranchName,
                 EN_BranchName = branchDto.EN_BranchName,
@@ -129,7 +131,7 @@ public class BranchService : IBranchService
                 PricePerKilo = branchDto.PricePerKilo,
                 MinDeliveryPrice = branchDto.MinDeliveryPrice,
                 Status = branchDto.Status,
-                Image = await _imageService.UploadImageAsync(image),
+                Image = await _imageService.UploadImageAsync(image, branchId),
                 PhoneNumber = branchDto.PhoneNumber,
                 WorkingPeriods = branchDto.WorkingHours?.Select(w =>
                 {
@@ -165,7 +167,7 @@ public class BranchService : IBranchService
         }
         catch (Exception ex)
         {
-            throw new Exception("Error occurred while adding branch: " + ex.Message);
+            throw new Exception("Error occurred while adding branch: " + ex);
         }
     }
     public async Task<BranchDTO> UpdateBranchAsync(Guid id, BranchDTO branchDto, IFormFile? image)
@@ -190,7 +192,7 @@ public class BranchService : IBranchService
 
         if (branch.Image != branchDto.Image)
         {
-            branch.Image = await _imageService.UploadImageAsync(image);
+            branch.Image = await _imageService.UpdateImageAsync(image,branch.Id);
         }
 
         branch.PhoneNumber = branchDto.PhoneNumber;
@@ -217,6 +219,17 @@ public class BranchService : IBranchService
 
         if (branch == null)
             return false;
+
+        var accountBranches = await _context.AccountBranches
+            .Where(ac => ac.BranchId == branchId)
+            .ToListAsync();
+
+        foreach (var accountBranch in accountBranches)
+        {
+            _context.AccountBranches.Remove(accountBranch);
+        }
+
+        await _imageService.DeleteImageAsync(branch.Id);
 
         _context.Branches.Remove(branch);
         await _context.SaveChangesAsync();

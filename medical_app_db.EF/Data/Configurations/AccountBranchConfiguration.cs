@@ -12,11 +12,13 @@ namespace medical_app_db.EF.Data.Configurations
 
             builder.HasOne(a => a.Account).WithMany(p => p.AccountBranches)
                 .HasForeignKey(ab => ab.AccountId)
-                .HasPrincipalKey(a => a.Id);
+                .HasPrincipalKey(a => a.Id)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(a => a.Branch).WithMany(p => p.AccountBranches)
                 .HasForeignKey(ab => ab.BranchId)
-                .HasPrincipalKey(b => b.Id);
+                .HasPrincipalKey(b => b.Id)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
