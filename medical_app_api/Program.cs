@@ -5,6 +5,7 @@ using medical_app_db.Services;
 using medical_app_api.Middleware;
 using medical_app_db.Core.Helpers;
 using medical_app_db.EF.Services;
+using medical_app_db.EF.Factory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services
     .AddHttpContextAccessor()
     .AddEmailService()
     .AddEmailConfiguration(builder.Configuration, builder.Environment);
+
+builder.Services.AddSingleton<IUserFactory, UserFactory>();
 
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IProductService, ProductsServices>();

@@ -11,8 +11,8 @@ using medical_app_db.Core.Helpers;
 using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
-using Microsoft.EntityFrameworkCore;
 using medical_app_db.Core.Models.Doctor_Module;
+using medical_app_db.EF.Factory;
 namespace medical_app_db.EF.Services
 {
     public class AuthService : IAuthService
@@ -22,19 +22,24 @@ namespace medical_app_db.EF.Services
         private readonly IEmailService _emailService;
         private IMemoryCache _cach;
         private readonly JWT _Jwt;
+        private ClaimsStrategyFactory _claimsStrategyFactory;
+        private readonly IUserFactory _userFactory;
 
         public AuthService(
             MedicalDbContext context,
             UserManager<ApplicationUser> userManager,
             IEmailService emailService,
             IOptions<JWT> jwtOptions,
-            IMemoryCache cache)
+            IMemoryCache cache,
+            IUserFactory userFactory)
         {
             _context = context;
             _userManager = userManager;
             _emailService = emailService;
             _Jwt = jwtOptions.Value;
             _cach = cache;
+            _userFactory = userFactory;
+            _claimsStrategyFactory = new ClaimsStrategyFactory(context);
         }
 
         public async Task<AuthModel> Register(RegisterationDTO model)
@@ -53,36 +58,31 @@ namespace medical_app_db.EF.Services
                     Status = HttpStatusCode.BadRequest
                 };
 
-            var newUser = new ApplicationUser()
-            {
-                UserName = model.UserName,
-                Email = model.Email,
-            };
-
             try
             {
-                var result = await _userManager.CreateAsync(newUser, model.Password!);
+                var user = _userFactory.CreateUser(model);
+
+                var result = await _userManager.CreateAsync(user, model.Password!);
+
+                if (user is Doctor doctor)
+                {
+                    doctor.DoctorClinic.DoctorId = doctor.Id;
+                    await _context.SaveChangesAsync();
+                }
 
                 if (!result.Succeeded)
                     throw new Exception();
 
-                var account = new Account
+                if (result.Succeeded)
                 {
-                    Id = Guid.NewGuid(),
-                    ApplicationUser = newUser,
-                    ApplicationUserId = newUser.Id,
-                    Image = model.Image,
-                    PharmacyId = model.PharmacyId
-                };
-
-                await _context.Accounts.AddAsync(account);
-                await _context.SaveChangesAsync();
+                    await _userManager.AddToRoleAsync(user, model.Role);
+                }
             }
-            catch
+            catch(Exception ex)
             {
                 return new AuthModel
                 {
-                    Message = "Failed to Create Account",
+                    Message = ex.Message,
                     Status = HttpStatusCode.InternalServerError
                 };
             }
@@ -117,7 +117,7 @@ namespace medical_app_db.EF.Services
             try
             {
                 await _emailService.SendEmailAsync(user.Email, "Login Confimatation", otp);
-                _cach.Set(user.Email!, otp, TimeSpan.FromMinutes(5));
+                _cach.Set(user.Email!, otp, TimeSpan.FromMinutes(300));
             }
             catch
             {
@@ -184,37 +184,23 @@ namespace medical_app_db.EF.Services
         }
         private async Task<JwtSecurityToken> GenerateJwtToken(ApplicationUser user)
         {
-            var account = await _context.Accounts
-                .FirstOrDefaultAsync(a => a.ApplicationUserId == user.Id);
-
-            var doctor = await _context.Set<Doctor>()
-                .FirstOrDefaultAsync(a => a.ApplicationUserId == user.Id);
-            var clinic = new DoctorClinic();
-            if (doctor is not null)
-            clinic = await _context.Set<DoctorClinic>()
-                .FirstOrDefaultAsync(c => c.DoctorId == doctor.Id);
-
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            var roles = await _userManager.GetRolesAsync(user);
-
-            var roleClaims = new List<Claim>();
-            foreach (var claim in roles)
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var claims = new List<Claim>
             {
-                roleClaims.Add(new Claim("role", claim));
+                new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                new(ClaimTypes.Name, user.UserName ?? "")
+            };
+            foreach (var role in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+            var claimsStrategy = _claimsStrategyFactory.GetStrategy(user);
+            if (claimsStrategy != null)
+            {
+                claims.AddRange(claimsStrategy.GetClaims(user));
             }
 
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim("AccountId", account?.Id.ToString() ?? ""),
-                new Claim("ClinicId", clinic?.ClinicId.ToString() ?? ""),
-                new Claim("DoctorId", doctor?.Id.ToString() ?? ""),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email , user.Email ?? ""),
-                new Claim(JwtRegisteredClaimNames.Iss , "healthApp"),
-                new Claim(ClaimTypes.Name, user.UserName ?? ""),
-                new Claim("PharmacyID", account?.PharmacyId.ToString() ?? ""),
-            }.Union(userClaims).Union(roleClaims);
 
             var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_Jwt.SecurityKey ?? "healthApp"));
             var signInCredentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
