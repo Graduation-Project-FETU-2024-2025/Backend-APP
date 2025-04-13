@@ -15,7 +15,7 @@ namespace medical_app_api.Middleware
         {
             if (context.Request.Path.StartsWithSegments("/api/secure"))
             {
-                var pharmacyIdClaim = context.User.FindFirst("PharmacyID")?.Value;
+                var pharmacyIdClaim = context.User.FindFirst("Pharmacy")?.Value;
                 if(string.IsNullOrEmpty(pharmacyIdClaim))
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;

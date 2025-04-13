@@ -12,6 +12,7 @@ namespace medical_app_db.EF.Strategies
             if (user is Account account)
             {
                 claims.Add(new Claim("Pharmacy", account.PharmacyId.ToString() ?? ""));
+                claims.Add(new Claim("Account", account.Id.ToString() ?? ""));
 
             }
             return claims;

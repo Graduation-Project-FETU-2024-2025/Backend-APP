@@ -106,7 +106,7 @@ public class BranchService : IBranchService
     public async Task<BranchDTO> AddBranchAsync(BranchDTO branchDto, IFormFile? image)
     {
         var httpContext = _httpContextAccessor.HttpContext;
-        _ = Guid.TryParse(httpContext.User.FindFirst("AccountId")?.Value, out Guid accountId);
+        _ = Guid.TryParse(httpContext.User.FindFirst("Account")?.Value, out Guid accountId);
         try
         {
             ValidateBranchData(branchDto);
