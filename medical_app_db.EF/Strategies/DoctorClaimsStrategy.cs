@@ -26,7 +26,7 @@ namespace medical_app_db.EF.Strategies
             var claims = new List<Claim>();
             if (user is Doctor doctor)
             {
-                claims.Add(new Claim("Clinic", clinicId.ToString() ?? ""));
+                claims.Add(new Claim("ClinicId", clinicId.ToString() ?? ""));
 
                 if (!string.IsNullOrEmpty(doctor.Specialization))
                 {
