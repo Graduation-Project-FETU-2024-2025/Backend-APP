@@ -13,6 +13,7 @@ namespace medical_app_db.Core.DTOs
 		public int stock { get; set; }
 		public float price { get; set; }
 		public bool visibility { get; set; } = false;
+        public string? BranchName { get; set; }
         public DateOnly AdditionDate { get; set; }
         public SystemProductDTO? productDTO { get; set; } = null;
 	}

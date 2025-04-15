@@ -1,4 +1,5 @@
-﻿using medical_app_db.Core.DTOs;
+﻿using Azure.Core;
+using medical_app_db.Core.DTOs;
 using medical_app_db.Core.Interfaces;
 using medical_app_db.Core.Models;
 using medical_app_db.EF.Data;
@@ -10,7 +11,7 @@ namespace medical_app_db.Services;
 public class ProductsServices : IProductService
 {
     private readonly MedicalDbContext _context;
-	private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
 	public ProductsServices(MedicalDbContext context, IHttpContextAccessor httpContextAccessor)
     {
@@ -84,22 +85,22 @@ public class ProductsServices : IProductService
 		return BranchProducts;
 	}
 
-	public async Task<IEnumerable<ProductDTO>> GetOutOfStockProductsAsync(Guid branchID, int page, int pageSize)
+	public async Task<IEnumerable<ProductDTO>> GetOutOfStockProductsAsync(int page, int pageSize, string lang)
     {
-        var httpContext = _httpContextAccessor.HttpContext;
-
-        if (httpContext == null)
+        var branches = await GetAccountBranchs();
+		var result = new Dictionary<Guid, string?>();
+        foreach (var item in branches)
         {
-            throw new UnauthorizedAccessException("HttpContext is not available.");
+			result.Add(item.BranchId, lang == "en" ? item.Branch.EN_BranchName : item.Branch.AR_BranchName);
         }
-
-		var outOfStckProducts = await _context.BranchProducts
-			.Where(p => p.BranchId == branchID)
+        var outOfStckProducts = await _context.BranchProducts
+			.Where(p => result.Keys.Contains(p.BranchId))
 			.Where(p => p.stock <= 5)
 			.OrderBy(p => p.SystemProductCode)
             .Select(b => new ProductDTO
             {
                 BranchId = b.BranchId,
+                BranchName = result[b.BranchId],
                 SystemProductCode = b.SystemProductCode,
                 stock = b.stock,
                 price = b.price,
@@ -121,8 +122,19 @@ public class ProductsServices : IProductService
 
 		return outOfStckProducts;
     }
+    private async Task<IReadOnlyList<AccountBranch>> GetAccountBranchs()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        _ = Guid.TryParse(httpContext.User.FindFirst("AccountId")?.Value, out Guid accountId);
 
-	public async Task<IEnumerable<ProductDTO>> GetLastAddedProductsAsync(Guid branchID)
+        var branches = await _context.AccountBranches
+            .Where(ab => ab.AccountId == accountId)
+			.Include(ab => ab.Branch)
+            .ToListAsync();
+
+        return branches;
+    }
+    public async Task<IEnumerable<ProductDTO>> GetLastAddedProductsAsync(Guid branchID)
 	{
 		var httpContext = _httpContextAccessor.HttpContext;
 

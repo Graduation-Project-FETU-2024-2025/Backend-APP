@@ -92,7 +92,7 @@ namespace medical_app_api.Controllers
 		}
 
 		[HttpGet("out-of-stock")]
-		public async Task<IActionResult> GetOutOfStockProducts(Guid branch_id, int page = 1, int pageSize = 3)
+		public async Task<IActionResult> GetOutOfStockProducts(int page = 1, int pageSize = 3)
 		{
             var lang = Request.Headers["lang"].ToString().ToLower();
 
@@ -102,7 +102,7 @@ namespace medical_app_api.Controllers
             }
 
 			if (page < 1) page = 1;
-			var outOfStckProducts = await _productService.GetOutOfStockProductsAsync(branch_id, page, pageSize);
+			var outOfStckProducts = await _productService.GetOutOfStockProductsAsync(page, pageSize,lang);
 
             if (outOfStckProducts == null || !outOfStckProducts.Any())
             {
@@ -111,12 +111,13 @@ namespace medical_app_api.Controllers
 
             var result = outOfStckProducts.Select(b => new
             {
-                BranchId = b.BranchId,
+                b.BranchId,
+				b.BranchName,
                 Name = lang == "ar" ? b.productDTO.AR_Name : b.productDTO.EN_Name,
-                SystemProductCode = b.SystemProductCode,
-                stock = b.stock,
-                price = b.price,
-                visibility = b.visibility,
+                b.SystemProductCode,
+                b.stock,
+                b.price,
+                b.visibility,
                 productDTO = new SystemProductDTO
                 {
                     Code = b.productDTO.Code,
