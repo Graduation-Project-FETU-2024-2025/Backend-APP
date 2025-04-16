@@ -7,7 +7,7 @@ using System.Net;
 using System.Text.Json;
 namespace medical_app_db.API.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Account")]
 [Route("api/secure/[controller]")]
 [ApiController]
 public class BranchController : ControllerBase

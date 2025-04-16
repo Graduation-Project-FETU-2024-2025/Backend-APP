@@ -4,6 +4,6 @@
     <ActiveDebugProfile>https</ActiveDebugProfile>
     <Controller_SelectedScaffolderID>ApiControllerEmptyScaffolder</Controller_SelectedScaffolderID>
     <Controller_SelectedScaffolderCategoryPath>root/Common/Api</Controller_SelectedScaffolderCategoryPath>
-    <NameOfLastUsedPublishProfile>F:\Backend-APP\medical_app_api\Properties\PublishProfiles\site18314-WebDeploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>F:\GP trial\Backend-APP\medical_app_api\Properties\PublishProfiles\site18314-WebDeploy1.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>
