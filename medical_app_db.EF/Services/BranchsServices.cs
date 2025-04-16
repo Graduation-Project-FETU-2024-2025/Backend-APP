@@ -94,7 +94,7 @@ public class BranchService : IBranchService
     private async Task<IReadOnlyList<Guid>> GetAccountBranchIds()
     {
         var httpContext = _httpContextAccessor.HttpContext;
-        _ = Guid.TryParse(httpContext.User.FindFirst("AccountId")?.Value, out Guid accountId);
+        _ = Guid.TryParse(httpContext.User.FindFirst("Account")?.Value, out Guid accountId);
 
         var branchesId = await _context.AccountBranches
             .Where(ab => ab.AccountId == accountId)
@@ -174,9 +174,7 @@ public class BranchService : IBranchService
     {
         var pharmacyId = (Guid)_httpContextAccessor.HttpContext.Items["PharmacyId"];
         var branch = await _context.Branches.Include(b => b.WorkingPeriods)
-            .FirstOrDefaultAsync(b => b.Id == id && b.PharmacyId == pharmacyId);
-
-        if (branch == null)
+            .FirstOrDefaultAsync(b => b.Id == id && b.PharmacyId == pharmacyId) ?? 
             throw new UnauthorizedAccessException("Branch not found or does not belong to the pharmacy.");
 
         ValidateBranchData(branchDto);
@@ -190,10 +188,9 @@ public class BranchService : IBranchService
         branch.MinDeliveryPrice = branchDto.MinDeliveryPrice;
         branch.Status = branchDto.Status;
 
-        if (branch.Image != branchDto.Image)
-        {
+        if(image is not null) 
             branch.Image = await _imageService.UpdateImageAsync(image,branch.Id);
-        }
+        
 
         branch.PhoneNumber = branchDto.PhoneNumber;
         branch.WorkingPeriods = branchDto.WorkingHours?.Select(w => new WorkingPeriod
@@ -235,7 +232,7 @@ public class BranchService : IBranchService
         await _context.SaveChangesAsync();
         return true;
     }
-    private void ValidateBranchData(BranchDTO branchDto)
+    private static void ValidateBranchData(BranchDTO branchDto)
     {
         if (!Regex.IsMatch(branchDto.AR_BranchName, @"^[\u0600-\u06FF\s]+$"))
         {
@@ -283,14 +280,13 @@ public class BranchService : IBranchService
             }
         }
     }
-    private TimeOnly ParseTime(string timeString)
+    private static TimeOnly ParseTime(string timeString)
     {
         try
         {
-            TimeOnly time;
             var formats = new[] { "h:mm tt", "hh:mm tt", "H:mm tt", "hh:mm tt" };
 
-            if (TimeOnly.TryParseExact(timeString, formats, null, System.Globalization.DateTimeStyles.None, out time))
+            if (TimeOnly.TryParseExact(timeString, formats, null, System.Globalization.DateTimeStyles.None, out TimeOnly time))
             {
                 return time;
             }

@@ -26,7 +26,7 @@ namespace medical_app_db.EF.Factory
                 },
                 UserRoles.Doctor => new Doctor
                 {
-                    UserName = model.Email,
+                    UserName = model.UserName,
                     Email = model.Email,
                     Name = model.FullName,
                     Specialization = model.Specialization,

@@ -9,6 +9,5 @@ namespace medical_app_db.Core.Models
         public string Picture { get; set; } = null!;
         public string Gnder { get; set; } = null!;
         public string SSN { get; set; } = null!;
-        //public string Phone { get; set; } = null!;
     }
 }
