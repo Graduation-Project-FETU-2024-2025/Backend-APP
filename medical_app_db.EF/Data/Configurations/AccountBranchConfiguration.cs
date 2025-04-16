@@ -18,7 +18,7 @@ namespace medical_app_db.EF.Data.Configurations
             builder.HasOne(a => a.Branch).WithMany(p => p.AccountBranches)
                 .HasForeignKey(ab => ab.BranchId)
                 .HasPrincipalKey(b => b.Id)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
