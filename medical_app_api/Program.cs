@@ -40,6 +40,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+await app.SeedAsync(app.Services);
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
