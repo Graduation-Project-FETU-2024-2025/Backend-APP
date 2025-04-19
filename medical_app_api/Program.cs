@@ -6,6 +6,9 @@ using medical_app_api.Middleware;
 using medical_app_db.Core.Helpers;
 using medical_app_db.EF.Services;
 using medical_app_db.EF.Factory;
+using medical_app_db.Core.Services.Interfaces;
+using medical_app_db.EF.Migrations;
+using medical_app_db.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,8 @@ builder.Services.AddSingleton<IUserFactory, UserFactory>();
 
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IProductService, ProductsServices>();
+builder.Services.AddScoped<IClinicStatisticsService, ClinicStatisticsService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped(typeof(IAppointmentService),typeof(AppointmentService));
 builder.Services.AddScoped(typeof(IImageService),typeof(CloudinaryService));
 builder.Services.Configure<CloudinatuSettings>(builder.Configuration.GetSection("CloudinarySettings"));
