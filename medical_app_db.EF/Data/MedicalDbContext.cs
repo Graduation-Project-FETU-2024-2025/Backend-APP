@@ -59,7 +59,6 @@ namespace medical_app_db.EF.Data
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(PrescriptionProductConfigurations).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(WorkingPeriodInClinicConfigurations).Assembly);
             base.OnModelCreating(modelBuilder);
-
         }
 
     }

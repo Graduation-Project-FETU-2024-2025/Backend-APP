@@ -12,3 +12,4 @@
         public decimal TotalIncome { get; set; }
     }
 }
+
