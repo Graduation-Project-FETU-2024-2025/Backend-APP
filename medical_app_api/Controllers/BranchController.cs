@@ -1,4 +1,4 @@
-﻿using medical_app_db.Core.DTOs;
+using medical_app_db.Core.DTOs;
 using medical_app_db.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@ using System.Net;
 using System.Text.Json;
 namespace medical_app_db.API.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Account")]
 [Route("api/secure/[controller]")]
 [ApiController]
 public class BranchController : ControllerBase
@@ -21,39 +21,46 @@ public class BranchController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllBranches(int page = 1, int pageSize = 3)
     {
-        var lang = Request.Headers["lang"].ToString().ToLower();
-
-        if (string.IsNullOrEmpty(lang))
+        try
         {
-            return BadRequest(new { message = "Language not provided in the header.", statusCode = (int)HttpStatusCode.BadRequest });
+      
+            var lang = Request.Headers["lang"].ToString().ToLower();
+
+            if (string.IsNullOrEmpty(lang))
+            {
+                return BadRequest(new
+                {
+                    message = "Language not provided in the header.",
+                    statusCode = (int)HttpStatusCode.BadRequest
+                });
+            }
+
+         
+            var branches = await _branchService.GetAllBranchesAsync( lang,page, pageSize);
+
+            if (branches == null || !branches.Any())
+            {
+                return NoContent();
+            }
+
+            
+            return Ok(new
+            {
+                message = "Success",
+                statusCode = (int)HttpStatusCode.OK,
+                data = branches
+            });
         }
-
-        var branches = await _branchService.GetAllBranchesAsync(page, pageSize);
-
-        if (branches == null || !branches.Any())
+        catch (Exception ex)
         {
-            return NoContent(); 
+            return StatusCode((int)HttpStatusCode.InternalServerError, new
+            {
+                message = "An error occurred while fetching branches.",
+                error = ex.Message
+            });
         }
-
-        var result = branches.Select(b => new
-        {
-            Id = b.Id,
-            PharmacyId = b.PharmacyId,
-            b.Address,
-            BranchName = lang == "ar" ? b.AR_BranchName : b.EN_BranchName,
-            PhoneNumber = b.PhoneNumber,
-            Image = b.Image,
-            Status = b.Status,
-            DeliveryRange = b.DeliveryRange,
-            PricePerKilo = b.PricePerKilo,
-            MinDeliveryPrice = b.MinDeliveryPrice,
-            Lat = b.Lat,
-            Long = b.Long,
-            WorkingHours = b.WorkingHours
-        });
-
-        return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
     }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetBranchById(Guid id)
     {
@@ -61,43 +68,23 @@ public class BranchController : ControllerBase
 
         if (string.IsNullOrEmpty(lang))
         {
-            return BadRequest(new { message = "Language not provided in the header.", statusCode = (int)HttpStatusCode.BadRequest });
-        }
-
-        try
-        {
-            var branch = await _branchService.GetBranchByIdAsync(id,lang);
-
-            if (branch == null)
+            return BadRequest(new
             {
-                return NotFound(new { message = "Branch not found", statusCode = (int)HttpStatusCode.NotFound });
-            }
-
-            var result = new
-            {
-                Id = branch.Id,
-                PharmacyId = branch.PharmacyId,
-                branch.Address,
-                BranchName = lang == "ar" ? branch.AR_BranchName : branch.EN_BranchName,
-                PhoneNumber = branch.PhoneNumber,
-                Image = branch.Image,
-                Status = branch.Status,
-                Lat = branch.Lat,
-                Long = branch.Long,
-                DeliveryRange = branch.DeliveryRange,
-                PricePerKilo = branch.PricePerKilo,
-                MinDeliveryPrice = branch.MinDeliveryPrice,
-                WorkingHours = branch.WorkingHours
-            };
-
-            return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
+                message = "Language not provided in the header.",
+                statusCode = (int)HttpStatusCode.BadRequest
+            });
         }
-        catch (Exception ex)
+
+        var branch = await _branchService.GetBranchByIdAsync(id, lang);
+
+        return Ok(new
         {
-            return StatusCode(500, new { message = "Internal server error", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
-        }
+            message = "Success",
+            statusCode = (int)HttpStatusCode.OK,
+            data = branch
+        });
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> AddBranch([FromForm]BranchDTO branchDto,IFormFile? image,[FromForm] string? workingHours)
     {
@@ -105,7 +92,8 @@ public class BranchController : ControllerBase
         {
             return BadRequest(new { message = "Invalid branch data", statusCode = (int)HttpStatusCode.BadRequest });
         }
-
+        if (image is null)
+            return BadRequest(new { message = "Image is Required", statusCode = (int)HttpStatusCode.BadRequest });
         try
         {
             if (!string.IsNullOrEmpty(workingHours))
@@ -124,7 +112,7 @@ public class BranchController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Failed to create branch", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
+            return StatusCode(500, new { message = "Failed to create branch", statusCode = (int) HttpStatusCode.InternalServerError, details = ex.Message });
         }
     }
     [HttpPut("{id}")]
@@ -180,5 +168,7 @@ public class BranchController : ControllerBase
         }
     }
 }
+
+
 
 

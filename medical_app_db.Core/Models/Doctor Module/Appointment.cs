@@ -5,7 +5,7 @@
         public Guid Id { get; set; }
         public DateTime Date { get; set; }
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
-        public AppointmentType Type { get; set; }  
+        public AppointmentType Type { get; set; }
         public Guid ClinicId { get; set; }
         public Clinic? Clinic { get; set; }
         public Guid UserId { get; set; }

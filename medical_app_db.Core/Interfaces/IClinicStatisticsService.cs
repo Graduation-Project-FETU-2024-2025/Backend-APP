@@ -11,4 +11,6 @@ namespace medical_app_db.Core.Interfaces
     {
         Task<ClinicStatisticsDTO> GetClinicStatisticsAsync(Guid clinicId);
     }
+
 }
+

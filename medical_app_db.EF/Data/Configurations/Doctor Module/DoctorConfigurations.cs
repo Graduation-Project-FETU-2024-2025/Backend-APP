@@ -8,7 +8,7 @@ namespace medical_app_db.EF.Data.Configurations.Doctor_Module
     {
         public void Configure(EntityTypeBuilder<Doctor> builder)
         {
-            builder.HasKey(d => d.Id);
+            builder.ToTable("Doctor");
         }
     }
 }

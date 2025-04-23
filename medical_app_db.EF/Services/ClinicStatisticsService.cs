@@ -32,10 +32,11 @@ namespace medical_app_db.EF.Services
                 ConfirmedAppointments = appointments.Count(a => a.Status == AppointmentStatus.Accepted),
                 CanceledAppointments = appointments.Count(a => a.Status == AppointmentStatus.Decliened),
                 TotalIncome = appointments
-                    .Where(a => a.Status == AppointmentStatus.Completed) 
-                    .Sum(a => a.Price) 
+                    .Where(a => a.Status == AppointmentStatus.Completed)
+                    .Sum(a => a.Price)
             };
 
         }
     }
 }
+

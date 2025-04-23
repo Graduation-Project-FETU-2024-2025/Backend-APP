@@ -12,8 +12,8 @@ using medical_app_db.EF.Data;
 namespace medical_app_db.EF.Migrations
 {
     [DbContext(typeof(MedicalDbContext))]
-    [Migration("20241216150722_updateIdentity")]
-    partial class updateIdentity
+    [Migration("20250419152843_finalprofile")]
+    partial class finalprofile
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -159,9 +159,7 @@ namespace medical_app_db.EF.Migrations
             modelBuilder.Entity("medical_app_db.Core.Models.Account", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PharmacyId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("AccessFailedCount")
@@ -170,13 +168,17 @@ namespace medical_app_db.EF.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Image")
+                    b.Property<string>("Gnder")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -184,6 +186,10 @@ namespace medical_app_db.EF.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("nvarchar(max)");
@@ -194,11 +200,22 @@ namespace medical_app_db.EF.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("PharmacyId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Picture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SSN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -209,11 +226,14 @@ namespace medical_app_db.EF.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "PharmacyId");
+                    b.HasKey("Id");
 
                     b.HasIndex("PharmacyId");
 
-                    b.ToTable("Accounts");
+                    b.HasIndex("Id", "PharmacyId")
+                        .IsUnique();
+
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.AccountBranch", b =>
@@ -231,6 +251,28 @@ namespace medical_app_db.EF.Migrations
                     b.ToTable("AccountBranches");
                 });
 
+            modelBuilder.Entity("medical_app_db.Core.Models.AppointmentDates", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AppointmentMaxNumber")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.ToTable("AppointmentDates");
+                });
+
             modelBuilder.Entity("medical_app_db.Core.Models.Branch", b =>
                 {
                     b.Property<Guid>("Id")
@@ -240,8 +282,28 @@ namespace medical_app_db.EF.Migrations
                     b.Property<Guid>("PharmacyId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AR_Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AR_BranchName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int>("DeliveryRange")
                         .HasColumnType("int");
+
+                    b.Property<string>("EN_Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EN_BranchName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<double>("Lat")
                         .HasColumnType("float");
@@ -252,6 +314,11 @@ namespace medical_app_db.EF.Migrations
                     b.Property<decimal>("MinDeliveryPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<decimal>("PricePerKilo")
                         .HasPrecision(18, 2)
@@ -273,14 +340,252 @@ namespace medical_app_db.EF.Migrations
                     b.Property<Guid>("BranchId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("SystemProductId")
+                    b.Property<Guid>("SystemProductCode")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("BranchId", "SystemProductId");
+                    b.Property<DateOnly>("AdditionDate")
+                        .HasColumnType("date");
 
-                    b.HasIndex("SystemProductId");
+                    b.Property<float>("price")
+                        .HasColumnType("real");
+
+                    b.Property<int>("stock")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("visibility")
+                        .HasColumnType("bit");
+
+                    b.HasKey("BranchId", "SystemProductCode");
+
+                    b.HasIndex("SystemProductCode");
 
                     b.ToTable("BranchProducts");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.ClinicPhone", b =>
+                {
+                    b.Property<Guid>("C_ID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("C_ID", "PhoneNumber");
+
+                    b.ToTable("ClinicPhones");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Appointment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DoctorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DoctorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Clinic", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Lat")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Long")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Clinics");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Doctor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Gnder")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Picture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SSN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Specialization")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Doctor", (string)null);
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.DoctorClinic", b =>
+                {
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DoctorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ClinicId", "DoctorId");
+
+                    b.HasIndex("ClinicId")
+                        .IsUnique();
+
+                    b.HasIndex("DoctorId")
+                        .IsUnique();
+
+                    b.ToTable("DoctorClinics");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Prescription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AppointmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DoctorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tests")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("Prescriptions");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.PrescriptionProduct", b =>
+                {
+                    b.Property<Guid>("PrescriptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SystemProductCode")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PrescriptionId", "SystemProductCode");
+
+                    b.HasIndex("SystemProductCode");
+
+                    b.ToTable("PrescriptionProducts");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Item", b =>
@@ -371,20 +676,6 @@ namespace medical_app_db.EF.Migrations
                     b.ToTable("Pharmacies");
                 });
 
-            modelBuilder.Entity("medical_app_db.Core.Models.PhoneNumber", b =>
-                {
-                    b.Property<Guid>("BranchId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Phone")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.HasKey("BranchId", "Phone");
-
-                    b.ToTable("PhoneNumbers");
-                });
-
             modelBuilder.Entity("medical_app_db.Core.Models.SystemProduct", b =>
                 {
                     b.Property<Guid>("Code")
@@ -395,11 +686,28 @@ namespace medical_app_db.EF.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EN_Name")
+                    b.Property<string>("Active_principal")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Company_Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("EN_Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Code");
 
@@ -419,6 +727,9 @@ namespace medical_app_db.EF.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -426,11 +737,19 @@ namespace medical_app_db.EF.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Gnder")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -443,15 +762,19 @@ namespace medical_app_db.EF.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Phone")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Picture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SSN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -490,6 +813,22 @@ namespace medical_app_db.EF.Migrations
                     b.HasKey("BranchId", "Start", "End");
 
                     b.ToTable("WorkingPeriods");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.WorkingPeriodInClinic", b =>
+                {
+                    b.Property<Guid>("AppointmentDateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("AppointmentDateId", "StartTime", "EndTime");
+
+                    b.ToTable("WorkingPeriodsInClinics");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -548,7 +887,7 @@ namespace medical_app_db.EF.Migrations
                     b.HasOne("medical_app_db.Core.Models.Pharmacy", "Pharmacy")
                         .WithMany("Accounts")
                         .HasForeignKey("PharmacyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Pharmacy");
@@ -559,7 +898,6 @@ namespace medical_app_db.EF.Migrations
                     b.HasOne("medical_app_db.Core.Models.Account", "Account")
                         .WithMany("AccountBranches")
                         .HasForeignKey("AccountId")
-                        .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -573,6 +911,17 @@ namespace medical_app_db.EF.Migrations
                     b.Navigation("Account");
 
                     b.Navigation("Branch");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.AppointmentDates", b =>
+                {
+                    b.HasOne("medical_app_db.Core.Models.Doctor_Module.Clinic", "Clinic")
+                        .WithMany("AppointmentDates")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Branch", b =>
@@ -597,11 +946,102 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasOne("medical_app_db.Core.Models.SystemProduct", "SystemProduct")
                         .WithMany("BranchProducts")
-                        .HasForeignKey("SystemProductId")
+                        .HasForeignKey("SystemProductCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Branch");
+
+                    b.Navigation("SystemProduct");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.ClinicPhone", b =>
+                {
+                    b.HasOne("medical_app_db.Core.Models.Doctor_Module.Clinic", "Clinic")
+                        .WithMany("ClinicPhones")
+                        .HasForeignKey("C_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Appointment", b =>
+                {
+                    b.HasOne("medical_app_db.Core.Models.Doctor_Module.Clinic", "Clinic")
+                        .WithMany("Appointments")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("medical_app_db.Core.Models.Doctor_Module.Doctor", null)
+                        .WithMany("Appointments")
+                        .HasForeignKey("DoctorId");
+
+                    b.HasOne("medical_app_db.Core.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.DoctorClinic", b =>
+                {
+                    b.HasOne("medical_app_db.Core.Models.Doctor_Module.Clinic", "Clinic")
+                        .WithOne("DoctorClinic")
+                        .HasForeignKey("medical_app_db.Core.Models.Doctor_Module.DoctorClinic", "ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("medical_app_db.Core.Models.Doctor_Module.Doctor", "Doctor")
+                        .WithOne("DoctorClinic")
+                        .HasForeignKey("medical_app_db.Core.Models.Doctor_Module.DoctorClinic", "DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+
+                    b.Navigation("Doctor");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Prescription", b =>
+                {
+                    b.HasOne("medical_app_db.Core.Models.Doctor_Module.Appointment", "Appointment")
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("medical_app_db.Core.Models.Doctor_Module.Doctor", "Doctor")
+                        .WithMany("Prescriptions")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Doctor");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.PrescriptionProduct", b =>
+                {
+                    b.HasOne("medical_app_db.Core.Models.Doctor_Module.Prescription", "Prescription")
+                        .WithMany("PrescriptionProducts")
+                        .HasForeignKey("PrescriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("medical_app_db.Core.Models.SystemProduct", "SystemProduct")
+                        .WithMany("PrescriptionProducts")
+                        .HasForeignKey("SystemProductCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Prescription");
 
                     b.Navigation("SystemProduct");
                 });
@@ -645,18 +1085,6 @@ namespace medical_app_db.EF.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("medical_app_db.Core.Models.PhoneNumber", b =>
-                {
-                    b.HasOne("medical_app_db.Core.Models.Branch", "Branch")
-                        .WithMany("PhoneNumbers")
-                        .HasForeignKey("BranchId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
             modelBuilder.Entity("medical_app_db.Core.Models.WorkingPeriod", b =>
                 {
                     b.HasOne("medical_app_db.Core.Models.Branch", "Branch")
@@ -669,20 +1097,59 @@ namespace medical_app_db.EF.Migrations
                     b.Navigation("Branch");
                 });
 
+            modelBuilder.Entity("medical_app_db.Core.Models.WorkingPeriodInClinic", b =>
+                {
+                    b.HasOne("medical_app_db.Core.Models.AppointmentDates", "AppointmentDate")
+                        .WithMany("WorkingPeriods")
+                        .HasForeignKey("AppointmentDateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppointmentDate");
+                });
+
             modelBuilder.Entity("medical_app_db.Core.Models.Account", b =>
                 {
                     b.Navigation("AccountBranches");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.AppointmentDates", b =>
+                {
+                    b.Navigation("WorkingPeriods");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Branch", b =>
                 {
                     b.Navigation("AccountBranches");
 
-                    b.Navigation("PhoneNumbers");
-
                     b.Navigation("Products");
 
                     b.Navigation("WorkingPeriods");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Clinic", b =>
+                {
+                    b.Navigation("AppointmentDates");
+
+                    b.Navigation("Appointments");
+
+                    b.Navigation("ClinicPhones");
+
+                    b.Navigation("DoctorClinic");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Doctor", b =>
+                {
+                    b.Navigation("Appointments");
+
+                    b.Navigation("DoctorClinic");
+
+                    b.Navigation("Prescriptions");
+                });
+
+            modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Prescription", b =>
+                {
+                    b.Navigation("PrescriptionProducts");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Order", b =>
@@ -700,6 +1167,8 @@ namespace medical_app_db.EF.Migrations
             modelBuilder.Entity("medical_app_db.Core.Models.SystemProduct", b =>
                 {
                     b.Navigation("BranchProducts");
+
+                    b.Navigation("PrescriptionProducts");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.User", b =>

@@ -8,15 +8,22 @@ namespace medical_app_db.EF.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Account> builder)
         {
-            builder.HasKey(a => new { a.Id , a.PharmacyId });
+            builder.ToTable("Accounts");
+            
+            builder
+              .HasIndex(a => new { a.Id, a.PharmacyId })
+              .IsUnique();
             builder.Property(a => a.PharmacyId).IsRequired();
-            builder.Property(a => a.Image).IsRequired(false);
 
-            builder.HasOne(a => a.Pharmacy).WithMany(p => p.Accounts).HasForeignKey(a => a.PharmacyId);
-            builder.HasOne(a => a.ApplicationUser)
-                .WithOne(u => u.Account)
-                .HasForeignKey<Account>(a => a.ApplicationUserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(a => a.Pharmacy)
+                .WithMany(p => p.Accounts)
+                .HasForeignKey(a => a.PharmacyId);
+
+            builder
+                .HasOne(a => a.Pharmacy)
+                .WithMany(p => p.Accounts)
+                .HasForeignKey(a => a.PharmacyId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

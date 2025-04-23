@@ -5,7 +5,7 @@
 namespace medical_app_db.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class updateIdentity : Migration
+    public partial class finalprofile : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -9,7 +9,7 @@ using medical_app_db.EF.Data.Configurations.Doctor_Module;
 
 namespace medical_app_db.EF.Data
 {
-    public class MedicalDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+    public class MedicalDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
         public DbSet<Order> Orders { get; set; }
         public DbSet<Item> Items { get; set; }
@@ -59,7 +59,6 @@ namespace medical_app_db.EF.Data
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(PrescriptionProductConfigurations).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(WorkingPeriodInClinicConfigurations).Assembly);
             base.OnModelCreating(modelBuilder);
-          
         }
 
     }

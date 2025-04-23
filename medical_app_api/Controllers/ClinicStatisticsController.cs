@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace medical_app_api.Controllers
 {
     [Authorize]
-    [Route("api/secure/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ClinicStatisticsController : ControllerBase
     {
@@ -71,5 +71,3 @@ namespace medical_app_api.Controllers
             }
         }
     }
-}
-

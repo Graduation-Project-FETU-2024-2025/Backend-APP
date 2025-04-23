@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using medical_app_db.EF.Services;
 using medical_app_db.Core.Helpers;
 using medical_app_db.EF.Services;
+using medical_app_db.EF.Factory;
+using medical_app_db.Core.Services.Interfaces;
+using medical_app_db.EF.Migrations;
+using medical_app_db.Core.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,11 +28,13 @@ builder.Services.InjectIdentity<ApplicationUser>()
     .AddEmailService()
     .AddEmailConfiguration(builder.Configuration, builder.Environment);
 
+builder.Services.AddSingleton<IUserFactory, UserFactory>();
+
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IProductService, ProductsServices>();
 
-builder.Services.AddScoped<IDoctorProfileServices, ProfilesServices>();
 builder.Services.AddScoped<IClinicStatisticsService, ClinicStatisticsService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 builder.Services.AddMemoryCache();
 
@@ -50,6 +56,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+await app.SeedAsync(app.Services);
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

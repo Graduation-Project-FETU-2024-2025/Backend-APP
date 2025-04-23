@@ -1,4 +1,5 @@
-﻿using medical_app_db.Core.DTOs;
+﻿using Azure.Core;
+using medical_app_db.Core.DTOs;
 using medical_app_db.Core.Interfaces;
 using medical_app_db.Core.Models;
 using medical_app_db.EF.Data;
@@ -10,7 +11,7 @@ namespace medical_app_db.Services;
 public class ProductsServices : IProductService
 {
     private readonly MedicalDbContext _context;
-	private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
 	public ProductsServices(MedicalDbContext context, IHttpContextAccessor httpContextAccessor)
     {
@@ -21,14 +22,8 @@ public class ProductsServices : IProductService
 
 	public async Task<IEnumerable<SystemProductDTO>> GetAllSystemProductsAsync(int page = 1, int pageSize = 3, String search = "")
 	{
-		var httpContext = _httpContextAccessor.HttpContext;
-
-		if (httpContext == null)
-		{
-			throw new UnauthorizedAccessException("HttpContext is not available.");
-		}
-
-		var SystemProducts = await _context.SystemProducts
+		var httpContext = _httpContextAccessor.HttpContext ?? throw new UnauthorizedAccessException("HttpContext is not available.");
+        var SystemProducts = await _context.SystemProducts
 			.Where(b => b.AR_Name.Contains(search) || b.EN_Name.Contains(search))
 			.Select(b => new SystemProductDTO
 			{
@@ -49,14 +44,9 @@ public class ProductsServices : IProductService
 
 	public async Task<IEnumerable<ProductDTO>> GetAllBranchProductsAsync(Guid branchID, int page = 1, int pageSize = 3, String search = "")
 	{
-		var httpContext = _httpContextAccessor.HttpContext;
-
-		if (httpContext == null)
-		{
-			throw new UnauthorizedAccessException("HttpContext is not available.");
-		}
-
-		var BranchProducts = await _context.BranchProducts
+		var httpContext = _httpContextAccessor.HttpContext ?? throw new UnauthorizedAccessException("HttpContext is not available.");
+        var BranchProducts = await _context.BranchProducts
+			.Where(b => b.BranchId == branchID)
 			.Where(b => b.SystemProduct.AR_Name.Contains(search) || b.SystemProduct.EN_Name.Contains(search))
 			.Select(b => new ProductDTO
 			{
@@ -83,21 +73,22 @@ public class ProductsServices : IProductService
 		return BranchProducts;
 	}
 
-	public async Task<IEnumerable<ProductDTO>> GetOutOfStockProductsAsync(int page, int pageSize)
+	public async Task<IEnumerable<ProductDTO>> GetOutOfStockProductsAsync(int page, int pageSize, string lang)
     {
-        var httpContext = _httpContextAccessor.HttpContext;
-
-        if (httpContext == null)
+        var branches = await GetAccountBranchs();
+		var result = new Dictionary<Guid, string?>();
+        foreach (var item in branches)
         {
-            throw new UnauthorizedAccessException("HttpContext is not available.");
+			result.Add(item.BranchId, lang == "en" ? item.Branch.EN_BranchName : item.Branch.AR_BranchName);
         }
-
-		var outOfStckProducts = await _context.BranchProducts
+        var outOfStckProducts = await _context.BranchProducts
+			.Where(p => result.Keys.Contains(p.BranchId))
 			.Where(p => p.stock <= 5)
 			.OrderBy(p => p.SystemProductCode)
             .Select(b => new ProductDTO
             {
                 BranchId = b.BranchId,
+                BranchName = result[b.BranchId],
                 SystemProductCode = b.SystemProductCode,
                 stock = b.stock,
                 price = b.price,
@@ -119,8 +110,50 @@ public class ProductsServices : IProductService
 
 		return outOfStckProducts;
     }
+    private async Task<IReadOnlyList<AccountBranch>> GetAccountBranchs()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        _ = Guid.TryParse(httpContext.User.FindFirst("Account")?.Value, out Guid accountId);
 
-    private void ValidateBranchProductData(ProductDTO productDto)
+        var branches = await _context.AccountBranches
+            .Where(ab => ab.AccountId == accountId)
+			.Include(ab => ab.Branch)
+            .ToListAsync();
+
+        return branches;
+    }
+    public async Task<IEnumerable<ProductDTO>> GetLastAddedProductsAsync(Guid branchID)
+	{
+		var httpContext = _httpContextAccessor.HttpContext ?? throw new UnauthorizedAccessException("HttpContext is not available.");
+		var lastAddedProducts = await _context.BranchProducts
+			.Where(p => p.BranchId == branchID)
+			.OrderByDescending(p => p.AdditionDate)
+			.Select(b => new ProductDTO
+			{
+				BranchId = b.BranchId,
+				SystemProductCode = b.SystemProductCode,
+				stock = b.stock,
+				price = b.price,
+				visibility = b.visibility,
+				AdditionDate = b.AdditionDate,
+				productDTO = new SystemProductDTO
+				{
+					Code = b.SystemProduct.Code,
+					AR_Name = b.SystemProduct.AR_Name,
+					EN_Name = b.SystemProduct.EN_Name,
+					Image = b.SystemProduct.Image,
+					Type = b.SystemProduct.Type,
+					Active_principal = b.SystemProduct.Active_principal,
+					Company_Name = b.SystemProduct.Company_Name
+				}
+			})
+			.Take(5)
+			.ToListAsync();
+
+		return lastAddedProducts;
+	}
+
+	private void ValidateBranchProductData(ProductDTO productDto)
 	{
 		if(productDto.stock < 0)
 		{
