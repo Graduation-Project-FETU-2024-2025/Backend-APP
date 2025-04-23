@@ -1,10 +1,13 @@
 ﻿using medical_app_db.Core.DTOs;
 using medical_app_db.Core.Interfaces;
+using medical_app_db.Core.Models;
 using medical_app_db.Core.Models.Doctor_Module;
 using medical_app_db.EF.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System.Security.Claims;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace medical_app_db.Services;
 
@@ -137,4 +140,46 @@ public class AppointmentService : IAppointmentService
 
         return ClinicId;
     }
+
+	public async Task<AppointmentDates> UpdateAppointmentDateAsync(Guid id, AppointmentDateDTO appointmentDate)
+    {
+		Guid ClinicId = GetClinicId();
+
+		var oldAppointmentDate = await _context.AppointmentDates.Include(b => b.WorkingPeriods)
+			.FirstOrDefaultAsync(b => b.Id == id && b.ClinicId == ClinicId) ??
+			throw new UnauthorizedAccessException("This Appointment date not belongs to your clinc");
+
+		oldAppointmentDate.AppointmentMaxNumber = appointmentDate.AppointmentMaxNumber;
+        oldAppointmentDate.Date = appointmentDate.Date;
+        oldAppointmentDate.WorkingPeriods = appointmentDate.WorkingPeriods?.Select(w => new WorkingPeriodInClinic
+		{
+			StartTime = w.StartTime,
+            EndTime = w.EndTime,
+		}).ToList();
+
+		await _context.SaveChangesAsync();
+
+		return oldAppointmentDate;
+	}
+
+	private static TimeOnly ParseTime(string timeString)
+	{
+		try
+		{
+			var formats = new[] { "h:mm tt", "hh:mm tt", "H:mm tt", "hh:mm tt" };
+
+			if (TimeOnly.TryParseExact(timeString, formats, null, System.Globalization.DateTimeStyles.None, out TimeOnly time))
+			{
+				return time;
+			}
+			else
+			{
+				throw new FormatException("Invalid time format.");
+			}
+		}
+		catch (Exception ex)
+		{
+			throw new FormatException("Error parsing time: " + ex.Message);
+		}
+	}
 }

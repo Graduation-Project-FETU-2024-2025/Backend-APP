@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Numerics;
 
 namespace medical_app_api.Controllers
 {
@@ -126,5 +127,35 @@ namespace medical_app_api.Controllers
                 statusCode = HttpStatusCode.OK
             });
         }
+
+        [HttpPut("{appointment_date_id}/edit-dates")]
+        public async Task<IActionResult> editClincAppointmentDates(Guid appointment_date_id, AppointmentDateDTO appointmentDate)
+        {
+			if (appointmentDate == null)
+			{
+				return BadRequest(new { message = "Invalid appointment date data", statusCode = (int)HttpStatusCode.BadRequest });
+			}
+
+			try
+			{
+				var updatedAppointmentDate = await _appointmentService.UpdateAppointmentDateAsync(appointment_date_id, appointmentDate);
+
+				if (updatedAppointmentDate == null)
+				{
+					return NotFound(new { message = "Appointment date not found", statusCode = (int)HttpStatusCode.NotFound });
+				}
+
+				return Ok(new
+				{
+					message = "Appointment date updated successfully",
+					statusCode = (int)HttpStatusCode.OK,
+					data = updatedAppointmentDate
+				});
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "Failed to update appointment date", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
+			}
+		}
     }
 }

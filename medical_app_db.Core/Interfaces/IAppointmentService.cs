@@ -1,4 +1,5 @@
 ﻿using medical_app_db.Core.DTOs;
+using medical_app_db.Core.Models;
 using medical_app_db.Core.Models.Doctor_Module;
 
 namespace medical_app_db.Core.Interfaces
@@ -10,5 +11,7 @@ namespace medical_app_db.Core.Interfaces
         Task<bool> AcceptApointment(Guid id);
         Task<bool> DeclineApointment(Guid id);
         Task<Prescription?> AddPrescriptionAsync(PrescriptionDTO model);
-    }
+
+        Task<AppointmentDates> UpdateAppointmentDateAsync(Guid id, AppointmentDateDTO appointmentDate);
+	}
 }
