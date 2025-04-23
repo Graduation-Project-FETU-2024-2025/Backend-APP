@@ -48,9 +48,7 @@ public class AppointmentService : IAppointmentService
         Guid ClinicId = GetClinicId();
 
         var appointment = await _context.Set<Appointment>()
-            .Where(a => a.ClinicId == ClinicId && a.Status == AppointmentStatus.Pending)
-            .Include(a => a.Clinic)
-            .SingleOrDefaultAsync(a => a.Id == id);
+            .SingleOrDefaultAsync(a => a.ClinicId == ClinicId && a.Status == AppointmentStatus.Pending && a.Id == id);
 
         if (appointment is null)
             return false;
@@ -69,9 +67,8 @@ public class AppointmentService : IAppointmentService
         Guid ClinicId = GetClinicId();
 
         var appointment = await _context.Set<Appointment>()
-            .Where(a => a.ClinicId == ClinicId && a.Status == AppointmentStatus.Pending)
-            .Include(a => a.Clinic)
-            .SingleOrDefaultAsync(a => a.Id == id);
+            .SingleOrDefaultAsync(a => a.ClinicId == ClinicId && a.Status == AppointmentStatus.Pending && a.Id == id);
+
 
         if (appointment is null)
             return false;
