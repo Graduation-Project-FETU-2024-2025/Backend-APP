@@ -12,8 +12,8 @@ using medical_app_db.EF.Data;
 namespace medical_app_db.EF.Migrations
 {
     [DbContext(typeof(MedicalDbContext))]
-    [Migration("20250416183857_test1")]
-    partial class test1
+    [Migration("20250423160348_updateTableNames1")]
+    partial class updateTableNames1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -379,7 +379,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasKey("C_ID", "PhoneNumber");
 
-                    b.ToTable("ClinicPhone");
+                    b.ToTable("ClinicPhones");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Appointment", b =>
@@ -408,6 +408,10 @@ namespace medical_app_db.EF.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -423,7 +427,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Appointment");
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Clinic", b =>
@@ -450,7 +454,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clinic");
+                    b.ToTable("Clinics");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.DoctorClinic", b =>
@@ -469,7 +473,7 @@ namespace medical_app_db.EF.Migrations
                     b.HasIndex("DoctorId")
                         .IsUnique();
 
-                    b.ToTable("DoctorClinic");
+                    b.ToTable("DoctorClinics");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.Prescription", b =>
@@ -496,7 +500,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Prescription");
+                    b.ToTable("Prescriptions");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Doctor_Module.PrescriptionProduct", b =>
@@ -514,7 +518,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasIndex("SystemProductCode");
 
-                    b.ToTable("PrescriptionProduct");
+                    b.ToTable("PrescriptionProducts");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Item", b =>
@@ -672,7 +676,7 @@ namespace medical_app_db.EF.Migrations
 
                     b.HasKey("AppointmentDateId", "StartTime", "EndTime");
 
-                    b.ToTable("WorkingPeriodInClinic");
+                    b.ToTable("WorkingPeriodsInClinics");
                 });
 
             modelBuilder.Entity("medical_app_db.Core.Models.Account", b =>
