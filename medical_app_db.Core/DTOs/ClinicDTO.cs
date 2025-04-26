@@ -17,9 +17,7 @@ namespace medical_app_db.Core.DTOs
 		public double Long { get; set; }
 		public double Lat { get; set; }
 
-		public DoctorClinic? DoctorClinic { get; set; }
-		public ICollection<ClinicPhone>? ClinicPhones { get; set; }
-		public ICollection<Appointment>? Appointments { get; set; }
-		public ICollection<AppointmentDates>? AppointmentDates { get; set; }
+		public ICollection<ClinicPhonesDTO>? ClinicPhones { get; set; }
+		public ICollection<AppointmentDateDTO>? AppointmentDates { get; set; }
 	}
 }

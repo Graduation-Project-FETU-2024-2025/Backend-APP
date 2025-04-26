@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using medical_app_db.Core.DTOs;
+using medical_app_db.Core.Models;
 using medical_app_db.Core.Models.Doctor_Module;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,14 @@ namespace medical_app_db.Core.Helpers
             CreateMap<Prescription, PrescriptionDTO>()
                 .ForMember(p => p.PrescriptionProductDTOs, o => o.MapFrom(s => s.PrescriptionProducts));
             CreateMap<PrescriptionProduct, PrescriptionProductDTO>();
+
+            CreateMap<Clinic, ClinicDTO>()
+                .ForMember(d => d.AppointmentDates, o => o.MapFrom(s => s.AppointmentDates))
+                .ForMember(d => d.ClinicPhones, o  => o.MapFrom(s => s.ClinicPhones));
+            CreateMap<AppointmentDates, AppointmentDateDTO>();
+            CreateMap<ClinicPhone, ClinicPhonesDTO>();
+
+            CreateMap<WorkingPeriodInClinic, WorkingPeriodInClinicDTO>();
         }
     }
 }

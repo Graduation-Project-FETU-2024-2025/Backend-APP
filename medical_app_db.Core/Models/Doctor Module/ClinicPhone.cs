@@ -8,7 +8,7 @@ namespace medical_app_db.Core.Models
         public Guid C_ID { get; set; } 
         public string PhoneNumber { get; set; } = null!; 
 
-        public Clinic Clinic { get; set; } = null!;
+        public Clinic? Clinic { get; set; }
     }
 
 }

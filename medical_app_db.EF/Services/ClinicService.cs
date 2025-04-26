@@ -9,43 +9,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Claims;
+using medical_app_db.Core.Interfaces;
+using AutoMapper;
 
 namespace medical_app_db.EF.Services;
 
-	public class ClinicService
+public class ClinicService : IClinicService
+{
+	private readonly MedicalDbContext _context;
+	private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IMapper _mapper;
+
+    public ClinicService(MedicalDbContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
 	{
-		private readonly MedicalDbContext _context;
-		private readonly IHttpContextAccessor _httpContextAccessor;
+		_context = context;
+		_httpContextAccessor = httpContextAccessor;
+        _mapper = mapper;
+    }
 
-		public ClinicService(MedicalDbContext context, IHttpContextAccessor httpContextAccessor)
+	public async Task<ClinicDTO> GetClinicByIdAsync(Guid id)
+	{
+		Guid.TryParse(_httpContextAccessor.HttpContext.User
+            .FindFirstValue("ClinicId"), out Guid ClinicId);
+
+		var clinic = await _context.Clinics
+			.Include(c => c.AppointmentDates)
+			.Include(c => c.ClinicPhones)
+			.FirstOrDefaultAsync(b => b.Id == id);
+
+		if (clinic == null)
+			throw new KeyNotFoundException("Clinic not found");
+
+		clinic.AppointmentDates = await _context.AppointmentDates
+			.Where(ad => ad.ClinicId == clinic.Id)
+			.Include(ad => ad.WorkingPeriods)
+			.ToListAsync();
+
+		return new ClinicDTO
 		{
-			_context = context;
-			_httpContextAccessor = httpContextAccessor;
-		}
-
-		public async Task<ClinicDTO> GetClinicByIdAsync(Guid id)
-		{
-			var clinicId = (Guid)_httpContextAccessor.HttpContext.Items["ClinicId"];
-
-			var clinic = await _context.Clinics.Include(b => b.AppointmentDates)
-				.FirstOrDefaultAsync(b => b.Id == id);
-
-			if (clinic == null)
-				throw new KeyNotFoundException("Clinic not found");
-
-			return new ClinicDTO
-			{
-				Id = clinic.Id,
-				Name = clinic.Name,
-				Address = clinic.Address,
-				Price = clinic.Price,
-				Long = clinic.Long,
-				Lat = clinic.Lat,
-				DoctorClinic = clinic.DoctorClinic,
-				ClinicPhones = clinic.ClinicPhones,
-				Appointments = clinic.Appointments,
-				AppointmentDates = clinic.AppointmentDates,
-			};
-		}
+			Id = clinic.Id,
+			Name = clinic.Name,
+			Address = clinic.Address,
+			Price = clinic.Price,
+			Long = clinic.Long,
+			Lat = clinic.Lat,
+			AppointmentDates = _mapper.Map<List<AppointmentDateDTO>>(clinic.AppointmentDates),
+			ClinicPhones = _mapper.Map<List<ClinicPhonesDTO>>(clinic.ClinicPhones)
+		};
 	}
 }
+

@@ -7,11 +7,11 @@ namespace medical_app_db.Core.Models
     {
         public Guid Id { get; set; }
         public Guid ClinicId { get; set; } 
-        public Clinic Clinic { get; set; } = null!;
+        public Clinic? Clinic { get; set; }
         public DateTime Date { get; set; }
         public int AppointmentMaxNumber { get; set; } 
 
-        public ICollection<WorkingPeriodInClinic>? WorkingPeriods { get; set; }
+        public ICollection<WorkingPeriodInClinic> WorkingPeriods { get; set; } = null!;
     }
 }
 

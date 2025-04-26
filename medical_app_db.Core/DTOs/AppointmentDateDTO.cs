@@ -14,6 +14,6 @@ namespace medical_app_db.Core.DTOs
 		public DateTime Date { get; set; }
 		public int AppointmentMaxNumber { get; set; }
 
-		public ICollection<WorkingPeriodInClinic>? WorkingPeriods { get; set; }
+		public ICollection<WorkingPeriodInClinicDTO> WorkingPeriods { get; set; } = null!;
 	}
 }
