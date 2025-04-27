@@ -122,11 +122,44 @@ public class ProductsServices : IProductService
 
         return branches;
     }
-    public async Task<IEnumerable<ProductDTO>> GetLastAddedProductsAsync(Guid branchID)
+    public async Task<IEnumerable<ProductDTO>> GetLastAddedProductsByBranchAsync(Guid branchID)
 	{
 		var httpContext = _httpContextAccessor.HttpContext ?? throw new UnauthorizedAccessException("HttpContext is not available.");
 		var lastAddedProducts = await _context.BranchProducts
 			.Where(p => p.BranchId == branchID)
+			.OrderByDescending(p => p.AdditionDate)
+			.Select(b => new ProductDTO
+			{
+				BranchId = b.BranchId,
+				SystemProductCode = b.SystemProductCode,
+				stock = b.stock,
+				price = b.price,
+				visibility = b.visibility,
+				AdditionDate = b.AdditionDate,
+				productDTO = new SystemProductDTO
+				{
+					Code = b.SystemProduct.Code,
+					AR_Name = b.SystemProduct.AR_Name,
+					EN_Name = b.SystemProduct.EN_Name,
+					Image = b.SystemProduct.Image,
+					Type = b.SystemProduct.Type,
+					Active_principal = b.SystemProduct.Active_principal,
+					Company_Name = b.SystemProduct.Company_Name
+				}
+			})
+			.Take(5)
+			.ToListAsync();
+
+		return lastAddedProducts;
+	}
+
+	public async Task<IEnumerable<ProductDTO>> GetLastAddedProductsAsync()
+	{
+		var accountBranches = await GetAccountBranchs();
+		var branchIds = accountBranches.Select(b => b.BranchId).ToList();
+		var httpContext = _httpContextAccessor.HttpContext ?? throw new UnauthorizedAccessException("HttpContext is not available.");
+		var lastAddedProducts = await _context.BranchProducts
+			.Where(p => branchIds.Contains(p.BranchId))
 			.OrderByDescending(p => p.AdditionDate)
 			.Select(b => new ProductDTO
 			{
