@@ -13,5 +13,6 @@ namespace medical_app_db.Core.Interfaces
         Task<Prescription?> AddPrescriptionAsync(PrescriptionDTO model);
 
         Task<AppointmentDates> UpdateAppointmentDateAsync(Guid id, AppointmentDateDTO appointmentDate);
+        Task<List<AppointmentDateDTO>> GetAppointmentDates(); 
 	}
 }

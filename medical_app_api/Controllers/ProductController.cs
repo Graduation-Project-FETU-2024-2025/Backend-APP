@@ -133,8 +133,8 @@ namespace medical_app_api.Controllers
             return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
 		}
 
-		[HttpGet("last-added")]
-		public async Task<IActionResult> GetLastAddedProducts(Guid branch_id)
+		[HttpGet("last-added/{branch_id")]
+		public async Task<IActionResult> GetLastAddedProductsByBranch(Guid branch_id)
 		{
 			var lang = Request.Headers["lang"].ToString().ToLower();
 
@@ -143,7 +143,47 @@ namespace medical_app_api.Controllers
 				return BadRequest(new { message = "Language not provided in the header.", statusCode = (int)HttpStatusCode.BadRequest });
 			}
 
-			var lastAddedProducts = await _productService.GetLastAddedProductsAsync(branch_id);
+			var lastAddedProducts = await _productService.GetLastAddedProductsByBranchAsync(branch_id);
+
+			if (lastAddedProducts == null || !lastAddedProducts.Any())
+			{
+				return NoContent();
+			}
+
+			var result = lastAddedProducts.Select(b => new
+			{
+				BranchId = b.BranchId,
+				Name = lang == "ar" ? b.productDTO.AR_Name : b.productDTO.EN_Name,
+				SystemProductCode = b.SystemProductCode,
+				stock = b.stock,
+				price = b.price,
+				visibility = b.visibility,
+				productDTO = new SystemProductDTO
+				{
+					Code = b.productDTO.Code,
+					AR_Name = b.productDTO.AR_Name,
+					EN_Name = b.productDTO.EN_Name,
+					Image = b.productDTO.Image,
+					Type = b.productDTO.Type,
+					Active_principal = b.productDTO.Active_principal,
+					Company_Name = b.productDTO.Company_Name
+				}
+			});
+
+			return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
+		}
+
+		[HttpGet("last-added")]
+		public async Task<IActionResult> GetLastAddedProducts()
+		{
+			var lang = Request.Headers["lang"].ToString().ToLower();
+
+			if (string.IsNullOrEmpty(lang))
+			{
+				return BadRequest(new { message = "Language not provided in the header.", statusCode = (int)HttpStatusCode.BadRequest });
+			}
+
+			var lastAddedProducts = await _productService.GetLastAddedProductsAsync();
 
 			if (lastAddedProducts == null || !lastAddedProducts.Any())
 			{

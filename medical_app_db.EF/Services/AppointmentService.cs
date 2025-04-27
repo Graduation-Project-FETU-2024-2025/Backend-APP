@@ -162,6 +162,25 @@ public class AppointmentService : IAppointmentService
 		return oldAppointmentDate;
 	}
 
+    public async Task<List<AppointmentDateDTO>> GetAppointmentDates()
+    {
+		Guid ClinicId = GetClinicId();
+        var clicnAppointments = await _context.AppointmentDates.Where(ad => ad.ClinicId.Equals(ClinicId)).Select(a => new AppointmentDateDTO
+        {
+            AppointmentMaxNumber = a.AppointmentMaxNumber,
+            Date = a.Date,
+            Id = a.Id,
+            WorkingPeriods = a.WorkingPeriods.Select(w => new WorkingPeriodInClinicDTO
+			{
+                StartTime = w.StartTime,
+                EndTime = w.EndTime
+            }).ToList()
+        }).ToListAsync();
+
+        return clicnAppointments;
+	}
+
+
 	private static TimeOnly ParseTime(string timeString)
 	{
 		try
