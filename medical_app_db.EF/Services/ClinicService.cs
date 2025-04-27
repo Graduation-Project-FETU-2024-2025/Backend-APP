@@ -27,6 +27,16 @@ public class ClinicService : IClinicService
 		_httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
     }
+	private Guid GetClinicId()
+	{
+		bool success = Guid.TryParse(_httpContextAccessor.HttpContext.User
+		   .FindFirstValue("ClinicId"), out Guid ClinicId);
+
+		if (!success)
+			throw new UnauthorizedAccessException("Unothorized to Access This Resourse");
+
+		return ClinicId;
+	}
 
 	public async Task<ClinicDTO> GetClinicByIdAsync(Guid id)
 	{
@@ -58,5 +68,24 @@ public class ClinicService : IClinicService
 			ClinicPhones = _mapper.Map<List<ClinicPhonesDTO>>(clinic.ClinicPhones)
 		};
 	}
+	public async Task<Clinic> UpdateClinicAsync(ClinicDTO clinicDTO)
+	{
+		var clinicID = GetClinicId();
+		var clinic = await _context.Clinics.FirstOrDefaultAsync(c => c.Id == clinicID);
+
+		if (clinic == null)
+			return null;
+
+		clinic.Name = clinicDTO.Name;
+		clinic.Price = clinicDTO.Price;
+		clinic.Lat = clinicDTO.Lat;
+		clinic.Long = clinicDTO.Long; 
+		clinic.DoctorClinic.Doctor.Specialization = clinicDTO.Specialization;
+
+
+		await _context.SaveChangesAsync();
+		return clinic;
+	}
+
 }
 

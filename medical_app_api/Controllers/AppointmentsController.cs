@@ -128,7 +128,19 @@ namespace medical_app_api.Controllers
             });
         }
 
-        [HttpPut("{appointment_date_id}/edit-dates")]
+		[HttpGet("get-all-appointment-dates")]
+		public async Task<IActionResult> GetAllAppointmentDates(DateTime? appointmentDate)
+		{
+			var appointments = await _appointmentService.GetAppointmentDates();
+			return Ok(new
+			{
+				message = "Suceess",
+				data = appointments,
+				StatusCode = HttpStatusCode.OK
+			});
+		}
+
+		[HttpPut("{appointment_date_id}/edit-dates")]
         public async Task<IActionResult> editClincAppointmentDates(Guid appointment_date_id, AppointmentDateDTO appointmentDate)
         {
 			if (appointmentDate == null)

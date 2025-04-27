@@ -16,7 +16,7 @@ namespace medical_app_db.Core.DTOs
 		public decimal Price { get; set; }
 		public double Long { get; set; }
 		public double Lat { get; set; }
-
+		public string? Specialization { get; set; }
 		public ICollection<ClinicPhonesDTO>? ClinicPhones { get; set; }
 		public ICollection<AppointmentDateDTO>? AppointmentDates { get; set; }
 	}
