@@ -9,7 +9,8 @@ using System.Net;
 
 namespace medical_app_api.Controllers
 {
-	[Route("api/[controller]")]
+	[Authorize]
+	[Route("api/secure/[controller]")]
 	[ApiController]
 	public class ProductController : ControllerBase
 	{
@@ -50,6 +51,46 @@ namespace medical_app_api.Controllers
 			return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
 		}
 
+		[HttpGet("{branch_id}")]
+		public async Task<IActionResult> getBranchProducts(Guid branch_id, int page = 1, int pageSize = 3, string search = "")
+		{
+			var lang = Request.Headers["lang"].ToString().ToLower();
+
+			if (string.IsNullOrEmpty(lang))
+			{
+				return BadRequest(new { message = "Language not provided in the header.", statusCode = (int)HttpStatusCode.BadRequest });
+			}
+
+			var branchProducts = await _productService.GetAllBranchProductsAsync(branch_id, page, pageSize, search);
+
+			if (branchProducts == null || !branchProducts.Any())
+			{
+				return NoContent();
+			}
+
+			var result = branchProducts.Select(b => new
+			{
+				BranchId = branch_id,
+				Name = lang == "ar" ? b.productDTO.AR_Name : b.productDTO.EN_Name,
+				SystemProductCode = b.SystemProductCode,
+				stock = b.stock,
+				price = b.price,
+				visibility = b.visibility,
+				productDTO = new SystemProductDTO
+				{
+					Code = b.productDTO.Code,
+					AR_Name = b.productDTO.AR_Name,
+					EN_Name = b.productDTO.EN_Name,
+					Image = b.productDTO.Image,
+					Type = b.productDTO.Type,
+					Active_principal = b.productDTO.Active_principal,
+					Company_Name = b.productDTO.Company_Name
+				}
+			});
+
+			return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
+		}
+
 		[HttpGet("out-of-stock")]
 		public async Task<IActionResult> GetOutOfStockProducts(int page = 1, int pageSize = 3)
 		{
@@ -61,7 +102,7 @@ namespace medical_app_api.Controllers
             }
 
 			if (page < 1) page = 1;
-			var outOfStckProducts = await _productService.GetOutOfStockProductsAsync(page, pageSize);
+			var outOfStckProducts = await _productService.GetOutOfStockProductsAsync(page, pageSize,lang);
 
             if (outOfStckProducts == null || !outOfStckProducts.Any())
             {
@@ -70,20 +111,112 @@ namespace medical_app_api.Controllers
 
             var result = outOfStckProducts.Select(b => new
             {
-                Code = b.Code,
-                Name = lang == "ar" ? b.AR_Name : b.EN_Name,
-                Image = b.Image,
-                Type = b.Type,
-                Active_principal = b.Active_principal,
-                Company_Name = b.Company_Name
+                b.BranchId,
+				b.BranchName,
+                Name = lang == "ar" ? b.productDTO.AR_Name : b.productDTO.EN_Name,
+                b.SystemProductCode,
+                b.stock,
+                b.price,
+                b.visibility,
+                productDTO = new SystemProductDTO
+                {
+                    Code = b.productDTO.Code,
+                    AR_Name = b.productDTO.AR_Name,
+                    EN_Name = b.productDTO.EN_Name,
+                    Image = b.productDTO.Image,
+                    Type = b.productDTO.Type,
+                    Active_principal = b.productDTO.Active_principal,
+                    Company_Name = b.productDTO.Company_Name
+                }
             });
 
             return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
 		}
 
-		[HttpGet("{branch_id}/{product_code}")]
-		public async Task<IActionResult> GetBranchById(Guid branch_id, Guid product_code)
+		[HttpGet("last-added/{branch_id")]
+		public async Task<IActionResult> GetLastAddedProductsByBranch(Guid branch_id)
 		{
+			var lang = Request.Headers["lang"].ToString().ToLower();
+
+			if (string.IsNullOrEmpty(lang))
+			{
+				return BadRequest(new { message = "Language not provided in the header.", statusCode = (int)HttpStatusCode.BadRequest });
+			}
+
+			var lastAddedProducts = await _productService.GetLastAddedProductsByBranchAsync(branch_id);
+
+			if (lastAddedProducts == null || !lastAddedProducts.Any())
+			{
+				return NoContent();
+			}
+
+			var result = lastAddedProducts.Select(b => new
+			{
+				BranchId = b.BranchId,
+				Name = lang == "ar" ? b.productDTO.AR_Name : b.productDTO.EN_Name,
+				SystemProductCode = b.SystemProductCode,
+				stock = b.stock,
+				price = b.price,
+				visibility = b.visibility,
+				productDTO = new SystemProductDTO
+				{
+					Code = b.productDTO.Code,
+					AR_Name = b.productDTO.AR_Name,
+					EN_Name = b.productDTO.EN_Name,
+					Image = b.productDTO.Image,
+					Type = b.productDTO.Type,
+					Active_principal = b.productDTO.Active_principal,
+					Company_Name = b.productDTO.Company_Name
+				}
+			});
+
+			return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
+		}
+
+		[HttpGet("last-added")]
+		public async Task<IActionResult> GetLastAddedProducts()
+		{
+			var lang = Request.Headers["lang"].ToString().ToLower();
+
+			if (string.IsNullOrEmpty(lang))
+			{
+				return BadRequest(new { message = "Language not provided in the header.", statusCode = (int)HttpStatusCode.BadRequest });
+			}
+
+			var lastAddedProducts = await _productService.GetLastAddedProductsAsync();
+
+			if (lastAddedProducts == null || !lastAddedProducts.Any())
+			{
+				return NoContent();
+			}
+
+			var result = lastAddedProducts.Select(b => new
+			{
+				BranchId = b.BranchId,
+				Name = lang == "ar" ? b.productDTO.AR_Name : b.productDTO.EN_Name,
+				SystemProductCode = b.SystemProductCode,
+				stock = b.stock,
+				price = b.price,
+				visibility = b.visibility,
+				productDTO = new SystemProductDTO
+				{
+					Code = b.productDTO.Code,
+					AR_Name = b.productDTO.AR_Name,
+					EN_Name = b.productDTO.EN_Name,
+					Image = b.productDTO.Image,
+					Type = b.productDTO.Type,
+					Active_principal = b.productDTO.Active_principal,
+					Company_Name = b.productDTO.Company_Name
+				}
+			});
+
+			return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
+		}
+
+		[HttpGet("{branch_id}/{product_code}")]
+		public async Task<IActionResult> GetBranchProductById(Guid branch_id, Guid product_code)
+		{
+			// Validate the branch is accessibly to the account
 			var lang = Request.Headers["lang"].ToString().ToLower();
 
 			if (string.IsNullOrEmpty(lang))
@@ -128,7 +261,6 @@ namespace medical_app_api.Controllers
 			}
 		}
 
-		[Authorize]
 		[HttpPost]
 		public async Task<IActionResult> AddBranchProduct(ProductDTO productDto)
 		{
@@ -136,6 +268,9 @@ namespace medical_app_api.Controllers
 			{
 				return BadRequest(new { message = "Invalid product data", statusCode = (int)HttpStatusCode.BadRequest });
 			}
+
+			// Validate that branch product isn't already added
+			// Validate that branch id available for the account
 
 			try
 			{
@@ -155,12 +290,14 @@ namespace medical_app_api.Controllers
 		}
 
 		[HttpPut("{branch_id}/{product_code}")]
-		public async Task<IActionResult> UpdateBranch(Guid branch_id, Guid product_code, ProductDTO productDTO)
+		public async Task<IActionResult> UpdateBranchProduct(Guid branch_id, Guid product_code, ProductDTO productDTO)
 		{
 			if (productDTO == null)
 			{
 				return BadRequest(new { message = "Invalid branch product data", statusCode = (int)HttpStatusCode.BadRequest });
 			}
+
+			// Validate that branch id available to the account
 
 			try
 			{
@@ -184,10 +321,10 @@ namespace medical_app_api.Controllers
 			}
 		}
 
-		[Authorize]
 		[HttpDelete("{branch_id}/{product_id}")]
 		public async Task<IActionResult> DeleteBranchProduct(Guid branch_id, Guid product_id)
 		{
+			// validate that branch available to the account
 			try
 			{
 				var result = await _productService.DeleteBranchProductAsync(branch_id, product_id); // مرر الـ BranchId فقط

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using medical_app_db.Core.Models.Doctor_Module;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ namespace medical_app_db.Core.Models
 		public string ?Active_principal {  get; set; }
 		public string ?Company_Name {  get; set; }
         public ICollection<BranchProduct>? BranchProducts { get; set; }
+        public ICollection<PrescriptionProduct>? PrescriptionProducts { get; set; }
 
-	}
+    }
 }

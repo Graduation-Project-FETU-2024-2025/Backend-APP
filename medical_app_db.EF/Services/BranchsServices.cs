@@ -1,49 +1,37 @@
-﻿using medical_app_db.Core.DTOs;
+using medical_app_db.Core.DTOs;
 using medical_app_db.Core.Interfaces;
 using medical_app_db.Core.Models;
 using medical_app_db.EF.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using medical_app_db.EF.Migrations;
 namespace medical_app_db.Services;
 public class BranchService : IBranchService
 {
     private readonly MedicalDbContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IImageService _imageService;
 
-    public BranchService(MedicalDbContext context, IHttpContextAccessor httpContextAccessor)
+    public BranchService(MedicalDbContext context, IHttpContextAccessor httpContextAccessor, IImageService imageService)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
+        _imageService = imageService;
     }
 
-    public async Task<IEnumerable<BranchDTO>> GetAllBranchesAsync(int page = 1, int pageSize = 3)
+    public async Task<IEnumerable<BranchDTO>> GetAllBranchesAsync(string lang, int page = 1, int pageSize = 3)
     {
-        var httpContext = _httpContextAccessor.HttpContext;
-
-        if (httpContext == null)
-        {
-            throw new UnauthorizedAccessException("HttpContext is not available.");
-        }
-
-        var pharmacyIdClaim = httpContext.User.FindFirst("PharmacyID")?.Value;
-
-        if (string.IsNullOrEmpty(pharmacyIdClaim))
-        {
-            throw new UnauthorizedAccessException("PharmacyId not found in token.");
-        }
-
-        if (!Guid.TryParse(pharmacyIdClaim, out var pharmacyId))
-        {
-            throw new UnauthorizedAccessException("Invalid PharmacyId format.");
-        }
+        var pharmacyId = (Guid)_httpContextAccessor.HttpContext.Items["PharmacyId"];
+        var branchesId = await GetAccountBranchIds();
 
         var branches = await _context.Branches
-            .Where(b => b.PharmacyId == pharmacyId)
+            .Where(b => b.PharmacyId == pharmacyId && branchesId.Contains(b.Id))
             .Include(b => b.WorkingPeriods)
             .Select(b => new BranchDTO
             {
                 Id = b.Id,
+                BranchName = lang == "ar" ? b.AR_BranchName : b.EN_BranchName,
                 AR_BranchName = b.AR_BranchName,
                 EN_BranchName = b.EN_BranchName,
                 PhoneNumber = b.PhoneNumber,
@@ -51,6 +39,10 @@ public class BranchService : IBranchService
                 Status = b.Status,
                 Lat = b.Lat,
                 Long = b.Long,
+                Address = lang == "ar" ? b.AR_Address : b.EN_Address,
+                DeliveryRange = b.DeliveryRange,
+                PricePerKilo = b.PricePerKilo,
+                MinDeliveryPrice = b.MinDeliveryPrice,
                 WorkingHours = b.WorkingPeriods != null
                     ? b.WorkingPeriods.Select(w => new WorkingPeriodDTO
                     {
@@ -68,21 +60,27 @@ public class BranchService : IBranchService
 
     public async Task<BranchDTO> GetBranchByIdAsync(Guid id, string lang)
     {
-        var branch = await _context.Branches.Include(b => b.WorkingPeriods).FirstOrDefaultAsync(b => b.Id == id);
+        var pharmacyId = (Guid)_httpContextAccessor.HttpContext.Items["PharmacyId"];
+
+        var branch = await _context.Branches.Include(b => b.WorkingPeriods)
+            .FirstOrDefaultAsync(b => b.Id == id && b.PharmacyId == pharmacyId);
+
         if (branch == null)
             throw new KeyNotFoundException("Branch not found");
 
         return new BranchDTO
         {
             Id = branch.Id,
-            AR_BranchName = lang == "ar" ? branch.AR_BranchName : branch.EN_BranchName,
-            EN_BranchName = lang == "en" ? branch.EN_BranchName : branch.AR_BranchName,
+            BranchName = lang == "ar" ? branch.AR_BranchName : branch.EN_BranchName, 
+            AR_BranchName = branch.AR_BranchName, 
+            EN_BranchName = branch.EN_BranchName,
             Lat = branch.Lat,
             Long = branch.Long,
+            Address = lang == "ar" ? branch.AR_Address : branch.EN_Address,
+            Status = branch.Status,
             DeliveryRange = branch.DeliveryRange,
             PricePerKilo = branch.PricePerKilo,
             MinDeliveryPrice = branch.MinDeliveryPrice,
-            Status = branch.Status,
             Image = branch.Image,
             PhoneNumber = branch.PhoneNumber,
             WorkingHours = branch.WorkingPeriods?.Select(w => new WorkingPeriodDTO
@@ -92,7 +90,149 @@ public class BranchService : IBranchService
             }).ToList()
         };
     }
-    private void ValidateBranchData(BranchDTO branchDto)
+
+    private async Task<IReadOnlyList<Guid>> GetAccountBranchIds()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        _ = Guid.TryParse(httpContext.User.FindFirst("Account")?.Value, out Guid accountId);
+
+        var branchesId = await _context.AccountBranches
+            .Where(ab => ab.AccountId == accountId)
+            .Select(ab => ab.BranchId)
+            .ToListAsync();
+
+        return branchesId;
+    }
+    public async Task<BranchDTO> AddBranchAsync(BranchDTO branchDto, IFormFile? image)
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        _ = Guid.TryParse(httpContext.User.FindFirst("Account")?.Value, out Guid accountId);
+        try
+        {
+            ValidateBranchData(branchDto);
+
+            var pharmacyId = (Guid)_httpContextAccessor.HttpContext.Items["PharmacyId"];
+            if (branchDto.PharmacyId != pharmacyId)
+                throw new UnauthorizedAccessException("Unauthorized to add a Branch Ti this Pharmacy");
+
+            var branchId = Guid.NewGuid();
+
+            var branch = new Branch
+            {
+                Id = branchId,
+                PharmacyId = pharmacyId,
+                AR_BranchName = branchDto.AR_BranchName,
+                EN_BranchName = branchDto.EN_BranchName,
+                Lat = branchDto.Lat,
+                Long = branchDto.Long,
+                AR_Address = branchDto.AR_Address,
+                EN_Address = branchDto.EN_Address,
+                DeliveryRange = branchDto.DeliveryRange,
+                PricePerKilo = branchDto.PricePerKilo,
+                MinDeliveryPrice = branchDto.MinDeliveryPrice,
+                Status = branchDto.Status,
+                Image = await _imageService.UploadImageAsync(image, branchId),
+                PhoneNumber = branchDto.PhoneNumber,
+                WorkingPeriods = branchDto.WorkingHours?.Select(w =>
+                {
+                    TimeOnly startTime = ParseTime(w.Start);
+                    TimeOnly endTime = ParseTime(w.End);
+
+                    return new WorkingPeriod
+                    {
+                        Start = startTime,
+                        End = endTime
+                    };
+                }).ToList()
+            };
+
+            await _context.Branches.AddAsync(branch);
+
+            var accountBrnach = new AccountBranch()
+            {
+                AccountId = accountId,
+                BranchId = branch.Id
+            };
+            await _context.AccountBranches.AddAsync(accountBrnach);
+
+            await _context.SaveChangesAsync();
+
+            branchDto.Id = branch.Id;
+            branchDto.Image = branch.Image;
+            return branchDto;
+        }
+        catch (ArgumentException argEx)
+        {
+            throw new Exception("Validation error: " + argEx.Message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error occurred while adding branch: " + ex);
+        }
+    }
+    public async Task<BranchDTO> UpdateBranchAsync(Guid id, BranchDTO branchDto, IFormFile? image)
+    {
+        var pharmacyId = (Guid)_httpContextAccessor.HttpContext.Items["PharmacyId"];
+        var branch = await _context.Branches.Include(b => b.WorkingPeriods)
+            .FirstOrDefaultAsync(b => b.Id == id && b.PharmacyId == pharmacyId) ?? 
+            throw new UnauthorizedAccessException("Branch not found or does not belong to the pharmacy.");
+
+        ValidateBranchData(branchDto);
+
+        branch.AR_BranchName = branchDto.AR_BranchName;
+        branch.EN_BranchName = branchDto.EN_BranchName;
+        branch.Lat = branchDto.Lat;
+        branch.Long = branchDto.Long;
+        branch.DeliveryRange = branchDto.DeliveryRange;
+        branch.PricePerKilo = branchDto.PricePerKilo;
+        branch.MinDeliveryPrice = branchDto.MinDeliveryPrice;
+        branch.Status = branchDto.Status;
+
+        if(image is not null) 
+            branch.Image = await _imageService.UpdateImageAsync(image,branch.Id);
+        
+
+        branch.PhoneNumber = branchDto.PhoneNumber;
+        branch.WorkingPeriods = branchDto.WorkingHours?.Select(w => new WorkingPeriod
+        {
+            Start = ParseTime(w.Start),
+            End = ParseTime(w.End)
+        }).ToList();
+        branch.AR_Address = branchDto.AR_Address;
+        branch.EN_Address = branchDto.EN_Address;
+
+        await _context.SaveChangesAsync();
+        branchDto.Id = id;
+        branchDto.Image = branch.Image;
+        return branchDto;
+    }
+    public async Task<bool> DeleteBranchAsync(Guid branchId)
+    {
+        var pharmacyId = (Guid)_httpContextAccessor.HttpContext.Items["PharmacyId"];
+
+        var branch = await _context.Branches
+            .Where(b => b.PharmacyId == pharmacyId)
+            .FirstOrDefaultAsync(b => b.Id == branchId);
+
+        if (branch == null)
+            return false;
+
+        var accountBranches = await _context.AccountBranches
+            .Where(ac => ac.BranchId == branchId)
+            .ToListAsync();
+
+        foreach (var accountBranch in accountBranches)
+        {
+            _context.AccountBranches.Remove(accountBranch);
+        }
+
+        await _imageService.DeleteImageAsync(branch.Id);
+
+        _context.Branches.Remove(branch);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+    private static void ValidateBranchData(BranchDTO branchDto)
     {
         if (!Regex.IsMatch(branchDto.AR_BranchName, @"^[\u0600-\u06FF\s]+$"))
         {
@@ -107,14 +247,6 @@ public class BranchService : IBranchService
         if (!Regex.IsMatch(branchDto.PhoneNumber, @"^\d+$"))
         {
             throw new ArgumentException("PhoneNumber must contain only digits.");
-        }
-
-        string[] allowedExtensions = { ".png", ".jpg", ".jpeg", ".gif" };
-        string imageExtension = Path.GetExtension(branchDto.Image)?.ToLower();
-
-        if (!allowedExtensions.Contains(imageExtension))
-        {
-            throw new ArgumentException("Invalid image format. Allowed formats: PNG, JPG, JPEG, GIF.");
         }
 
         if (branchDto.Lat < -90 || branchDto.Lat > 90)
@@ -148,139 +280,13 @@ public class BranchService : IBranchService
             }
         }
     }
-    private Guid GetPharmacyIdFromToken()
-    {
-        var httpContext = _httpContextAccessor.HttpContext;
-
-        if (httpContext == null)
-        {
-            throw new UnauthorizedAccessException("HttpContext is not available.");
-        }
-
-        var pharmacyIdClaim = httpContext.User.FindFirst("PharmacyID")?.Value;
-
-        if (string.IsNullOrEmpty(pharmacyIdClaim))
-        {
-            throw new UnauthorizedAccessException("PharmacyId not found in token.");
-        }
-
-        if (!Guid.TryParse(pharmacyIdClaim, out var pharmacyId))
-        {
-            throw new UnauthorizedAccessException("Invalid PharmacyId format.");
-        }
-
-        return pharmacyId;
-    }
-
-
-
-    public async Task<BranchDTO> AddBranchAsync(BranchDTO branchDto)
+    private static TimeOnly ParseTime(string timeString)
     {
         try
         {
-            ValidateBranchData(branchDto);
-
-            var pharmacyId = GetPharmacyIdFromToken();
-
-            var branch = new Branch
-            {
-                Id = Guid.NewGuid(),
-                PharmacyId = pharmacyId,
-                AR_BranchName = branchDto.AR_BranchName,
-                EN_BranchName = branchDto.EN_BranchName,
-                Lat = branchDto.Lat,
-                Long = branchDto.Long,
-                DeliveryRange = branchDto.DeliveryRange,
-                PricePerKilo = branchDto.PricePerKilo,
-                MinDeliveryPrice = branchDto.MinDeliveryPrice,
-                Status = branchDto.Status,
-                Image = branchDto.Image,
-                PhoneNumber = branchDto.PhoneNumber,
-                WorkingPeriods = branchDto.WorkingHours?.Select(w =>
-                {
-                    TimeOnly startTime = ParseTime(w.Start);
-                    TimeOnly endTime = ParseTime(w.End);
-
-                    return new WorkingPeriod
-                    {
-                        Start = startTime,
-                        End = endTime
-                    };
-                }).ToList()
-            };
-
-            _context.Branches.Add(branch);
-            await _context.SaveChangesAsync();
-
-            branchDto.Id = branch.Id;
-            return branchDto;
-        }
-        catch (ArgumentException argEx)
-        {
-            throw new Exception("Validation error: " + argEx.Message);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Error occurred while adding branch: " + ex.Message);
-        }
-    }
-
-
-    public async Task<BranchDTO> UpdateBranchAsync(Guid id, BranchDTO branchDto)
-    {
-        try
-        {
-            var branch = await _context.Branches
-                .Include(b => b.WorkingPeriods)
-                .FirstOrDefaultAsync(b => b.Id == id);
-
-            if (branch == null)
-                return null;
-
-            ValidateBranchData(branchDto);
-
-            branch.AR_BranchName = branchDto.AR_BranchName;
-            branch.EN_BranchName = branchDto.EN_BranchName;
-            branch.Lat = branchDto.Lat;
-            branch.Long = branchDto.Long;
-            branch.DeliveryRange = branchDto.DeliveryRange;
-            branch.PricePerKilo = branchDto.PricePerKilo;
-            branch.MinDeliveryPrice = branchDto.MinDeliveryPrice;
-            branch.Status = branchDto.Status;
-            branch.Image = branchDto.Image;
-            branch.PhoneNumber = branchDto.PhoneNumber;
-            branch.WorkingPeriods = branchDto.WorkingHours?.Select(w =>
-            {
-                TimeOnly startTime = ParseTime(w.Start);
-                TimeOnly endTime = ParseTime(w.End);
-
-                return new WorkingPeriod
-                {
-                    Start = startTime,
-                    End = endTime
-                };
-            }).ToList();
-
-            await _context.SaveChangesAsync();
-            return branchDto;
-        }
-        catch (ArgumentException argEx)
-        {
-            throw new Exception("Validation error: " + argEx.Message);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Error occurred while updating branch: " + ex.Message);
-        }
-    }
-    private TimeOnly ParseTime(string timeString)
-    {
-        try
-        {
-            TimeOnly time;
             var formats = new[] { "h:mm tt", "hh:mm tt", "H:mm tt", "hh:mm tt" };
 
-            if (TimeOnly.TryParseExact(timeString, formats, null, System.Globalization.DateTimeStyles.None, out time))
+            if (TimeOnly.TryParseExact(timeString, formats, null, System.Globalization.DateTimeStyles.None, out TimeOnly time))
             {
                 return time;
             }
@@ -295,16 +301,5 @@ public class BranchService : IBranchService
         }
     }
 
-    public async Task<bool> DeleteBranchAsync(Guid branchId)
-    {
-        var branch = await _context.Branches
-            .FirstOrDefaultAsync(b => b.Id == branchId);
 
-        if (branch == null)
-            return false;
-
-        _context.Branches.Remove(branch);
-        await _context.SaveChangesAsync();
-        return true;
-    }
 }

@@ -2,10 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 namespace medical_app_db.Core.Models
 {
-    public class User : IdentityUser<Guid> 
+    public class User : ApplicationUser
     {
-      
-        public string Phone { get; set; } = null!;
+
         public ICollection<Order>? Orders { get; set; }
     }
 }
