@@ -12,7 +12,7 @@ namespace medical_app_db.Core.Interfaces
         Task<bool> DeclineApointment(Guid id);
         Task<Prescription?> AddPrescriptionAsync(PrescriptionDTO model);
 
-        Task<AppointmentDates> UpdateAppointmentDateAsync(Guid id, AppointmentDateDTO appointmentDate);
+        Task<AppointmentDateDTO> UpdateAppointmentDateAsync(Guid id, AppointmentDateDTO appointmentDate);
         Task<List<AppointmentDateDTO>> GetAppointmentDates(); 
 	}
 }

@@ -110,6 +110,39 @@ public class ProductsServices : IProductService
 
 		return outOfStckProducts;
     }
+    public async Task<IEnumerable<ProductDTO>> GetOutOfStockProductsAsyncByBranch(Guid branchId, int page, int pageSize, string lang)
+	{
+        var outOfStckProducts = await _context.BranchProducts
+            .Where(p => p.BranchId == branchId)
+            .Where(p => p.stock <= 5)
+			.Include(p => p.Branch)
+            .OrderBy(p => p.SystemProductCode)
+            .Select(b => new ProductDTO
+            {
+                BranchId = b.BranchId,
+                BranchName = lang  == "en" ? b.Branch.EN_BranchName : b.Branch.AR_BranchName,
+                SystemProductCode = b.SystemProductCode,
+                stock = b.stock,
+                price = b.price,
+                visibility = b.visibility,
+                productDTO = new SystemProductDTO
+                {
+                    Code = b.SystemProduct.Code,
+                    AR_Name = b.SystemProduct.AR_Name,
+                    EN_Name = b.SystemProduct.EN_Name,
+                    Image = b.SystemProduct.Image,
+                    Type = b.SystemProduct.Type,
+                    Active_principal = b.SystemProduct.Active_principal,
+                    Company_Name = b.SystemProduct.Company_Name
+                }
+            })
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return outOfStckProducts;
+    }
+
     private async Task<IReadOnlyList<AccountBranch>> GetAccountBranchs()
     {
         var httpContext = _httpContextAccessor.HttpContext;
@@ -215,7 +248,14 @@ public class ProductsServices : IProductService
 		try
 		{
 			ValidateBranchProductData(productDto);
+			var exsistingProduct = await _context
+				.BranchProducts
+				.FirstOrDefaultAsync(bp => 
+					bp.BranchId == productDto.BranchId && bp.SystemProductCode == productDto.SystemProductCode);
 
+            if (exsistingProduct is not null)
+				throw new Exception("Product already exisit in the Branch") ;
+			
 			var product = new BranchProduct
 			{
 				BranchId = productDto.BranchId,
@@ -236,7 +276,7 @@ public class ProductsServices : IProductService
 		}
 		catch (Exception ex)
 		{
-			throw new Exception("Error occurred while adding branch: " + ex.Message);
+			throw new Exception("Error occurred while adding Product: " + ex.Message);
 		}
 	}
 	public async Task<ProductDTO> UpdateBranchProductAsync(Guid branch_id, Guid product_code, ProductDTO productDto)

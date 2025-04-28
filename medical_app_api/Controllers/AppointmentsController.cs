@@ -140,7 +140,7 @@ namespace medical_app_api.Controllers
 			});
 		}
 
-		[HttpPut("{appointment_date_id}/edit-dates")]
+		[HttpPut("edit-dates/{appointment_date_id}")]
         public async Task<IActionResult> editClincAppointmentDates(Guid appointment_date_id, AppointmentDateDTO appointmentDate)
         {
 			if (appointmentDate == null)

@@ -46,6 +46,7 @@ public class ClinicService : IClinicService
 		var clinic = await _context.Clinics
 			.Include(c => c.AppointmentDates)
 			.Include(c => c.ClinicPhones)
+			.Include(c => c.DoctorClinic)
 			.FirstOrDefaultAsync(b => b.Id == id);
 
 		if (clinic == null)
@@ -56,7 +57,10 @@ public class ClinicService : IClinicService
 			.Include(ad => ad.WorkingPeriods)
 			.ToListAsync();
 
-		return new ClinicDTO
+        var doctor = await _context.Set<Doctor>()
+            .FirstOrDefaultAsync(d => d.Id == clinic.DoctorClinic.DoctorId);
+
+        return new ClinicDTO
 		{
 			Id = clinic.Id,
 			Name = clinic.Name,
@@ -64,17 +68,23 @@ public class ClinicService : IClinicService
 			Price = clinic.Price,
 			Long = clinic.Long,
 			Lat = clinic.Lat,
+			Specialization = doctor?.Specialization,
 			AppointmentDates = _mapper.Map<List<AppointmentDateDTO>>(clinic.AppointmentDates),
 			ClinicPhones = _mapper.Map<List<ClinicPhonesDTO>>(clinic.ClinicPhones)
 		};
 	}
-	public async Task<Clinic> UpdateClinicAsync(ClinicDTO clinicDTO)
+	public async Task<ClinicDTO> UpdateClinicAsync(ClinicDTO clinicDTO)
 	{
 		var clinicID = GetClinicId();
-		var clinic = await _context.Clinics.FirstOrDefaultAsync(c => c.Id == clinicID);
+		var clinic = await _context.Clinics
+			.Include(c => c.DoctorClinic)
+			.FirstOrDefaultAsync(c => c.Id == clinicID);
 
 		if (clinic == null)
 			return null;
+
+		var dosctor = await _context.Set<Doctor>()
+			.FirstOrDefaultAsync(d => d.Id == clinic.DoctorClinic.DoctorId);
 
 		clinic.Name = clinicDTO.Name;
 		clinic.Price = clinicDTO.Price;
@@ -84,7 +94,7 @@ public class ClinicService : IClinicService
 
 
 		await _context.SaveChangesAsync();
-		return clinic;
+		return await GetClinicByIdAsync(clinicID);
 	}
 
 }

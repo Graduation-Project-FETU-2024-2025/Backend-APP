@@ -132,8 +132,47 @@ namespace medical_app_api.Controllers
 
             return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
 		}
+		[HttpGet("out-of-stock/{branchId}")]
+		public async Task<IActionResult> GetOutOfStockProductsByBranch(Guid branchId, int page =1 , int pageSize = 3)
+		{
+            var lang = Request.Headers["lang"].ToString().ToLower();
 
-		[HttpGet("last-added/{branch_id")]
+            if (string.IsNullOrEmpty(lang))
+            {
+                return BadRequest(new { message = "Language not provided in the header.", statusCode = (int)HttpStatusCode.BadRequest });
+            }
+
+            if (page < 1) page = 1;
+            var outOfStckProducts = await _productService.GetOutOfStockProductsAsyncByBranch(branchId ,page, pageSize, lang);
+
+            if (outOfStckProducts == null || !outOfStckProducts.Any())
+            {
+                return NoContent();
+            }
+
+            var result = outOfStckProducts.Select(b => new
+            {
+                Name = lang == "ar" ? b.productDTO.AR_Name : b.productDTO.EN_Name,
+                b.SystemProductCode,
+                b.stock,
+                b.price,
+                b.visibility,
+                productDTO = new SystemProductDTO
+                {
+                    Code = b.productDTO.Code,
+                    AR_Name = b.productDTO.AR_Name,
+                    EN_Name = b.productDTO.EN_Name,
+                    Image = b.productDTO.Image,
+                    Type = b.productDTO.Type,
+                    Active_principal = b.productDTO.Active_principal,
+                    Company_Name = b.productDTO.Company_Name
+                }
+            });
+
+            return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
+        }
+
+        [HttpGet("last-added/{branch_id}")]
 		public async Task<IActionResult> GetLastAddedProductsByBranch(Guid branch_id)
 		{
 			var lang = Request.Headers["lang"].ToString().ToLower();
@@ -285,7 +324,7 @@ namespace medical_app_api.Controllers
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, new { message = "Failed to add branch product", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
+				return StatusCode(500, new { message = ex.Message, statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
 			}
 		}
 

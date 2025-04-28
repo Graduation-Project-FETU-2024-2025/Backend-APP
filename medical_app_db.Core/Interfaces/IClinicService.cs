@@ -11,6 +11,6 @@ namespace medical_app_db.Core.Interfaces
 	public interface IClinicService
 	{
 		public Task<ClinicDTO> GetClinicByIdAsync(Guid id);
-		public Task<Clinic> UpdateClinicAsync(ClinicDTO clinicDTO);
+		public Task<ClinicDTO> UpdateClinicAsync(ClinicDTO clinicDTO);
 	}
 }

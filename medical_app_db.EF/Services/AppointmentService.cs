@@ -1,4 +1,5 @@
-﻿using medical_app_db.Core.DTOs;
+﻿using AutoMapper;
+using medical_app_db.Core.DTOs;
 using medical_app_db.Core.Interfaces;
 using medical_app_db.Core.Models;
 using medical_app_db.Core.Models.Doctor_Module;
@@ -15,11 +16,13 @@ public class AppointmentService : IAppointmentService
 {
     private readonly MedicalDbContext _context;
     private readonly IHttpContextAccessor _contextAccessor;
+    private readonly IMapper _mapper;
 
-    public AppointmentService(MedicalDbContext context,IHttpContextAccessor contextAccessor)
+    public AppointmentService(MedicalDbContext context,IHttpContextAccessor contextAccessor,IMapper mapper)
     {
         _context = context;
         _contextAccessor = contextAccessor;
+        _mapper = mapper;
     }
     public async Task<IReadOnlyList<Appointment>> GetAppointmentsAsync(DateTime? appointmentDate)
     {
@@ -141,7 +144,7 @@ public class AppointmentService : IAppointmentService
         return ClinicId;
     }
 
-	public async Task<AppointmentDates> UpdateAppointmentDateAsync(Guid id, AppointmentDateDTO appointmentDate)
+	public async Task<AppointmentDateDTO> UpdateAppointmentDateAsync(Guid id, AppointmentDateDTO appointmentDate)
     {
 		Guid ClinicId = GetClinicId();
 
@@ -155,11 +158,11 @@ public class AppointmentService : IAppointmentService
 		{
 			StartTime = w.StartTime,
             EndTime = w.EndTime,
-		}).ToList();
+		}).ToList() ?? new List<WorkingPeriodInClinic>();
 
 		await _context.SaveChangesAsync();
 
-		return oldAppointmentDate;
+		return _mapper.Map<AppointmentDateDTO>(oldAppointmentDate);
 	}
 
     public async Task<List<AppointmentDateDTO>> GetAppointmentDates()
