@@ -16,5 +16,6 @@ namespace medical_app_db.Core.Models
 		public int stock {  get; set; }
 		public float price { get; set; }
 		public bool visibility { get; set; } = false;
-	}
+		public DateOnly AdditionDate { get; set; }
+    }
 }
