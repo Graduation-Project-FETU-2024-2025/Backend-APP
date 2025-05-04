@@ -17,8 +17,8 @@ using medical_app_db.Core.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.InjectDbContext(builder.Configuration, builder.Environment);
-builder.Services.AddDbContext<MedicalDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<MedicalDbContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.InjectIdentity<ApplicationUser>()
     .AddJWTAuth(builder.Configuration)

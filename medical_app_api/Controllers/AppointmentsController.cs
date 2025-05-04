@@ -27,6 +27,9 @@ namespace medical_app_api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll(DateTime? appointmentDate)
         {
+            try
+            {
+
             var appointments = await _appointmentService.GetAppointmentsAsync(appointmentDate);
             return Ok(new 
             { 
@@ -34,6 +37,11 @@ namespace medical_app_api.Controllers
                 data = _mapper.Map<List<AppointmentDTO>>(appointments), 
                 StatusCode = HttpStatusCode.OK 
             });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]

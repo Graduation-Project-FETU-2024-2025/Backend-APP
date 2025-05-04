@@ -34,7 +34,7 @@ public class AppointmentService : IAppointmentService
             .ToListAsync();
 
         if (appointmentDate is not null)
-            appointmetns = appointmetns.Where(a => a.Date == appointmentDate).ToList();
+            appointmetns = appointmetns.Where(a => a.Date.Date == appointmentDate).ToList();
 
         return appointmetns;
     }
