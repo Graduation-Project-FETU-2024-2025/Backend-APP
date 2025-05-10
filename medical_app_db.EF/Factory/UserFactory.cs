@@ -29,7 +29,7 @@ namespace medical_app_db.EF.Factory
                     UserName = model.UserName,
                     Email = model.Email,
                     Name = model.FullName,
-                    Specialization = model.Specialization,
+                    SpecializationId = model.SpecializationId,
                     DoctorClinic = new DoctorClinic
                     {
                         ClinicId = model.ClinicId

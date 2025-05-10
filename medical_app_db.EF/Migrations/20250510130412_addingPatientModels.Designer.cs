@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using medical_app_db.EF.Data;
 
@@ -11,9 +12,11 @@ using medical_app_db.EF.Data;
 namespace medical_app_db.EF.Migrations
 {
     [DbContext(typeof(MedicalDbContext))]
-    partial class MedicalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250510130412_addingPatientModels")]
+    partial class addingPatientModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -555,7 +558,9 @@ namespace medical_app_db.EF.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("OredrDate")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValue(new DateTime(2025, 5, 10, 13, 4, 6, 262, DateTimeKind.Utc).AddTicks(5696));
 
                     b.Property<string>("Status")
                         .IsRequired()

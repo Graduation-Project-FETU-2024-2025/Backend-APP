@@ -2,7 +2,8 @@
 {
     public class Doctor : ApplicationUser
     {
-        public string? Specialization { get; set; }
+        public Guid SpecializationId { get; set; }
+        public Specialization? Specialization { get; set; }
         public ICollection<Appointment>? Appointments { get; set; }
         public ICollection<Prescription>? Prescriptions { get; set; }
         public DoctorClinic? DoctorClinic { get; set; }

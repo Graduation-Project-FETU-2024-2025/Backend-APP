@@ -6,13 +6,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using medical_app_db.Core.Models.Doctor_Module;
 using medical_app_db.EF.Data.Configurations.Doctor_Module;
+using medical_app_db.Core.Models.Order_Module;
 
 namespace medical_app_db.EF.Data
 {
     public class MedicalDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
         public DbSet<Order> Orders { get; set; }
-        public DbSet<Item> Items { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Specialization> Specializations { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         public DbSet<SystemProduct> SystemProducts { get; set; }
         public DbSet<Pharmacy> Pharmacies { get; set; }
         public DbSet<Account> Accounts { get; set; }
@@ -45,7 +48,7 @@ namespace medical_app_db.EF.Data
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(SystemProductConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(BranchProductConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AccountBranchConfiguration).Assembly);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ItemConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderItemConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppointemntDatesConfigurations).Assembly);
@@ -58,6 +61,10 @@ namespace medical_app_db.EF.Data
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(PrescriptionConfigurations).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(PrescriptionProductConfigurations).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(WorkingPeriodInClinicConfigurations).Assembly);
+
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ReviewConfigurations).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(SpecializationConfigurations).Assembly);
+
             base.OnModelCreating(modelBuilder);
         }
 

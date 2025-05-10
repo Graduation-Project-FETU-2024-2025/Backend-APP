@@ -6,8 +6,5 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasMany(e => e.Orders)
-            .WithOne(o => o.User)
-            .HasForeignKey(o => o.UserId);
     }
 }

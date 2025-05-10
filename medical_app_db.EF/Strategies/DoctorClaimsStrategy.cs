@@ -22,15 +22,21 @@ namespace medical_app_db.EF.Strategies
                                    .Where(dc => dc.DoctorId == user.Id)
                                    .Select(dc => dc.ClinicId)
                                    .FirstOrDefault();
+            var specialization = _context.Set<Doctor>()
+                .AsNoTracking()
+                .Where(d => d.Id == user.Id)
+                .Include(d => d.Specialization)
+                .Select(d => d.Specialization)
+                .FirstOrDefault();
 
             var claims = new List<Claim>();
             if (user is Doctor doctor)
             {
                 claims.Add(new Claim("ClinicId", clinicId.ToString() ?? ""));
 
-                if (!string.IsNullOrEmpty(doctor.Specialization))
+                if (!string.IsNullOrEmpty(doctor.Specialization?.Name))
                 {
-                    claims.Add(new Claim("Specialization", doctor.Specialization));
+                    claims.Add(new Claim("Specialization", specialization?.Name ?? ""));
                 }
             }
             return claims;

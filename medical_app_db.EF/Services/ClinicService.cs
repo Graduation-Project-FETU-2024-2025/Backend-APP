@@ -58,6 +58,7 @@ public class ClinicService : IClinicService
 			.ToListAsync();
 
         var doctor = await _context.Set<Doctor>()
+			.Include(d => d.Specialization)
             .FirstOrDefaultAsync(d => d.Id == clinic.DoctorClinic.DoctorId);
 
         return new ClinicDTO
@@ -68,7 +69,7 @@ public class ClinicService : IClinicService
 			Price = clinic.Price,
 			Long = clinic.Long,
 			Lat = clinic.Lat,
-			Specialization = doctor?.Specialization,
+			Specialization = doctor?.Specialization?.Name ?? "",
 			AppointmentDates = _mapper.Map<List<AppointmentDateDTO>>(clinic.AppointmentDates),
 			ClinicPhones = _mapper.Map<List<ClinicPhonesDTO>>(clinic.ClinicPhones)
 		};
@@ -83,14 +84,14 @@ public class ClinicService : IClinicService
 		if (clinic == null)
 			return null;
 
-		var dosctor = await _context.Set<Doctor>()
+		var doctor = await _context.Set<Doctor>().Include(d => d.Specialization)
 			.FirstOrDefaultAsync(d => d.Id == clinic.DoctorClinic.DoctorId);
 
 		clinic.Name = clinicDTO.Name;
 		clinic.Price = clinicDTO.Price;
 		clinic.Lat = clinicDTO.Lat;
-		clinic.Long = clinicDTO.Long; 
-		clinic.DoctorClinic.Doctor.Specialization = clinicDTO.Specialization;
+		clinic.Long = clinicDTO.Long;
+		doctor.Specialization.Name = clinicDTO.Specialization;
 
 
 		await _context.SaveChangesAsync();

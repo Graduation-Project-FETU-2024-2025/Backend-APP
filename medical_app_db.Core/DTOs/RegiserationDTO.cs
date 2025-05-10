@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace medical_app_db.Core.DTOs
 {
@@ -42,5 +43,7 @@ namespace medical_app_db.Core.DTOs
         public Guid PharmacyId { get; set; }
         [AllowNull]
         public string? Specialization { get; set; }
+        [JsonIgnore]
+        public Guid SpecializationId { get; set; }
     }
 }
