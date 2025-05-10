@@ -34,9 +34,9 @@ namespace medical_app_db.EF.Strategies
             {
                 claims.Add(new Claim("ClinicId", clinicId.ToString() ?? ""));
 
-                if (!string.IsNullOrEmpty(doctor.Specialization?.Name))
+                if (!string.IsNullOrEmpty(doctor.Specialization?.EnName))
                 {
-                    claims.Add(new Claim("Specialization", specialization?.Name ?? ""));
+                    claims.Add(new Claim("Specialization", specialization?.EnName ?? ""));
                 }
             }
             return claims;

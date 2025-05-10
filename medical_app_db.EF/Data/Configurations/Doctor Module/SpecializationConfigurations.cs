@@ -9,7 +9,8 @@ namespace medical_app_db.EF.Data.Configurations.Doctor_Module
         public void Configure(EntityTypeBuilder<Specialization> builder)
         {
             builder.HasKey(s => s.Id);
-            builder.Property(s => s.Name).IsRequired().HasMaxLength(200);
+            builder.Property(s => s.ArName).IsRequired().HasMaxLength(200);
+            builder.Property(s => s.EnName).IsRequired().HasMaxLength(200);
             builder.Property(s => s.Icon).IsRequired(false);
         }
     }

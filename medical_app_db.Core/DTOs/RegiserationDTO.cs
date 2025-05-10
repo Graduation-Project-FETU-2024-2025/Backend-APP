@@ -42,8 +42,6 @@ namespace medical_app_db.Core.DTOs
         [AllowNull]
         public Guid PharmacyId { get; set; }
         [AllowNull]
-        public string? Specialization { get; set; }
-        [JsonIgnore]
         public Guid SpecializationId { get; set; }
     }
 }

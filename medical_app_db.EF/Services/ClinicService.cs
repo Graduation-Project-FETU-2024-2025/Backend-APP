@@ -69,7 +69,7 @@ public class ClinicService : IClinicService
 			Price = clinic.Price,
 			Long = clinic.Long,
 			Lat = clinic.Lat,
-			Specialization = doctor?.Specialization?.Name ?? "",
+			Specialization = doctor?.Specialization?.EnName ?? "",
 			AppointmentDates = _mapper.Map<List<AppointmentDateDTO>>(clinic.AppointmentDates),
 			ClinicPhones = _mapper.Map<List<ClinicPhonesDTO>>(clinic.ClinicPhones)
 		};
@@ -91,7 +91,7 @@ public class ClinicService : IClinicService
 		clinic.Price = clinicDTO.Price;
 		clinic.Lat = clinicDTO.Lat;
 		clinic.Long = clinicDTO.Long;
-		doctor.Specialization.Name = clinicDTO.Specialization;
+		doctor.Specialization.EnName = clinicDTO.Specialization;
 
 
 		await _context.SaveChangesAsync();

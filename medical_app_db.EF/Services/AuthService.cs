@@ -61,11 +61,6 @@ namespace medical_app_db.EF.Services
 
             try
             {
-                if (!string.IsNullOrEmpty(model.Specialization))
-                    model.SpecializationId = await _context.Specializations
-                        .Where(s => s.Name.Equals(model.Specialization))
-                        .Select(s => s.Id).FirstOrDefaultAsync();
-
                 var user = _userFactory.CreateUser(model);
 
                 var result = await _userManager.CreateAsync(user, model.Password!);
