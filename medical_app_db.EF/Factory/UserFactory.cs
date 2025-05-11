@@ -40,9 +40,9 @@ namespace medical_app_db.EF.Factory
                     DateOfBirth = model.DateOfBirth,
                     Picture = model.Image
                 },
-                _ => new ApplicationUser
+                _ => new User
                 {
-                    UserName = model.Email,
+                    UserName = model.UserName,
                     Email = model.Email,
                     Name = model.FullName,
                     Gnder = model.Gnder,

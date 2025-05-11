@@ -14,6 +14,7 @@ using System.Net;
 using medical_app_db.Core.Models.Doctor_Module;
 using medical_app_db.EF.Factory;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 namespace medical_app_db.EF.Services
 {
     public class AuthService : IAuthService
@@ -95,7 +96,7 @@ namespace medical_app_db.EF.Services
                 Status = HttpStatusCode.Created
             };
         }
-        public async Task<AuthModel> Login(LoginDTO model)
+        public async Task<AuthModel> GetOtpAsync(LoginDTO model)
         {
             if (model.Email.IsNullOrEmpty())
                 return new AuthModel
@@ -135,37 +136,54 @@ namespace medical_app_db.EF.Services
                 Status = HttpStatusCode.OK
             };
         }
-        public async Task<AuthModel> VerifytOtp(TestOtpDTO model)
+        public async Task<AuthModel> UserLogin(UserLoginDTO model)
         {
-            if (model.Email.IsNullOrEmpty())
-                return new AuthModel { Message = "Email is Required" };
-            if (model.OTP.IsNullOrEmpty())
-                return new AuthModel { Message = "OTP is required" };
-
-            var user = await _userManager.FindByEmailAsync(model.Email!);
+            var user = await _context.Set<User>()
+                .FirstOrDefaultAsync(u => u.Email == model.Email);
 
             if (user is null)
+                return new AuthModel()
+                {
+                    Message = "Invalid User Attempt"
+                };
+
+            if(!await _userManager.CheckPasswordAsync(user , model.Password ?? ""))
+                return new AuthModel()
+                {
+                    Message = "Invalid User Attempt"
+                };
+
+            var token = await GenerateJwtToken(user);
+
+            return new AuthModel()
+            {
+                Message = "Loged in Succssfully",
+                IsAuthuntecated= true,
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Email = user.Email,
+                Roles = await _userManager.GetRolesAsync(user),
+                UserName = user.UserName,
+                ExpiresOn = token.ValidTo,
+                Status = HttpStatusCode.OK
+            };
+        }
+        public async Task<AuthModel> LoginAsync(TestOtpDTO model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email ?? "");
+            if(user is null)
                 return new AuthModel
                 {
-                    Message = "Email Not Found",
+                    Message = "Invalid Login Attempt",
                     Status = HttpStatusCode.BadRequest
                 };
 
-            _cach.TryGetValue(model.Email!, out string? chachedOtp);
-
-            if (chachedOtp is null)
+            if (!await TestOtp(model))
                 return new AuthModel
                 {
-                    Message = "OTP Expired, Try Agian",
+                    Message = "OTP Expired",
                     Status = HttpStatusCode.BadRequest
                 };
 
-            if (chachedOtp != model.OTP)
-                return new AuthModel
-                {
-                    Message = "OTP Is Not Correct, Please Check your Email and try again",
-                    Status = HttpStatusCode.BadRequest
-                };
 
             var token = await GenerateJwtToken(user);
 
@@ -182,6 +200,47 @@ namespace medical_app_db.EF.Services
             };
 
             return result;
+        }
+        public async Task<string?> GetPasswordResetToken(TestOtpDTO model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email ?? "");
+            if (user is null)
+                return null;
+            var result = await TestOtp(model);
+
+            if (!result)
+                return null;
+
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
+        }
+        public async Task<bool> ResetPasswordAsync(ResetPasswordDTO model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email ?? "");
+            if (user is null)
+                return false;
+            var result = await _userManager.ResetPasswordAsync(user, model.Token ?? "", model.Password ?? "");
+            if (!result.Succeeded)
+                return false;
+            return true;
+
+        }
+        private async Task<bool> TestOtp(TestOtpDTO model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email!);
+
+            if (user is null)
+                return false;
+
+            _cach.TryGetValue(model.Email!, out string? chachedOtp);
+
+            if (chachedOtp is null)
+                return false;
+
+            if (chachedOtp != model.OTP)
+                return false;
+
+            return true;
+
         }
         private async Task<JwtSecurityToken> GenerateJwtToken(ApplicationUser user)
         {
