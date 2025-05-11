@@ -1,0 +1,128 @@
+﻿[
+  {
+    "id": "b1c3aa1a-6d14-4e44-9107-1c8dbfc2de90",
+    "EnName": "Cardiology",
+    "ArName": "أمراض القلب",
+    "Icon": "https://www.freepik.com/Icon/heart-rate_5559844"
+  },
+  {
+    "id": "a1f7d21c-9d4b-4e38-a33a-f5e39d2b69ab",
+    "EnName": "Dermatology",
+    "ArName": "الأمراض الجلدية",
+    "Icon": "https://img.Icons8.com/external-flatIcons-flat-flat-Icons/64/external-dermatology-skincare-flatIcons-flat-flat-Icons.png"
+  },
+  {
+    "id": "91ab38f5-ff90-46d2-a2bb-9e9a12b1bc02",
+    "EnName": "Neurology",
+    "ArName": "طب الأعصاب",
+    "Icon": "https://www.freepik.com/Icon/neurology_9133638"
+  },
+  {
+    "id": "84520f6d-dbe7-41f5-87c1-e30d1638ffb4",
+    "EnName": "Pediatrics",
+    "ArName": "طب الأطفال",
+    "Icon": "https://www.freepik.com/Icon/pediatrics_8123655"
+  },
+  {
+    "id": "6ef003ed-b52c-4c62-81a5-e01fc8ef6ec2",
+    "EnName": "Orthopedics",
+    "ArName": "جراحة العظام",
+    "Icon": "https://www.freepik.com/Icon/orthopedics_9133633#fromView=search&page=1&position=26&uuid=94d453b6-06b8-4f95-a7c5-55dc58789573"
+  },
+  {
+    "id": "44c7f94c-b39e-4867-b0d4-d5479e93d6c1",
+    "EnName": "Gynecology",
+    "ArName": "أمراض النساء",
+    "Icon": "https://img.Icons8.com/external-tal-revivo-shadow-tal-revivo/24/external-medication-for-the-females-prescribed-by-a-gynecology-drugs-shadow-tal-revivo.png"
+  },
+  {
+    "id": "b67c6790-93b2-420b-960e-17d9f2f2e309",
+    "EnName": "Psychiatry",
+    "ArName": "الطب النفسي",
+    "Icon": "https://www.freepik.com/Icon/psychology_4305261#fromView=search&page=1&position=26&uuid=22af3bc5-271e-43a3-b833-5231aed340bf"
+  },
+  {
+    "id": "f09c5e30-6e27-4e5c-b228-b41ac6822c73",
+    "EnName": "Ophthalmology",
+    "ArName": "طب العيون",
+    "Icon": "https://img.Icons8.com/bubbles/100/ophthalmology.png"
+  },
+  {
+    "id": "c0f21b9e-e46b-4e3b-8cb8-245a6216a35b",
+    "EnName": "ENT",
+    "ArName": "أنف وأذن وحنجرة",
+    "Icon": "https://img.Icons8.com/external-flatIcons-lineal-color-flat-Icons/64/external-head-anatomy-flatIcons-lineal-color-flat-Icons-5.png"
+  },
+  {
+    "id": "d52db25d-28e4-471e-b36b-d70e05e2d25e",
+    "EnName": "Endocrinology",
+    "ArName": "طب الغدد الصماء",
+    "Icon": "https://www.freepik.com/Icon/endocrine-system_4891210#fromView=search&page=1&position=29&uuid=c7f3dfe2-f53f-4160-89f0-1c85b89eee64"
+  },
+  {
+    "id": "0ec1be9b-bb8d-4021-b861-1769bc6e3c75",
+    "EnName": "Gastroenterology",
+    "ArName": "أمراض الجهاز الهضمي",
+    "Icon": "https://www.freepik.com/Icon/gastroenterology_10154425#fromView=search&page=1&position=12&uuid=e3d3f3cc-e1a6-479a-9143-a3a425420b94"
+  },
+  {
+    "id": "fa8cd12b-d138-4459-a098-59a790b65d21",
+    "EnName": "Urology",
+    "ArName": "طب المسالك البولية",
+    "Icon": "https://www.freepik.com/Icon/kidney_3003294#fromView=search&page=1&position=14&uuid=45eec3a2-d2bb-404a-90aa-8e016d7dd14e"
+  },
+  {
+    "id": "3f6c9243-6e83-4fbd-92bc-302ddcb34fc7",
+    "EnName": "Internal Medicine",
+    "ArName": "الطب الباطني",
+    "Icon": "https://www.freepik.com/Icon/gastroenterology_12394323"
+  },
+  {
+    "id": "ae846f9f-8a18-4d2a-ae57-29a449bd731c",
+    "EnName": "Allergy & Immunology",
+    "ArName": "الحساسية والمناعة",
+    "Icon": "https://www.freepik.com/Icon/shoulder_10164445#fromView=search&page=1&position=53&uuid=442aced6-beab-44e6-8d08-e15024dfa07a"
+  },
+  {
+    "id": "e5305b5c-df6e-4a5b-b6e5-65666050ea38",
+    "EnName": "Rheumatology",
+    "ArName": "أمراض الروماتيزم",
+    "Icon": "https://img.Icons8.com/external-tal-revivo-shadow-tal-revivo/24/external-rheumatology-for-joint-pain-disease-and-control-hospital-shadow-tal-revivo.png"
+  },
+  {
+    "id": "d209ef25-9e6e-4937-bdc8-0f4f3aebf6df",
+    "EnName": "Nutrition",
+    "ArName": "التغذية العلاجية",
+    "Icon": "https://img.Icons8.com/arcade/64/healthy-eating.png"
+  },
+  {
+    "id": "fc84178b-2d06-4fd3-a0dc-d2cb41f3bb5f",
+    "EnName": "Family Medicine",
+    "ArName": "طب الأسرة",
+    "Icon": "https://img.Icons8.com/external-tal-revivo-duo-tal-revivo/25/external-family-medicine-system-with-plus-logotype-layout-hospital-duo-tal-revivo.png"
+  },
+  {
+    "id": "f4e2e6be-024f-4f60-bbaf-cac9b7e60d33",
+    "EnName": "Geriatrics",
+    "ArName": "طب الشيخوخة",
+    "Icon": "https://img.Icons8.com/external-flatIcons-lineal-color-flat-Icons/64/external-nursing-nursing-flatIcons-lineal-color-flat-Icons.png"
+  },
+  {
+    "id": "10c30ae5-5809-49cc-8322-f49f3e9b9e57",
+    "EnName": "Speech Therapy",
+    "ArName": "علاج النطق",
+    "Icon": "https://img.Icons8.com/external-tal-revivo-tritone-tal-revivo/32/external-speech-practice-and-therapy-treatment-in-same-hospital-premises-hospital-tritone-tal-revivo.png"
+  },
+  {
+    "id": "7f22cb1d-7a3e-4f39-bae6-3252c1d65fd3",
+    "EnName": "Physical Therapy",
+    "ArName": "العلاج الطبيعي",
+    "Icon": "https://img.Icons8.com/arcade/64/physical-therapy.png"
+  },
+  {
+    "id": "7f22cb1d-7a3e-4f39-bae6-3252c1d65fd3",
+    "EnName": "Other",
+    "ArName": "تخصص اْخر",
+    "Icon": "https://img.Icons8.com/arcade/64/physical-therapy.png"
+  }
+]

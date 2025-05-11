@@ -1,30 +1,29 @@
-﻿using medical_app_db.Core.Models;
+﻿using medical_app_db.EF.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 
 namespace medical_app_api.Extentions
 {
     public static class SeedingExtention
     {
-        public static async Task SeedAsync(this WebApplication app, IServiceProvider serviceProvider)
+        public static async Task<IApplicationBuilder> SeedAsync(this IApplicationBuilder app, IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
             var services = scope.ServiceProvider;
-            await SeedRolesAsync(services);
-        }
-
-        private static async Task SeedRolesAsync(IServiceProvider serviceProvider)
-        {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-            string[] roles = { UserRoles.Account, UserRoles.User, UserRoles.Doctor };
-
-            foreach (var role in roles)
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+            var _dbContext = services.GetRequiredService<MedicalDbContext>();
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger(typeof(Program));
+            try
             {
-                if (!await roleManager.RoleExistsAsync(role))
-                {
-                    await roleManager.CreateAsync(new IdentityRole<Guid>(role));
-                }
+                await _dbContext.Database.MigrateAsync();
+                await SeedingContext.SeedAsync(_dbContext,roleManager);
             }
+            catch(Exception ex) 
+            {
+                logger.LogError(message: ex.Message);
+            }
+            return app;
         }
     }
 }

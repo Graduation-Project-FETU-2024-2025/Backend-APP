@@ -11,7 +11,9 @@ namespace medical_app_api.Extentions
             IHostEnvironment hostEnvironment)
         {
             services.AddDbContext<MedicalDbContext>(options =>
-                    options.UseSqlServer(configuration.GetConnectionString(hostEnvironment.IsDevelopment() ? "DefaultConnection" : "ProductionDbConnection")));
+            {
+                options.UseSqlServer(configuration.GetConnectionString(hostEnvironment.IsDevelopment() ? "DefaultConnection" : "ProductionDbConnection"));
+            });
             return services;
         }
     }
