@@ -36,6 +36,8 @@ builder.Services.AddScoped<IProductService, ProductsServices>();
 builder.Services.AddScoped<IClinicStatisticsService, ClinicStatisticsService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IClinicService, ClinicService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+
 
 builder.Services.AddMemoryCache();
 
