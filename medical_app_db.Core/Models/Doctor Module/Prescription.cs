@@ -4,7 +4,8 @@
     {
         public Guid Id { get; set; }
         public string? Tests { get; set; }
-        public string? Notes { get; set; }
+        public string? NextAppointment { get; set; }
+        public string? Diagnosis { get; set; }
         public Guid DoctorId { get; set; }
         public Doctor Doctor { get; set; } = null!;
         public Guid AppointmentId { get; set; }

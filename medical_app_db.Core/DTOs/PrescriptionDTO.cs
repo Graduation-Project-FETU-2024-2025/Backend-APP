@@ -9,7 +9,8 @@ namespace medical_app_db.Core.DTOs
         [Required]
         public Guid AppointmentId { get; set; }
         public string? Tests { get; set; }
-        public string? Notes { get; set; }
+        public string? NextAppointment { get; set; }
+        public string? Diagnosis { get; set; }
         public ICollection<PrescriptionProductDTO>? PrescriptionProductDTOs { get; set; }
     }
 }

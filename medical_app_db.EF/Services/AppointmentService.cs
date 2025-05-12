@@ -106,7 +106,8 @@ public class AppointmentService : IAppointmentService
             DoctorId = model.DoctorId,
             AppointmentId = model.AppointmentId,
             Tests = model.Tests,
-            Notes = model.Notes,
+            Diagnosis = model.Diagnosis,
+            NextAppointment = model.NextAppointment
         };
 
         await _context.Set<Prescription>().AddAsync(newPrescription);
