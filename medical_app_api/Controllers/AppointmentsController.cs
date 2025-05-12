@@ -116,16 +116,19 @@ namespace medical_app_api.Controllers
                     data = model , 
                     StatusCode = HttpStatusCode.BadRequest
                 });
+            try
+            {
 
-            var newPrescription = await _appointmentService.AddPrescriptionAsync(model);
+                var newPrescription = await _appointmentService.AddPrescriptionAsync(model);
 
-            if(newPrescription is null)
-                return BadRequest(new
-                {
-                    message = "Coudn't Add Prescription",
-                    data = model,
-                    StatusCode = HttpStatusCode.BadRequest
-                });
+
+                if(newPrescription is null)
+                    return BadRequest(new
+                    {
+                        message = "Coudn't Add Prescription",
+                        data = model,
+                        StatusCode = HttpStatusCode.BadRequest
+                    });
 
 
             return Ok(new
@@ -134,6 +137,10 @@ namespace medical_app_api.Controllers
                 data = _mapper.Map<PrescriptionDTO>(newPrescription),
                 statusCode = HttpStatusCode.OK
             });
+            }catch(Exception ex)
+            {
+                return BadRequest(new{ m = ex.StackTrace , x = ex.Message});
+            }
         }
 
 		[HttpGet("get-all-appointment-dates")]

@@ -91,14 +91,22 @@ public class AppointmentService : IAppointmentService
 
     public async Task<Prescription?> AddPrescriptionAsync(PrescriptionDTO model)
     {
-        var doctor = await _context.Set<Doctor>()
-            .SingleOrDefaultAsync(d => d.Id == model.DoctorId);
+        if (model.DoctorId == Guid.Empty)
+            throw new ArgumentNullException(nameof(model.DoctorId), "DoctorId is required");
+        try
+        {
+            var doctor = await _context?.Set<Doctor>()?
+                .FirstOrDefaultAsync(d => d.Id == model.DoctorId);
+        }catch(Exception ex)
+        {
+            throw (new Exception($"Received DoctorId: {model.DoctorId}"));
+        }
 
         var appointment = await _context.Set<Appointment>()
             .SingleOrDefaultAsync(a => a.Id == model.AppointmentId);
 
-        if (doctor is null || appointment is null)
-            return null;
+        //if (doctor is null || appointment is null)
+        //    return null;
 
         var newPrescription = new Prescription()
         {
@@ -107,8 +115,12 @@ public class AppointmentService : IAppointmentService
             AppointmentId = model.AppointmentId,
             Tests = model.Tests,
             Diagnosis = model.Diagnosis,
-            NextAppointment = model.NextAppointment
+            NextAppointment = model.NextAppointment,
+            PrescriptionProducts = new List<PrescriptionProduct>()
         };
+        try
+        {
+
 
         await _context.Set<Prescription>().AddAsync(newPrescription);
 
@@ -126,8 +138,20 @@ public class AppointmentService : IAppointmentService
             await _context.Set<PrescriptionProduct>()
                 .AddAsync(prescriptionProduct);
         }
-
-        var result = await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw (new Exception(ex.Message, ex));
+        }
+        var result = 0;
+        try
+        {
+            result = await _context.SaveChangesAsync();
+        }
+        catch(Exception ex)
+        {
+            throw (new Exception(ex.Message, ex));
+        }
 
         if (result < 1)
             return null;

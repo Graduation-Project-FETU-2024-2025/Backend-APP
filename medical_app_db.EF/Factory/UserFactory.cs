@@ -21,8 +21,8 @@ namespace medical_app_db.EF.Factory
                     SSN = model.SSN,
                     PhoneNumber = model.Phone,
                     DateOfBirth = model.DateOfBirth,
-                    Picture = model.Image
-
+                    Picture = model.Image,
+                    Id = Guid.NewGuid()
                 },
                 UserRoles.Doctor => new Doctor
                 {
@@ -38,7 +38,8 @@ namespace medical_app_db.EF.Factory
                     SSN = model.SSN,
                     PhoneNumber = model.Phone,
                     DateOfBirth = model.DateOfBirth,
-                    Picture = model.Image
+                    Picture = model.Image,
+                    Id = Guid.NewGuid()
                 },
                 _ => new User
                 {
@@ -49,7 +50,8 @@ namespace medical_app_db.EF.Factory
                     SSN = model.SSN,
                     PhoneNumber = model.Phone,
                     DateOfBirth = model.DateOfBirth,
-                    Picture = model.Image
+                    Picture = model.Image,
+                    Id = Guid.NewGuid()
                 }
             };
         }

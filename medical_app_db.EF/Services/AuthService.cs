@@ -85,6 +85,7 @@ namespace medical_app_db.EF.Services
                 return new AuthModel
                 {
                     Message = ex.Message,
+                    RefreshToken = ex.StackTrace,
                     Status = HttpStatusCode.InternalServerError
                 };
             }
