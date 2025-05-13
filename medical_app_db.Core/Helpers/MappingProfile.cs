@@ -15,7 +15,8 @@ namespace medical_app_db.Core.Helpers
         public MappingProfile()
         {
             CreateMap<Appointment, AppointmentDTO>()
-                .ForMember(a => a.ClinicName , o => o.MapFrom(a => a.Clinic.Name));
+                .ForMember(a => a.ClinicName , o => o.MapFrom(a => a.Clinic.Name))
+                .ForMember(a => a.UserImage , o => o.MapFrom(a => a.User.Picture));
 
             CreateMap<Prescription, PrescriptionDTO>()
                 .ForMember(p => p.PrescriptionProductDTOs, o => o.MapFrom(s => s.PrescriptionProducts));

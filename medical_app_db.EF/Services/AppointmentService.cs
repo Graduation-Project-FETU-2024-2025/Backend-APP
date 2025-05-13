@@ -24,30 +24,34 @@ public class AppointmentService : IAppointmentService
         _contextAccessor = contextAccessor;
         _mapper = mapper;
     }
-    public async Task<IReadOnlyList<Appointment>> GetAppointmentsAsync(DateTime? appointmentDate)
+    public async Task<IReadOnlyList<AppointmentDTO>> GetAppointmentsAsync(DateTime? appointmentDate)
     {
         Guid ClinicId = GetClinicId();
 
         var appointmetns = await _context.Set<Appointment>()
             .Include(a => a.Clinic)
+            .Include(a => a.User)
             .Where(a => a.ClinicId == ClinicId)
             .ToListAsync();
 
         if (appointmentDate is not null)
             appointmetns = appointmetns.Where(a => a.Date.Date == appointmentDate).ToList();
 
-        return appointmetns;
+        
+
+        return _mapper.Map<IReadOnlyList<AppointmentDTO>>(appointmetns);
     }
-    public async Task<Appointment?> GetAppointmentAsync(Guid id)
+    public async Task<AppointmentDTO?> GetAppointmentAsync(Guid id)
     {
         Guid ClinicId = GetClinicId();
 
         var appointment = await _context.Set<Appointment>()
             .Where(a => a.ClinicId == ClinicId)
             .Include(a => a.Clinic)
+            .Include(a => a.User)
             .SingleOrDefaultAsync(a => a.Id == id);
 
-        return appointment;
+        return _mapper.Map<AppointmentDTO>(appointment);
     }
     public async Task<bool> AcceptApointment(Guid id)
     {

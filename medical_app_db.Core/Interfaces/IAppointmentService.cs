@@ -6,8 +6,8 @@ namespace medical_app_db.Core.Interfaces
 {
     public interface IAppointmentService
     {
-        Task<IReadOnlyList<Appointment>> GetAppointmentsAsync(DateTime? appointmentDate);
-        Task<Appointment?> GetAppointmentAsync(Guid id);
+        Task<IReadOnlyList<AppointmentDTO>> GetAppointmentsAsync(DateTime? appointmentDate);
+        Task<AppointmentDTO?> GetAppointmentAsync(Guid id);
         Task<bool> AcceptApointment(Guid id);
         Task<bool> DeclineApointment(Guid id);
         Task<Prescription?> AddPrescriptionAsync(PrescriptionDTO model);

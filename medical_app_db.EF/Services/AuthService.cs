@@ -26,6 +26,7 @@ namespace medical_app_db.EF.Services
         private readonly JWT _Jwt;
         private ClaimsStrategyFactory _claimsStrategyFactory;
         private readonly IUserFactory _userFactory;
+        private readonly IImageService _imageService;
 
         public AuthService(
             MedicalDbContext context,
@@ -33,7 +34,8 @@ namespace medical_app_db.EF.Services
             IEmailService emailService,
             IOptions<JWT> jwtOptions,
             IMemoryCache cache,
-            IUserFactory userFactory)
+            IUserFactory userFactory,
+            IImageService imageService)
         {
             _context = context;
             _userManager = userManager;
@@ -41,6 +43,7 @@ namespace medical_app_db.EF.Services
             _Jwt = jwtOptions.Value;
             _cach = cache;
             _userFactory = userFactory;
+            _imageService = imageService;
             _claimsStrategyFactory = new ClaimsStrategyFactory(context);
         }
 
@@ -64,12 +67,17 @@ namespace medical_app_db.EF.Services
             {
                 var user = _userFactory.CreateUser(model);
 
+                if (model.Image is not null && user != null)
+                {
+                    var image = await _imageService.UploadImageAsync(model.Image, user.Id);
+                    user.Picture = image ?? "";
+                }
+
                 var result = await _userManager.CreateAsync(user, model.Password!);
 
                 if (user is Doctor doctor)
                 {
                     doctor.DoctorClinic.DoctorId = doctor.Id;
-                    await _context.SaveChangesAsync();
                 }
 
                 if (!result.Succeeded)
@@ -79,6 +87,10 @@ namespace medical_app_db.EF.Services
                 {
                     await _userManager.AddToRoleAsync(user, model.Role);
                 }
+
+                
+                await _context.SaveChangesAsync();
+
             }
             catch(Exception ex)
             {
@@ -94,6 +106,12 @@ namespace medical_app_db.EF.Services
             {
                 Message = "Account Created Successfully",
                 IsAuthuntecated = true,
+                UserName = model.UserName,
+                Email = model.Email,
+                Roles =
+                [
+                    model.Role
+                ],
                 Status = HttpStatusCode.Created
             };
         }

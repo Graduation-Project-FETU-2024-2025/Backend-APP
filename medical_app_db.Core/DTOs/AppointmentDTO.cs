@@ -16,5 +16,6 @@ namespace medical_app_db.Core.DTOs
         [Display(Name = "Doctor Name")]
         public string DoctorName { get; set; } = null!;
         public decimal Price { get; set; }
+        public string? UserImage { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace medical_app_api.Controllers
 
         //[Authorize("Admin")]
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterationDTO model)
+        public async Task<IActionResult> Register([FromForm]RegisterationDTO model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

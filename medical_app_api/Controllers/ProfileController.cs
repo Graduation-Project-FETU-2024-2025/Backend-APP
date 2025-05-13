@@ -2,6 +2,7 @@
 using medical_app_db.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace medical_app_db.Core.Controllers
 {
@@ -40,7 +41,7 @@ namespace medical_app_db.Core.Controllers
                 if (!result)
                     return BadRequest("Update failed");
 
-                return Ok("Profile updated successfully");
+                return Ok(new {Message =  "Profile updated successfully" , status = HttpStatusCode.OK });
             }
             catch (Exception ex)
             {

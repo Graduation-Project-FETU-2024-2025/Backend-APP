@@ -43,6 +43,12 @@ namespace medical_app_db.Core.Services
                     .OfType<Doctor>()
                     .FirstOrDefaultAsync(u => u.Id.ToString() == userId);
             }
+            else if (role == UserRoles.User)
+            {
+                user = await _userManager.Users
+                    .OfType<User>()
+                    .FirstOrDefaultAsync(u => u.Id.ToString() == userId);
+            }
             else
             {
                 throw new Exception("Unauthorized or invalid role.");
@@ -76,6 +82,12 @@ namespace medical_app_db.Core.Services
             {
                 user = await _userManager.Users
                     .OfType<Doctor>()
+                    .FirstOrDefaultAsync(u => u.Id.ToString() == userId);
+            }
+            else if (role == UserRoles.User)
+            {
+                user = await _userManager.Users
+                    .OfType<User>()
                     .FirstOrDefaultAsync(u => u.Id.ToString() == userId);
             }
             else
