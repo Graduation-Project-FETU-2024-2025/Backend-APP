@@ -26,7 +26,21 @@ public class ReviewService : IReviewService
             })
             .ToListAsync();
     }
-
+    public async Task<IEnumerable<ReviewDto>> GetClinicReviewsAsync(Guid clinicId, int page, int pageSize)
+    {
+        return await _context.Reviews
+            .Where(r => r.ClinicId == clinicId)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(r => new ReviewDto
+            {
+                Id = r.Id,
+                ClinicId = r.ClinicId,
+                Rate = r.Rate,
+                Comment = r.Comment
+            })
+            .ToListAsync();
+    }
     public async Task<Guid> CreateReviewAsync(Guid userId, AddReviewDto dto)
     {
         var review = new Review

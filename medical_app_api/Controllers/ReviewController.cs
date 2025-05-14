@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Claims;
 
 [ApiController]
@@ -25,9 +26,14 @@ public class ReviewController : ControllerBase
     {
         var userId = GetUserIdFromToken();
         var reviews = await _reviewService.GetUserReviewsAsync(userId, page, pageSize);
-        return Ok(reviews);
+        return Ok(new { data = reviews, Messgae ="Success" , Status = HttpStatusCode.OK});
     }
-
+    [HttpGet("{clinicId}")]
+    public async Task<IActionResult> GetReviewForClinic(Guid clinicId,int page = 1, int pageSize = 10)
+    {
+        var reviews = await _reviewService.GetClinicReviewsAsync(clinicId, page, pageSize);
+        return Ok(new { data = reviews, Messgae = "Success", Status = HttpStatusCode.OK });
+    }
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] AddReviewDto dto)
     {
