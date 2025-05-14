@@ -24,7 +24,7 @@ public class AppointmentService : IAppointmentService
         _contextAccessor = contextAccessor;
         _mapper = mapper;
     }
-    public async Task<IReadOnlyList<AppointmentDTO>> GetAppointmentsAsync(DateTime? appointmentDate)
+    public async Task<IReadOnlyList<AppointmentDTO>> GetAppointmentsAsync(DateTime? appointmentDate, AppointmentStatus? status, AppointmentType? type)
     {
         Guid ClinicId = GetClinicId();
 
@@ -37,7 +37,13 @@ public class AppointmentService : IAppointmentService
         if (appointmentDate is not null)
             appointmetns = appointmetns.Where(a => a.Date.Date == appointmentDate).ToList();
 
-        
+        if (status is not null)
+            appointmetns = appointmetns.Where(a => a.Status == status).ToList();
+
+        if (type is not null)
+            appointmetns = appointmetns.Where(a => a.Type == type).ToList();
+
+
 
         return _mapper.Map<IReadOnlyList<AppointmentDTO>>(appointmetns);
     }

@@ -25,18 +25,22 @@ namespace medical_app_api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(DateTime? appointmentDate)
+        public async Task<IActionResult> GetAll(DateTime? appointmentDate, AppointmentStatus? status, AppointmentType? type)
         {
             try
             {
 
-            var appointments = await _appointmentService.GetAppointmentsAsync(appointmentDate);
-            return Ok(new 
-            { 
-                message = "Suceess", 
-                data = _mapper.Map<List<AppointmentDTO>>(appointments), 
-                StatusCode = HttpStatusCode.OK 
-            });
+                var appointments = await _appointmentService.GetAppointmentsAsync(appointmentDate,status,type);
+                return Ok(new 
+                { 
+                    message = "Suceess", 
+                    data = _mapper.Map<List<AppointmentDTO>>(appointments), 
+                    StatusCode = HttpStatusCode.OK 
+                });
+            }
+            catch(UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new {ex.Message , Status = HttpStatusCode.Unauthorized });
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using medical_app_db.Core.Models.Doctor_Module;
+using System.ComponentModel.DataAnnotations;
 
 namespace medical_app_db.Core.DTOs
 {
@@ -17,5 +18,6 @@ namespace medical_app_db.Core.DTOs
         public string DoctorName { get; set; } = null!;
         public decimal Price { get; set; }
         public string? UserImage { get; set; }
+        public string Type { get; set; }
     }
 }
