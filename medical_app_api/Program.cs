@@ -12,6 +12,7 @@ using medical_app_db.EF.Factory;
 using medical_app_db.Core.Services.Interfaces;
 using medical_app_db.EF.Migrations;
 using medical_app_db.Core.Services;
+using medical_app_api.Controllers;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,7 @@ builder.Services.AddScoped<IClinicStatisticsService, ClinicStatisticsService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IClinicService, ClinicService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<ISpecializationService, SpecializationService>();
 
 
 builder.Services.AddMemoryCache();
