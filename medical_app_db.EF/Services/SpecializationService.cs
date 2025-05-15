@@ -24,14 +24,14 @@ namespace medical_app_api.Controllers
 			_httpContextAccessor = httpContextAccessor;
 			_imageService = imageService;
 		}
-		public async Task<SpecializationDto> AddSpecializationAsync(SpecializationDto specializationDto, IFormFile icon)
+		public async Task<SpecializationDto?> AddSpecializationAsync(SpecializationDto specializationDto, IFormFile icon)
 		{
 			var existingSpecialization = await _context
 				.Specializations
 				.FirstOrDefaultAsync(s => s.ArName == specializationDto.ArName && s.EnName == specializationDto.EnName);
 
 			if (existingSpecialization is not null)
-				throw new Exception("Specialization already exisits");
+				return null;
 
 			var specialization = new Specialization
 			{
@@ -41,16 +41,16 @@ namespace medical_app_api.Controllers
 
 			Specialization sp = _context.Specializations.Add(specialization).Entity;
 
-			sp.Icon = await _imageService.UploadImageAsync(icon, sp.Id);
+			sp.Icon = await _imageService.UploadImageAsync(icon, sp.Id) ?? "";
 
-			_context.SaveChanges();
+			await _context.SaveChangesAsync();
 
 			return new SpecializationDto
 			{
-				Id = specializationDto.Id,
-				ArName = specializationDto.ArName,
-				EnName = specializationDto.EnName,
-				Icon = specialization.Icon
+				Id = sp.Id,
+				ArName = sp.ArName,
+				EnName = sp.EnName,
+				Icon = sp.Icon
 			};
 		}
 
@@ -89,7 +89,7 @@ namespace medical_app_api.Controllers
 			return specializations;
 		}
 
-		public async Task<SpecializationDto> GetSpecializationAsync(Guid id)
+		public async Task<SpecializationDto?> GetSpecializationAsync(Guid id)
 		{
 			var specialization = await _context.Specializations.FirstOrDefaultAsync(b => b.Id == id);
 			if (specialization == null)
@@ -104,7 +104,7 @@ namespace medical_app_api.Controllers
 			};
 		}
 
-		public async Task<SpecializationDto> UpdateSpecializationAsync(Guid id, SpecializationDto specializationDto, IFormFile? icon)
+		public async Task<SpecializationDto?> UpdateSpecializationAsync(Guid id, SpecializationDto specializationDto, IFormFile? icon)
 		{
 			var specialization = await _context.Specializations
 			.FirstOrDefaultAsync(p => p.Id == id);
@@ -118,7 +118,7 @@ namespace medical_app_api.Controllers
 			specialization.EnName = specializationDto.EnName;
 			specialization.ArName = specializationDto.ArName;
 
-			_context.SaveChanges();
+			await _context.SaveChangesAsync();
 
 			return new SpecializationDto
 			{

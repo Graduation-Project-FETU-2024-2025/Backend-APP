@@ -1,5 +1,6 @@
 ﻿using medical_app_db.Core.DTOs;
 using medical_app_db.Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -83,7 +84,7 @@ namespace medical_app_api.Controllers
 				return StatusCode(500, new { message = "Internal server error", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
 			}
 		}
-
+        [Authorize]
 		[HttpPost]
 		public async Task<IActionResult> AddSpecialization([FromForm] SpecializationDto specializationDto, IFormFile icon)
 		{
@@ -95,22 +96,26 @@ namespace medical_app_api.Controllers
 			try
 			{
 				var createSpecialization = await _specializationService.AddSpecializationAsync(specializationDto, icon);
-
+				if (createSpecialization is null) return BadRequest(new
+				{
+					Message = "Specialization Already Exists",
+					statusCode = (int)HttpStatusCode.BadRequest,
+                }); 
 				return Ok(
 					new
 					{
 						message = "Specialization has been added successfully",
 						statusCode = (int)HttpStatusCode.Created,
-						data = specializationDto
-					});
+						data = createSpecialization
+                    });
 			}
 			catch (Exception ex)
 			{
 				return StatusCode(500, new { message = ex.Message, statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
 			}
 		}
-
-		[HttpPut("{id}")]
+        [Authorize]
+        [HttpPut("{id}")]
 		public async Task<IActionResult> UpdateBranchProduct(Guid id, [FromForm] SpecializationDto specializationDto, IFormFile? icon)
 		{
 			if (specializationDto == null)
@@ -139,7 +144,7 @@ namespace medical_app_api.Controllers
 				return StatusCode(500, new { message = "Failed to update specialization", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
 			}
 		}
-
+		[Authorize]
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteSpecialization(Guid id)
 		{
