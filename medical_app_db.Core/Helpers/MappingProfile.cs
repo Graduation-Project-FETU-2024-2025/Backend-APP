@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using medical_app_db.Core.DTOs;
+using medical_app_db.Core.DTOs.Order;
 using medical_app_db.Core.Models;
 using medical_app_db.Core.Models.Doctor_Module;
+using medical_app_db.Core.Models.Order_Module;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +31,13 @@ namespace medical_app_db.Core.Helpers
             CreateMap<ClinicPhone, ClinicPhonesDTO>();
 
             CreateMap<WorkingPeriodInClinic, WorkingPeriodInClinicDTO>();
+            CreateMap<Order, OrderToReturnDTO>()
+                .ForMember(d => d.Status, o => o.MapFrom(s => s.Status))
+                .ForMember(d => d.UserName, o => o.MapFrom(s => s.Name))
+                .ForMember(d => d.Ar_BranchName, o => o.MapFrom(s => s.Branch.AR_BranchName))
+                .ForMember(d => d.En_BranchName, o => o.MapFrom(s => s.Branch.EN_BranchName));
+
+            CreateMap<OrderItem, OrderItemToReturnDTO>();
         }
     }
 }
