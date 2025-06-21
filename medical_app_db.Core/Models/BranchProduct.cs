@@ -11,5 +11,6 @@
 		public float price { get; set; }
 		public bool visibility { get; set; } = false;
 		public DateOnly AdditionDate { get; set; }
+        public float deliveryPrice { get; set; }
     }
 }
