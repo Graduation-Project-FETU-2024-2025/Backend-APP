@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace medical_app_db.Core.Models
+﻿namespace medical_app_db.Core.Models
 {
 	public class BranchProduct
 	{
@@ -17,5 +11,6 @@ namespace medical_app_db.Core.Models
 		public float price { get; set; }
 		public bool visibility { get; set; } = false;
 		public DateOnly AdditionDate { get; set; }
+        public float deliveryPrice { get; set; }
     }
 }

@@ -21,37 +21,33 @@ namespace medical_app_api.Controllers
 			_productService = productService;
 		}
 
-		[HttpGet]
-		public async Task<IActionResult> getSystemProducts(int page = 1, int pageSize = 3, String search = "")
-		{
-			var lang = Request.Headers["lang"].ToString().ToLower();
+        [HttpGet]
+        public async Task<IActionResult> getSystemProducts(int page = 1, int pageSize = 3, string search = "")
+        {
+            var lang = Request.Headers["lang"].ToString().ToLower();
 
-			if (string.IsNullOrEmpty(lang))
-			{
-				return BadRequest(new { message = "Language not provided in the header.", statusCode = (int)HttpStatusCode.BadRequest });
-			}
+            if (string.IsNullOrEmpty(lang))
+                return BadRequest(new { message = "Language not provided in the header.", statusCode = 400 });
 
-			var systemProducts = await _productService.GetAllSystemProductsAsync(page, pageSize, search);
+            var systemProducts = await _productService.GetAllSystemProductAsync(page, pageSize, search);
 
-			if (systemProducts == null || !systemProducts.Any())
-			{
-				return NoContent();
-			}
+            if (systemProducts == null || !systemProducts.Any())
+                return NoContent();
 
-			var result = systemProducts.Select(b => new
-			{
-				Code = b.Code,
-				Name = lang == "ar" ? b.AR_Name : b.EN_Name,
-				Image = b.Image,
-				Type = b.Type,
-				Active_principal = b.Active_principal,
-				Company_Name = b.Company_Name
-			});
+            var result = systemProducts.Select(b => new
+            {
+                Code = b.Code,
+                Name = lang == "ar" ? b.AR_Name : b.EN_Name,
+                Image = b.Image,
+                Type = b.Type,
+                Active_principal = b.Active_principal,
+                Company_Name = b.Company_Name
+            });
 
-			return Ok(new { message = "Success", statusCode = (int)HttpStatusCode.OK, data = result });
-		}
+            return Ok(new { message = "Success", statusCode = 200, data = result });
+        }
 
-		[HttpGet("{branch_id}")]
+        [HttpGet("{branch_id}")]
 		public async Task<IActionResult> getBranchProducts(Guid branch_id, int page = 1, int pageSize = 3, string search = "")
 		{
 			var lang = Request.Headers["lang"].ToString().ToLower();
@@ -380,5 +376,20 @@ namespace medical_app_api.Controllers
 				return StatusCode(500, new { message = "Failed to delete product", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
 			}
 		}
-	}
+        [HttpGet("with-branches")]
+        public async Task<IActionResult> getSystemProductsWithBranchInfo(int page = 1, int pageSize = 3, string search = "")
+        {
+            var products = await _productService.GetAllSystemProductsAsync(page, pageSize, search);
+
+            if (products == null || !products.Any())
+                return NoContent();
+
+            return Ok(new { message = "Success", statusCode = 200, data = products });
+        }
+
+
+
+
+
+    }
 }

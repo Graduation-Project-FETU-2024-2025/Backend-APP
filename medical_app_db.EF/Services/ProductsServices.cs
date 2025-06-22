@@ -20,7 +20,7 @@ public class ProductsServices : IProductService
 
 	}
 
-	public async Task<IEnumerable<SystemProductDTO>> GetAllSystemProductsAsync(int page = 1, int pageSize = 3, String search = "")
+	public async Task<IEnumerable<SystemProductDTO>> GetAllSystemProductAsync(int page = 1, int pageSize = 3, String search = "")
 	{
 		var httpContext = _httpContextAccessor.HttpContext ?? throw new UnauthorizedAccessException("HttpContext is not available.");
         var SystemProducts = await _context.SystemProducts
@@ -72,8 +72,38 @@ public class ProductsServices : IProductService
 
 		return BranchProducts;
 	}
+    public async Task<IEnumerable<SystemProductWithBranchInfoDTO>> GetAllSystemProductsAsync(int page = 1, int pageSize = 3, string search = "")
+    {
+        var httpContext = _httpContextAccessor.HttpContext ?? throw new UnauthorizedAccessException("HttpContext is not available.");
 
-	public async Task<IEnumerable<ProductDTO>> GetOutOfStockProductsAsync(int page, int pageSize, string lang)
+      
+        var lang = httpContext.Request.Headers["lang"].ToString().ToLower();
+
+        var products = await _context.BranchProducts
+            .Include(bp => bp.SystemProduct)
+            .Include(bp => bp.Branch)
+                .ThenInclude(b => b.Pharmacy)
+            .Where(bp => bp.SystemProduct.AR_Name.Contains(search) || bp.SystemProduct.EN_Name.Contains(search))
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(bp => new SystemProductWithBranchInfoDTO
+            {
+                PharmacyName = lang == "ar" ? bp.Branch.Pharmacy.ArName : bp.Branch.Pharmacy.EnName,
+                BranchName = lang == "ar" ? bp.Branch.AR_BranchName : bp.Branch.EN_BranchName,
+                BranchLocation = lang == "ar" ? bp.Branch.AR_Address : bp.Branch.EN_Address,
+                Stock = bp.stock,
+                Price = bp.price,
+               DeliveryPrice = bp.deliveryPrice
+
+            })
+            .ToListAsync();
+
+        return products;
+    }
+
+
+
+    public async Task<IEnumerable<ProductDTO>> GetOutOfStockProductsAsync(int page, int pageSize, string lang)
     {
         var branches = await GetAccountBranchs();
 		var result = new Dictionary<Guid, string?>();
