@@ -54,7 +54,7 @@ namespace medical_app_db.EF.Services
                 return null;
 
             var orders = await _context.Set<Order>()
-                .Where(o => o.Name == user.UserName && o.Status == OrderStatus.Pending)
+                .Where(o => o.UserEmail == user.Email && o.Status == OrderStatus.Pending)
                 .Include(o => o.Branch)
                 .Include(o => o.OrderItems)
                 .Skip((pageIndex - 1) * pageSize).Take(pageSize)
@@ -68,7 +68,7 @@ namespace medical_app_db.EF.Services
             if (user == null)
                 return null;
             var orders = await _context.Set<Order>()
-                .Where(o => o.Name == user.UserName)
+                .Where(o => o.UserEmail == user.Email)
                 .Include(o => o.Branch)
                 .Include(o => o.OrderItems)
                 .Skip((pageIndex - 1) * pageSize).Take(pageSize)
