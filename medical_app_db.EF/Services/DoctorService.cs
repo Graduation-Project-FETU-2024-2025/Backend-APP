@@ -29,10 +29,10 @@ public class DoctorService : IDoctorService
                 ReviewsCount = _context.Reviews
                     .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
                 Image= d.Picture,
-                NextAvailableAppointment = d.Appointments
-                    .Where(a => a.Date > DateTime.Now)
-                    .OrderBy(a => a.Date)
-                    .Select(a => a.Date.ToString("dddd, hh:mm tt"))
+                NextAvailableAppointment = _context.AppointmentDates
+                    .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
+                    .OrderBy(ad => ad.Date)
+                    .Select(ad => ad.Date.ToString("dddd, hh:mm tt"))
                     .FirstOrDefault()
             });
 
@@ -60,10 +60,10 @@ public class DoctorService : IDoctorService
                 ReviewsCount = _context.Reviews
                     .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
                 Image = d.Picture,
-                NextAvailableAppointment = d.Appointments
-                    .Where(a => a.Date > DateTime.Now)
-                    .OrderBy(a => a.Date)
-                    .Select(a => a.Date.ToString("dddd, hh:mm tt"))
+                NextAvailableAppointment = _context.AppointmentDates
+                    .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
+                    .OrderBy(ad => ad.Date)
+                    .Select(ad => ad.Date.ToString("dddd, hh:mm tt"))
                     .FirstOrDefault()
             })
             .FirstOrDefaultAsync();
@@ -85,10 +85,10 @@ public class DoctorService : IDoctorService
                     .Average(r => (double?)r.Rate) ?? 0,
                 ReviewsCount = _context.Reviews
                     .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
-                NextAvailableAppointment = d.Appointments
-                    .Where(a => a.Date > DateTime.Now)
-                    .OrderBy(a => a.Date)
-                    .Select(a => a.Date.ToString("dddd, hh:mm tt"))
+                NextAvailableAppointment = _context.AppointmentDates
+                    .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
+                    .OrderBy(ad => ad.Date)
+                    .Select(ad => ad.Date.ToString("dddd, hh:mm tt"))
                     .FirstOrDefault()
             });
 
