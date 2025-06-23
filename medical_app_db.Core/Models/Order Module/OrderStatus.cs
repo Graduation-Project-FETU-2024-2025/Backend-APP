@@ -8,6 +8,8 @@ namespace medical_app_db.Core.Models.Order_Module
         Pending,
         [EnumMember(Value = "Confirmed")]
         Confirmed,
+        [EnumMember(Value = "Packaged")]
+        Packaged,
         [EnumMember(Value = "Delivered")]
         Delivered,
         [EnumMember(Value = "Not Delivered")]
