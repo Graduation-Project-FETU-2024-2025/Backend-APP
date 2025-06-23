@@ -382,9 +382,21 @@ namespace medical_app_api.Controllers
             var products = await _productService.GetAllSystemProductsAsync(page, pageSize, search);
 
             if (products == null || !products.Any())
-                return NoContent();
+            {
+                return Ok(new
+                {
+                    statusCode = 204,
+                    message = "No products found",
+                    data = new List<object>() 
+                });
+            }
 
-            return Ok(new { message = "Success", statusCode = 200, data = products });
+            return Ok(new
+            {
+                statusCode = 200,
+                message = "Orders retrieved successfully",
+                data = products
+            });
         }
 
 

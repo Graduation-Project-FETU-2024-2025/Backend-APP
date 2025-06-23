@@ -7,7 +7,7 @@
         public string BranchLocation { get; set; } = null!;
         public int Stock { get; set; }
         public float Price { get; set; }
-        public float DeliveryPrice { get; set; }
+       public string ProductName { get; set; } = null!;
     }
 
 }

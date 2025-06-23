@@ -93,7 +93,8 @@ public class ProductsServices : IProductService
                 BranchLocation = lang == "ar" ? bp.Branch.AR_Address : bp.Branch.EN_Address,
                 Stock = bp.stock,
                 Price = bp.price,
-               DeliveryPrice = bp.deliveryPrice
+				ProductName=lang =="ar"?bp.SystemProduct.AR_Name:bp.SystemProduct.EN_Name
+          
 
             })
             .ToListAsync();
