@@ -111,7 +111,6 @@ public class DoctorService : IDoctorService
         var query = _context.Doctors
             .Where(d => d.SpecializationId == specializationId)
             .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic)
-            .Include(d => d.Appointments)
             .Select(d => new DoctorListDto
             {
                 Id = d.Id,
@@ -125,16 +124,15 @@ public class DoctorService : IDoctorService
                     .Average(r => (double?)r.Rate) ?? 0,
                 ReviewsCount = _context.Reviews
                     .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
-                NextAvailableAppointment = d.Appointments
-                    .Where(a => a.Date > DateTime.Now)
-                    .OrderBy(a => a.Date)
-                    .Select(a => a.Date.ToString("dddd, hh:mm tt"))
+                NextAvailableAppointment = _context.AppointmentDates
+                    .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
+                    .OrderBy(ad => ad.Date)
+                    .Select(ad => ad.Date.ToString("dddd, hh:mm tt"))
                     .FirstOrDefault()
             });
 
         var total = await query.CountAsync();
 
-       
         var items = await query
             .OrderByDescending(d => d.Rating)
             .Skip((pageNumber - 1) * pageSize)
@@ -143,5 +141,6 @@ public class DoctorService : IDoctorService
 
         return new PaginatedResult<DoctorListDto>(items, total);
     }
+
 
 }
