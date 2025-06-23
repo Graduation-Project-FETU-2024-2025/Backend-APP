@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using medical_app_db.Core.Helpers;
+using Microsoft.AspNetCore.Http;
 
 namespace medical_app_db.Core.Services.Interfaces
 {
@@ -6,5 +7,6 @@ namespace medical_app_db.Core.Services.Interfaces
     {
         Task<ProfileDto> GetProfileAsync();
         Task<bool> EditProfileAsync(ProfileDto dto,IFormFile?image);
+        Task<ProfileServiceResult> GetUserHistoryAsync();
     }
 }

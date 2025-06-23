@@ -14,7 +14,8 @@ namespace medical_app_db.EF.Data.Configurations.Doctor_Module
                 .WithMany(d => d.Prescriptions)
                 .HasForeignKey(p => p.DoctorId)
                 .OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(p => p.Appointment).WithMany().HasForeignKey(p => p.AppointmentId);
+            builder.HasOne(p => p.Appointment).WithOne(a => a.Prescription)
+                .HasForeignKey<Prescription>(p => p.AppointmentId);
             
         }
     }

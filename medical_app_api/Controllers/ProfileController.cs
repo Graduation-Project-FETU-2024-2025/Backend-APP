@@ -37,16 +37,25 @@ namespace medical_app_db.Core.Controllers
         {
             try
             {
-                var result = await _profileService.EditProfileAsync(dto,image);
+                var result = await _profileService.EditProfileAsync(dto, image);
                 if (!result)
                     return BadRequest("Update failed");
 
-                return Ok(new {Message =  "Profile updated successfully" , status = HttpStatusCode.OK });
+                return Ok(new { Message = "Profile updated successfully", status = HttpStatusCode.OK });
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpGet("history")]
+        public async Task<IActionResult> GetHistory()
+        {
+            var result = await _profileService.GetUserHistoryAsync();
+            if (!result.Success)
+                return BadRequest(result.Message);
+            return Ok(result);
+
         }
     }
 }

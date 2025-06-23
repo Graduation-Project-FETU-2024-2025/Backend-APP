@@ -1,6 +1,7 @@
 ﻿using medical_app_db.Core.Models.Doctor_Module;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace medical_app_db.EF.Data.Configurations.Doctor_Module
 {
@@ -22,6 +23,11 @@ namespace medical_app_db.EF.Data.Configurations.Doctor_Module
               );
             builder.HasOne(a => a.Clinic).WithMany(c => c.Appointments).HasForeignKey(a => a.ClinicId);
             builder.HasOne(a => a.User).WithMany().HasForeignKey(a => a.UserId);
+
+            builder
+                .HasOne(a => a.Prescription)
+                .WithOne(p => p.Appointment)
+                .HasForeignKey<Appointment>(a => a.PrescriptionId);
         }
     }
 }
