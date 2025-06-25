@@ -59,7 +59,7 @@ public class ClinicService : IClinicService
             .FirstOrDefaultAsync(d => d.Id == clinic.DoctorClinic.DoctorId);
 
 		var reviews = await _context.Reviews
-			.Where(r => r.ClinicId == clinic.Id).ToListAsync();
+			.Where(r => r.ClinicId == clinic.Id).Include(c => c.User).ToListAsync();
 
         return new ClinicDTO
 		{
