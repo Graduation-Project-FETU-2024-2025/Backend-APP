@@ -40,9 +40,6 @@ public class ClinicService : IClinicService
 
 	public async Task<ClinicDTO> GetClinicByIdAsync(Guid id)
 	{
-		Guid.TryParse(_httpContextAccessor.HttpContext.User
-            .FindFirstValue("ClinicId"), out Guid ClinicId);
-
 		var clinic = await _context.Clinics
 			.Include(c => c.AppointmentDates)
 			.Include(c => c.ClinicPhones)
@@ -61,6 +58,9 @@ public class ClinicService : IClinicService
 			.Include(d => d.Specialization)
             .FirstOrDefaultAsync(d => d.Id == clinic.DoctorClinic.DoctorId);
 
+		var reviews = await _context.Reviews
+			.Where(r => r.ClinicId == clinic.Id).ToListAsync();
+
         return new ClinicDTO
 		{
 			Id = clinic.Id,
@@ -71,7 +71,8 @@ public class ClinicService : IClinicService
 			Lat = clinic.Lat,
 			Specialization = doctor?.Specialization?.EnName ?? "",
 			AppointmentDates = _mapper.Map<List<AppointmentDateDTO>>(clinic.AppointmentDates),
-			ClinicPhones = _mapper.Map<List<ClinicPhonesDTO>>(clinic.ClinicPhones)
+			ClinicPhones = _mapper.Map<List<ClinicPhonesDTO>>(clinic.ClinicPhones),
+			Reviews = _mapper.Map<List<ReviewDto>>(reviews)
 		};
 	}
 	public async Task<ClinicDTO> UpdateClinicAsync(ClinicDTO clinicDTO)

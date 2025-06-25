@@ -29,6 +29,7 @@ namespace medical_app_db.Core.Helpers
                 .ForMember(d => d.ClinicPhones, o  => o.MapFrom(s => s.ClinicPhones));
             CreateMap<AppointmentDates, AppointmentDateDTO>();
             CreateMap<ClinicPhone, ClinicPhonesDTO>();
+            CreateMap<Review, ReviewDto>();
 
             CreateMap<WorkingPeriodInClinic, WorkingPeriodInClinicDTO>();
             CreateMap<Order, OrderToReturnDTO>()

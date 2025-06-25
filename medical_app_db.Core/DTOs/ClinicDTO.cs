@@ -17,7 +17,8 @@ namespace medical_app_db.Core.DTOs
 		public double Long { get; set; }
 		public double Lat { get; set; }
 		public string? Specialization { get; set; }
-		public ICollection<ClinicPhonesDTO>? ClinicPhones { get; set; }
+        public IReadOnlyList<ReviewDto>? Reviews { get; set; }
+        public ICollection<ClinicPhonesDTO>? ClinicPhones { get; set; }
 		public ICollection<AppointmentDateDTO>? AppointmentDates { get; set; }
 	}
 }
