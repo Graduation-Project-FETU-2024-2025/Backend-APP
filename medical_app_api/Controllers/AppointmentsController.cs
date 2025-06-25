@@ -159,8 +159,8 @@ namespace medical_app_api.Controllers
 			});
 		}
 
-		[HttpPut("edit-dates/{appointment_date_id}")]
-        public async Task<IActionResult> editClincAppointmentDates(Guid appointment_date_id, AppointmentDateDTO appointmentDate)
+		[HttpPost("add-dates")]
+        public async Task<IActionResult> EditClincAppointmentDates(AppointmentDateDTO appointmentDate)
         {
 			if (appointmentDate == null)
 			{
@@ -169,7 +169,7 @@ namespace medical_app_api.Controllers
 
 			try
 			{
-				var updatedAppointmentDate = await _appointmentService.UpdateAppointmentDateAsync(appointment_date_id, appointmentDate);
+				var updatedAppointmentDate = await _appointmentService.AddAppointmentDateAsync(appointmentDate);
 
 				if (updatedAppointmentDate == null)
 				{

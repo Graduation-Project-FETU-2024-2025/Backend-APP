@@ -179,23 +179,44 @@ public class AppointmentService : IAppointmentService
         return ClinicId;
     }
 
-	public async Task<AppointmentDateDTO> UpdateAppointmentDateAsync(Guid id, AppointmentDateDTO appointmentDate)
+	public async Task<AppointmentDateDTO> AddAppointmentDateAsync(AppointmentDateDTO appointmentDate)
     {
 		Guid ClinicId = GetClinicId();
 
-		var oldAppointmentDate = await _context.AppointmentDates.Include(b => b.WorkingPeriods)
-			.FirstOrDefaultAsync(b => b.Id == id && b.ClinicId == ClinicId) ??
-			throw new UnauthorizedAccessException("This Appointment date not belongs to your clinc");
-
-		oldAppointmentDate.AppointmentMaxNumber = appointmentDate.AppointmentMaxNumber;
-        oldAppointmentDate.Date = appointmentDate.Date;
-        oldAppointmentDate.WorkingPeriods = appointmentDate.WorkingPeriods?.Select(w => new WorkingPeriodInClinic
-		{
-			StartTime = w.StartTime,
-            EndTime = w.EndTime,
-		}).ToList() ?? new List<WorkingPeriodInClinic>();
-
-		await _context.SaveChangesAsync();
+		var oldAppointmentDate = await _context.AppointmentDates
+            .Where(ad => ad.ClinicId.Equals(ClinicId))
+            .Include(ad => ad.WorkingPeriods)
+            .FirstOrDefaultAsync();
+        var newAppointmentdate = new AppointmentDates();
+        if(oldAppointmentDate is null)
+        {
+            newAppointmentdate = new AppointmentDates
+            {
+                Id = Guid.NewGuid(),
+                ClinicId = ClinicId,
+                AppointmentMaxNumber = appointmentDate.AppointmentMaxNumber,
+                Date = appointmentDate.Date,
+                WorkingPeriods = appointmentDate.WorkingPeriods?.Select(w => new WorkingPeriodInClinic
+                {
+                    StartTime = w.StartTime,
+                    EndTime = w.EndTime,
+                }).ToList() ?? new List<WorkingPeriodInClinic>()
+            };
+            await _context.AppointmentDates.AddAsync(newAppointmentdate);
+        }
+        else
+        {
+            oldAppointmentDate.AppointmentMaxNumber = appointmentDate.AppointmentMaxNumber;
+            oldAppointmentDate.Date = appointmentDate.Date;
+            oldAppointmentDate.WorkingPeriods = appointmentDate.WorkingPeriods?.Select(w => new WorkingPeriodInClinic
+            {
+                StartTime = w.StartTime,
+                EndTime = w.EndTime,
+            }).ToList() ?? new List<WorkingPeriodInClinic>();
+            _context.AppointmentDates.Update(oldAppointmentDate);
+        }
+        newAppointmentdate = oldAppointmentDate ?? newAppointmentdate;
+        await _context.SaveChangesAsync();
 
 		return _mapper.Map<AppointmentDateDTO>(oldAppointmentDate);
 	}
