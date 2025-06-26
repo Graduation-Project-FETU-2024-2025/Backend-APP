@@ -18,7 +18,7 @@ namespace medical_app_db.Core.DTOs
         public string DoctorName { get; set; } = null!;
         public decimal Price { get; set; }
         public string? UserImage { get; set; }
-        public string Type { get; set; }
+        public AppointmentType Type { get; set; }
         public string? Complaint { get; set; }
         public PrescriptionDTO? Prescription { get; set; }
     }

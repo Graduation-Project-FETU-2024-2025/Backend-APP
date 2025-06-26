@@ -47,7 +47,46 @@ public class AppointmentService : IAppointmentService
 
         return _mapper.Map<IReadOnlyList<AppointmentDTO>>(appointmetns);
     }
-    public async Task<AppointmentDTO?> GetAppointmentAsync(Guid id)
+	public async Task<IReadOnlyList<AppointmentDTO>> GetUserAppointmentsAsync(DateTime? appointmentDate, AppointmentStatus? status, AppointmentType? type, Guid user_id)
+	{
+		var appointmetns = await _context.Set<Appointment>()
+			.Include(a => a.Clinic)
+			.Include(a => a.User)
+			.Where(a => a.UserId == user_id)
+			.ToListAsync();
+
+		if (appointmentDate is not null)
+			appointmetns = appointmetns.Where(a => a.Date.Date == appointmentDate).ToList();
+
+		if (status is not null)
+			appointmetns = appointmetns.Where(a => a.Status == status).ToList();
+
+		if (type is not null)
+			appointmetns = appointmetns.Where(a => a.Type == type).ToList();
+
+
+
+		return _mapper.Map<IReadOnlyList<AppointmentDTO>>(appointmetns);
+	}
+	public async Task<IReadOnlyList<AppointmentDTO>> GetUserInCompleteAppointmentsAsync(DateTime? appointmentDate, AppointmentType? type, Guid user_id)
+	{
+		var appointmetns = await _context.Set<Appointment>()
+			.Include(a => a.Clinic)
+			.Include(a => a.User)
+			.Where(a => a.UserId == user_id && (a.Status == AppointmentStatus.Pending || a.Status == AppointmentStatus.Accepted))
+			.ToListAsync();
+
+		if (appointmentDate is not null)
+			appointmetns = appointmetns.Where(a => a.Date.Date == appointmentDate).ToList();
+
+		if (type is not null)
+			appointmetns = appointmetns.Where(a => a.Type == type).ToList();
+
+
+
+		return _mapper.Map<IReadOnlyList<AppointmentDTO>>(appointmetns);
+	}
+	public async Task<AppointmentDTO?> GetAppointmentAsync(Guid id)
     {
         Guid ClinicId = GetClinicId();
 
@@ -98,7 +137,6 @@ public class AppointmentService : IAppointmentService
 
         return true;
     }
-
     public async Task<Prescription?> AddPrescriptionAsync(PrescriptionDTO model)
     {
         if (model.DoctorId == Guid.Empty)
@@ -178,7 +216,6 @@ public class AppointmentService : IAppointmentService
 
         return ClinicId;
     }
-
 	public async Task<AppointmentDateDTO> AddAppointmentDateAsync(AppointmentDateDTO appointmentDate)
     {
 		Guid ClinicId = GetClinicId();
@@ -220,7 +257,6 @@ public class AppointmentService : IAppointmentService
 
 		return _mapper.Map<AppointmentDateDTO>(oldAppointmentDate);
 	}
-
     public async Task<List<AppointmentDateDTO>> GetAppointmentDates()
     {
 		Guid ClinicId = GetClinicId();
@@ -238,8 +274,6 @@ public class AppointmentService : IAppointmentService
 
         return clicnAppointments;
 	}
-
-
 	private static TimeOnly ParseTime(string timeString)
 	{
 		try
@@ -258,6 +292,51 @@ public class AppointmentService : IAppointmentService
 		catch (Exception ex)
 		{
 			throw new FormatException("Error parsing time: " + ex.Message);
+		}
+	}
+	public async Task<bool> createAppointmentAsync(AppointmentDTO appointmentDTO)
+	{
+		var httpContext = _contextAccessor.HttpContext;
+		_ = Guid.TryParse(httpContext.User.FindFirst("Account")?.Value, out Guid accountId);
+
+        var user = await _context.Set<User>()
+            .Where(u => u.Id == accountId)
+            .FirstAsync();
+
+		try
+		{
+
+			var appointmentId = Guid.NewGuid();
+
+			var appointment = new Appointment
+			{
+			    Id = appointmentId,
+	            Date = appointmentDTO.Date,
+	            Status = AppointmentStatus.Pending,
+	            Type = appointmentDTO.Type,
+	            ClinicId = appointmentDTO.ClinicId,
+	            UserId = accountId,
+	            UserName = user.UserName,
+	            DoctorName = appointmentDTO.DoctorName,
+	            Price = appointmentDTO.Price,
+	            Complaint = appointmentDTO.Complaint,
+            };
+
+			await _context.Appointments.AddAsync(appointment);
+
+			await _context.SaveChangesAsync();
+
+            appointmentDTO.Id = appointment.Id;
+
+			return appointmentDTO;
+		}
+		catch (ArgumentException argEx)
+		{
+			throw new Exception("Validation error: " + argEx.Message);
+		}
+		catch (Exception ex)
+		{
+			throw new Exception("Error occurred while adding branch: " + ex);
 		}
 	}
 }

@@ -48,7 +48,55 @@ namespace medical_app_api.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+		[HttpGet("users/{id}")]
+		public async Task<IActionResult> GetAllByUser(DateTime? appointmentDate, AppointmentStatus? status, AppointmentType? type, [FromRoute]Guid id)
+		{
+			try
+			{
+
+				var appointments = await _appointmentService.GetUserAppointmentsAsync(appointmentDate, status, type, id);
+				return Ok(new
+				{
+					message = "Suceess",
+					data = _mapper.Map<List<AppointmentDTO>>(appointments),
+					StatusCode = HttpStatusCode.OK
+				});
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				return Unauthorized(new { ex.Message, Status = HttpStatusCode.Unauthorized });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpGet("users/{id}/incomplete")]
+		public async Task<IActionResult> GetAllInCompleteByUser(DateTime? appointmentDate, AppointmentType? type, [FromRoute] Guid id)
+		{
+			try
+			{
+
+				var appointments = await _appointmentService.GetUserInCompleteAppointmentsAsync(appointmentDate, type, id);
+				return Ok(new
+				{
+					message = "Suceess",
+					data = _mapper.Map<List<AppointmentDTO>>(appointments),
+					StatusCode = HttpStatusCode.OK
+				});
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				return Unauthorized(new { ex.Message, Status = HttpStatusCode.Unauthorized });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute]Guid id)
         {
             var appointment = await _appointmentService.GetAppointmentAsync(id);
@@ -188,5 +236,44 @@ namespace medical_app_api.Controllers
 				return StatusCode(500, new { message = "Failed to update appointment date", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
 			}
 		}
-    }
+
+
+		[HttpPost("create")]
+		public async Task<IActionResult> createAppointment(AppointmentDTO appointment)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(new
+				{
+					message = "Bad Request",
+					data = appointment,
+					StatusCode = HttpStatusCode.BadRequest
+				});
+			try
+			{
+
+				var newAppointment = await _appointmentService.createAppointmentAsync(appointment);
+
+
+				if (newAppointment is null)
+					return BadRequest(new
+					{
+						message = "Coudn't Create Appointment",
+						data = appointment,
+						StatusCode = HttpStatusCode.BadRequest
+					});
+
+
+				return Ok(new
+				{
+					message = "Suceess",
+					data = _mapper.Map<AppointmentDTO>(newAppointment),
+					statusCode = HttpStatusCode.OK
+				});
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { m = ex.StackTrace, x = ex.Message });
+			}
+		}
+	}
 }
