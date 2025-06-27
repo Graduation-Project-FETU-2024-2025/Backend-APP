@@ -275,5 +275,63 @@ namespace medical_app_api.Controllers
 				return BadRequest(new { m = ex.StackTrace, x = ex.Message });
 			}
 		}
+
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> deleteAppointment(Guid id)
+		{
+			try
+			{
+
+				var deleteAppointment = await _appointmentService.deleteAppointmentAsync(id);
+
+
+				if (!deleteAppointment)
+					return BadRequest(new
+					{
+						message = "Coudn't delete Appointment",
+						StatusCode = HttpStatusCode.BadRequest
+					});
+
+
+				return Ok(new
+				{
+					message = "Suceess",
+					statusCode = HttpStatusCode.OK
+				});
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { m = ex.StackTrace, x = ex.Message });
+			}
+		}
+		[HttpPut("{id}")]
+		public async Task<IActionResult> updateAppointment(AppointmentDTO appointment)
+		{
+			try
+			{
+				var updateAppointment = await _appointmentService.updateAppointmentAsync(appointment);
+
+
+				if (updateAppointment == null)
+					return BadRequest(new
+					{
+						message = "Coudn't delete Appointment",
+						data = appointment,
+						StatusCode = HttpStatusCode.BadRequest
+					});
+
+
+				return Ok(new
+				{
+					message = "Suceess",
+					data = updateAppointment,
+					statusCode = HttpStatusCode.OK
+				});
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { m = ex.StackTrace, x = ex.Message });
+			}
+		}
 	}
 }

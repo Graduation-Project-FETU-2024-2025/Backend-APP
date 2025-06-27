@@ -294,7 +294,7 @@ public class AppointmentService : IAppointmentService
 			throw new FormatException("Error parsing time: " + ex.Message);
 		}
 	}
-	public async Task<bool> createAppointmentAsync(AppointmentDTO appointmentDTO)
+	public async Task<AppointmentDTO> createAppointmentAsync(AppointmentDTO appointmentDTO)
 	{
 		var httpContext = _contextAccessor.HttpContext;
 		_ = Guid.TryParse(httpContext.User.FindFirst("Account")?.Value, out Guid accountId);
@@ -338,5 +338,37 @@ public class AppointmentService : IAppointmentService
 		{
 			throw new Exception("Error occurred while adding branch: " + ex);
 		}
+	}
+
+	public async Task<bool> deleteAppointmentAsync(Guid id)
+	{
+		var httpContext = _contextAccessor.HttpContext;
+		_ = Guid.TryParse(httpContext.User.FindFirst("Account")?.Value, out Guid accountId);
+
+		var appointment = await _context.Set<Appointment>()
+			.Where(a => a.Id == id)
+			.FirstAsync();
+
+        if(appointment.UserId != accountId)
+            return false;
+
+
+		_context.Appointments.Remove(appointment);
+
+        return true;
+	}
+
+	public async Task<AppointmentDTO> updateAppointmentAsync(AppointmentDTO appointmentDTO)
+	{
+		var appointment = await _context.Appointments
+				.FirstOrDefaultAsync(a => a.Id == appointmentDTO.Id);
+        if (appointment.UserId != appointmentDTO.UserId)
+            return null;
+
+        appointment.Date = appointmentDTO.Date;
+        appointment.Complaint = appointmentDTO.Complaint;
+
+		await _context.SaveChangesAsync();
+		return appointmentDTO;
 	}
 }

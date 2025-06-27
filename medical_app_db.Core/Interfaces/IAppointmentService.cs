@@ -18,6 +18,9 @@ namespace medical_app_db.Core.Interfaces
         Task<List<AppointmentDateDTO>> GetAppointmentDates(); 
 
         Task<AppointmentDTO> createAppointmentAsync(AppointmentDTO appointmentDTO);
+		Task<AppointmentDTO> updateAppointmentAsync(AppointmentDTO appointmentDTO);
+
+		Task<bool> deleteAppointmentAsync(Guid id);
 
 	}
 }
