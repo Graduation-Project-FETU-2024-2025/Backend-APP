@@ -296,14 +296,21 @@ public class AppointmentService : IAppointmentService
 	}
 	public async Task<AppointmentDTO> createAppointmentAsync(AppointmentDTO appointmentDTO)
 	{
-		var httpContext = _contextAccessor.HttpContext;
-		_ = Guid.TryParse(httpContext.User.FindFirst("Account")?.Value, out Guid accountId);
-
         var user = await _context.Set<User>()
-            .Where(u => u.Id == accountId)
+            .Where(u => u.Id == appointmentDTO.UserId)
             .FirstAsync();
 
-		try
+        if (user is null)
+            throw new Exception("User not found.");
+
+        var clinic = await _context.Set<Clinic>()
+            .Where(c => c.Id == appointmentDTO.ClinicId)
+            .FirstOrDefaultAsync();
+
+        if (clinic is null)
+            throw new Exception("Clinic not found.");
+
+        try
 		{
 
 			var appointmentId = Guid.NewGuid();
@@ -313,12 +320,12 @@ public class AppointmentService : IAppointmentService
 			    Id = appointmentId,
 	            Date = appointmentDTO.Date,
 	            Status = AppointmentStatus.Pending,
-	            Type = appointmentDTO.Type,
+	            Type = Enum.Parse<AppointmentType>(appointmentDTO.Type),
 	            ClinicId = appointmentDTO.ClinicId,
-	            UserId = accountId,
+	            UserId = user.Id,
 	            UserName = user.UserName,
 	            DoctorName = appointmentDTO.DoctorName,
-	            Price = appointmentDTO.Price,
+	            Price = clinic.Price,
 	            Complaint = appointmentDTO.Complaint,
             };
 
@@ -328,7 +335,7 @@ public class AppointmentService : IAppointmentService
 
             appointmentDTO.Id = appointment.Id;
 
-			return appointmentDTO;
+			return _mapper.Map<AppointmentDTO>(appointment);
 		}
 		catch (ArgumentException argEx)
 		{
@@ -343,18 +350,18 @@ public class AppointmentService : IAppointmentService
 	public async Task<bool> deleteAppointmentAsync(Guid id)
 	{
 		var httpContext = _contextAccessor.HttpContext;
-		_ = Guid.TryParse(httpContext.User.FindFirst("Account")?.Value, out Guid accountId);
+		_ = Guid.TryParse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid userId);
 
 		var appointment = await _context.Set<Appointment>()
 			.Where(a => a.Id == id)
 			.FirstAsync();
 
-        if(appointment.UserId != accountId)
+        if(appointment.UserId != userId)
             return false;
 
 
 		_context.Appointments.Remove(appointment);
-
+        await _context.SaveChangesAsync();
         return true;
 	}
 
