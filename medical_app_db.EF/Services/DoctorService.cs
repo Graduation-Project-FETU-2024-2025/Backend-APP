@@ -12,96 +12,144 @@ public class DoctorService : IDoctorService
 
     public async Task<PaginatedResult<DoctorListDto>> GetAllDoctorsAsync(int pageNumber, int pageSize)
     {
-        var query = _context.Doctors
-            .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic)
+        var doctors = await _context.Doctors
+            .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic).ThenInclude(c => c.ClinicPhones)
             .Include(d => d.Appointments)
-            .Select(d => new DoctorListDto
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var clinicIds = doctors.Select(d => d.DoctorClinic.ClinicId).ToList();
+
+        var reviews = await _context.Reviews
+            .Where(r => clinicIds.Contains(r.ClinicId))
+            .ToListAsync();
+
+        var appointmentDates = await _context.AppointmentDates
+            .Where(ad => clinicIds.Contains(ad.ClinicId) && ad.Date > DateTime.Now)
+            .ToListAsync();
+
+        var items = doctors.Select(d =>
+        {
+            var clinic = d.DoctorClinic.Clinic;
+            var clinicReviews = reviews.Where(r => r.ClinicId == clinic.Id).ToList();
+            var rating = clinicReviews.Any() ? clinicReviews.Average(r => r.Rate) : 0;
+            var nextDate = appointmentDates
+                .Where(ad => ad.ClinicId == clinic.Id)
+                .OrderBy(ad => ad.Date)
+                .Select(ad => ad.Date.ToString("dddd, hh:mm tt"))
+                .FirstOrDefault();
+
+            return new DoctorListDto
             {
                 Id = d.Id,
                 FullName = d.Name,
-                ClinicName = d.DoctorClinic.Clinic.Name,
-                ClinicAddress = d.DoctorClinic.Clinic.Address,
-                PhoneNumber = d.DoctorClinic.Clinic.ClinicPhones.FirstOrDefault().PhoneNumber, 
-                Rating = _context.Reviews
-                    .Where(r => r.ClinicId == d.DoctorClinic.ClinicId)
-                    .Average(r => (double?)r.Rate) ?? 0,
-
-                ReviewsCount = _context.Reviews
-                    .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
-                Image= d.Picture,
-                Price = d.DoctorClinic.Clinic.Price,
+                ClinicName = clinic.Name,
+                ClinicAddress = clinic.Address,
+                PhoneNumber = clinic.ClinicPhones.FirstOrDefault()?.PhoneNumber ?? "",
+                Rating = rating,
+                ReviewsCount = clinicReviews.Count,
+                Image = d.Picture,
+                Price = clinic.Price,
                 About = d.About,
-                NextAvailableAppointment = _context.AppointmentDates
-                    .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
-                    .OrderBy(ad => ad.Date)
-                    .Select(ad => ad.Date.ToString("dddd, hh:mm tt"))
-                    .FirstOrDefault()
-            });
+                NextAvailableAppointment = nextDate
+            };
+        }).ToList();
 
-        var total = await query.CountAsync();
-        var items = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+        var total = await _context.Doctors.CountAsync();
 
         return new PaginatedResult<DoctorListDto>(items, total);
     }
 
+
     public async Task<DoctorListDto?> GetDoctorByIdAsync(Guid id)
     {
-        return await _context.Doctors
-            .Where(d => d.Id == id)
-            .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic)
-            .Select(d => new DoctorListDto
-            {
-                Id = d.Id,
-                FullName = d.Name,
-                ClinicName = d.DoctorClinic.Clinic.Name,
-                ClinicAddress = d.DoctorClinic.Clinic.Address,
-                PhoneNumber = d.DoctorClinic.Clinic.ClinicPhones.FirstOrDefault().PhoneNumber,
-                Rating = _context.Reviews
-                    .Where(r => r.ClinicId == d.DoctorClinic.ClinicId)
-                    .Average(r => (double?)r.Rate) ?? 0,
-                ReviewsCount = _context.Reviews
-                    .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
-                Image = d.Picture,
-                Price = d.DoctorClinic.Clinic.Price,
-                About = d.About,
-                NextAvailableAppointment = _context.AppointmentDates
-                    .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
-                    .OrderBy(ad => ad.Date)
-                    .Select(ad => ad.Date.ToString("dddd, hh:mm tt"))
-                    .FirstOrDefault()
-            })
+        var doctor = await _context.Doctors
+            .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic).ThenInclude(c => c.ClinicPhones)
+            .FirstOrDefaultAsync(d => d.Id == id);
+
+        if (doctor == null) return null;
+
+        var clinic = doctor.DoctorClinic.Clinic;
+
+        var reviews = await _context.Reviews
+            .Where(r => r.ClinicId == clinic.Id)
+            .ToListAsync();
+
+        var rating = reviews.Any() ? reviews.Average(r => r.Rate) : 0;
+        var reviewsCount = reviews.Count;
+
+        var nextDate = await _context.AppointmentDates
+            .Where(ad => ad.ClinicId == clinic.Id && ad.Date > DateTime.Now)
+            .OrderBy(ad => ad.Date)
+            .Select(ad => ad.Date.ToString("dddd, hh:mm tt"))
             .FirstOrDefaultAsync();
+
+        return new DoctorListDto
+        {
+            Id = doctor.Id,
+            FullName = doctor.Name,
+            ClinicName = clinic.Name,
+            ClinicAddress = clinic.Address,
+            PhoneNumber = clinic.ClinicPhones.FirstOrDefault()?.PhoneNumber ?? "",
+            Rating = rating,
+            ReviewsCount = reviewsCount,
+            Image = doctor.Picture,
+            Price = clinic.Price,
+            About = doctor.About,
+            NextAvailableAppointment = nextDate
+        };
     }
+
 
     public async Task<PaginatedResult<DoctorListDto>> GetDoctorsBySpecializationAsync(Guid specializationId, int pageNumber, int pageSize)
     {
-        var query = _context.Doctors
+        var doctors = await _context.Doctors
             .Where(d => d.SpecializationId == specializationId)
-            .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic)
+            .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic).ThenInclude(c => c.ClinicPhones)
             .Include(d => d.Appointments)
-            .Select(d => new DoctorListDto
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var clinicIds = doctors.Select(d => d.DoctorClinic.ClinicId).ToList();
+
+        var reviews = await _context.Reviews
+            .Where(r => clinicIds.Contains(r.ClinicId))
+            .ToListAsync();
+
+        var appointmentDates = await _context.AppointmentDates
+            .Where(ad => clinicIds.Contains(ad.ClinicId) && ad.Date > DateTime.Now)
+            .ToListAsync();
+
+        var items = doctors.Select(d =>
+        {
+            var clinic = d.DoctorClinic.Clinic;
+            var clinicReviews = reviews.Where(r => r.ClinicId == clinic.Id).ToList();
+            var rating = clinicReviews.Any() ? clinicReviews.Average(r => r.Rate) : 0;
+            var nextDate = appointmentDates
+                .Where(ad => ad.ClinicId == clinic.Id)
+                .OrderBy(ad => ad.Date)
+                .Select(ad => ad.Date.ToString("dddd, hh:mm tt"))
+                .FirstOrDefault();
+
+            return new DoctorListDto
             {
                 Id = d.Id,
                 FullName = d.Name,
-                ClinicName = d.DoctorClinic.Clinic.Name,
-                Rating = _context.Reviews
-                    .Where(r => r.ClinicId == d.DoctorClinic.ClinicId)
-                    .Average(r => (double?)r.Rate) ?? 0,
-                ReviewsCount = _context.Reviews
-                    .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
-                Price = d.DoctorClinic.Clinic.Price,
-                PhoneNumber = d.DoctorClinic.Clinic.ClinicPhones.FirstOrDefault().PhoneNumber,
+                ClinicName = clinic.Name,
+                ClinicAddress = clinic.Address,
+                PhoneNumber = clinic.ClinicPhones.FirstOrDefault()?.PhoneNumber ?? "",
+                Rating = rating,
+                ReviewsCount = clinicReviews.Count,
                 Image = d.Picture,
+                Price = clinic.Price,
                 About = d.About,
-                NextAvailableAppointment = _context.AppointmentDates
-                    .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
-                    .OrderBy(ad => ad.Date)
-                    .Select(ad => ad.Date.ToString("dddd, hh:mm tt"))
-                    .FirstOrDefault()
-            });
+                NextAvailableAppointment = nextDate
+            };
+        }).ToList();
 
-        var total = await query.CountAsync();
-        var items = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+        var total = await _context.Doctors.CountAsync(d => d.SpecializationId == specializationId);
 
         return new PaginatedResult<DoctorListDto>(items, total);
     }
@@ -116,40 +164,10 @@ public class DoctorService : IDoctorService
 
     public async Task<PaginatedResult<DoctorListDto>> GetTopRatedDoctorsBySpecializationAsync(Guid specializationId, int pageNumber, int pageSize)
     {
-        var query = _context.Doctors
-            .Where(d => d.SpecializationId == specializationId)
-            .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic)
-            .Select(d => new DoctorListDto
-            {
-                Id = d.Id,
-                FullName = d.Name,
-                ClinicName = d.DoctorClinic.Clinic.Name,
-                ClinicAddress = d.DoctorClinic.Clinic.Address,
-                PhoneNumber = d.DoctorClinic.Clinic.ClinicPhones.FirstOrDefault().PhoneNumber,
-                Image = d.Picture,
-                Rating = _context.Reviews
-                    .Where(r => r.ClinicId == d.DoctorClinic.ClinicId)
-                    .Average(r => (double?)r.Rate) ?? 0,
-                ReviewsCount = _context.Reviews
-                    .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
-                Price = d.DoctorClinic.Clinic.Price,
-                About = d.About,
-                NextAvailableAppointment = _context.AppointmentDates
-                    .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
-                    .OrderBy(ad => ad.Date)
-                    .Select(ad => ad.Date.ToString("dddd, hh:mm tt"))
-                    .FirstOrDefault()
-            });
+        var doctors = await GetDoctorsBySpecializationAsync(specializationId, pageNumber, pageSize);
+        var sorted = doctors.Items.OrderByDescending(d => d.Rating).ToList();
 
-        var total = await query.CountAsync();
-
-        var items = await query
-            .OrderByDescending(d => d.Rating)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        return new PaginatedResult<DoctorListDto>(items, total);
+        return new PaginatedResult<DoctorListDto>(sorted, doctors.TotalCount);
     }
 
 
