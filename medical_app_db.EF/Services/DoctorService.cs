@@ -1,3 +1,4 @@
+using medical_app_db.Core.DTOs;
 using medical_app_db.EF.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,7 @@ public class DoctorService : IDoctorService
         var doctors = await _context.Doctors
             .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic).ThenInclude(c => c.ClinicPhones)
             .Include(d => d.Appointments)
+            .Include(d => d.Specialization)
             .ToListAsync();
 
         var clinicIds = doctors.Select(d => d.DoctorClinic.ClinicId).ToList();
@@ -51,7 +53,14 @@ public class DoctorService : IDoctorService
                 Image = d.Picture,
                 Price = clinic.Price,
                 About = d.About,
-                NextAvailableAppointment = nextDate
+                NextAvailableAppointment = nextDate,
+                Specialization = new SpecializationDto
+                {
+                    Id = d.SpecializationId,
+                    ArName = d.Specialization?.ArName ?? "Unknown",
+                    EnName = d.Specialization?.EnName ?? "Unknown",
+                    Icon = d.Specialization?.Icon ?? "default-icon.png"
+                }
             };
         })
         .Skip((pageNumber - 1) * pageSize)
@@ -67,6 +76,7 @@ public class DoctorService : IDoctorService
     {
         var doctor = await _context.Doctors
             .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic).ThenInclude(c => c.ClinicPhones)
+            .Include(d => d.Specialization)
             .FirstOrDefaultAsync(d => d.Id == id);
 
         if (doctor == null) return null;
@@ -97,7 +107,14 @@ public class DoctorService : IDoctorService
             Image = doctor.Picture,
             Price = clinic.Price,
             About = doctor.About,
-            NextAvailableAppointment = nextDate
+            NextAvailableAppointment = nextDate,
+            Specialization = new SpecializationDto
+            {
+                Id = doctor.SpecializationId,
+                ArName = doctor.Specialization?.ArName ?? "Unknown",
+                EnName = doctor.Specialization?.EnName ?? "Unknown",
+                Icon = doctor.Specialization?.Icon ?? "default-icon.png"
+            }
         };
     }
 
@@ -107,6 +124,7 @@ public class DoctorService : IDoctorService
             .Where(d => d.SpecializationId == specializationId)
             .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic).ThenInclude(c => c.ClinicPhones)
             .Include(d => d.Appointments)
+            .Include(d => d.Specialization)
             .ToListAsync();
 
         var clinicIds = doctors.Select(d => d.DoctorClinic.ClinicId).ToList();
@@ -143,7 +161,14 @@ public class DoctorService : IDoctorService
                 Image = d.Picture,
                 Price = clinic.Price,
                 About = d.About,
-                NextAvailableAppointment = nextDate
+                NextAvailableAppointment = nextDate,
+                Specialization = new SpecializationDto
+                {
+                    Id = d.SpecializationId,
+                    ArName = d.Specialization?.ArName ?? "Unknown",
+                    EnName = d.Specialization?.EnName ?? "Unknown",
+                    Icon = d.Specialization?.Icon ?? "default-icon.png"
+                }
             };
         })
         .Skip((pageNumber - 1) * pageSize)

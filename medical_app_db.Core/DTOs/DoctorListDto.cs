@@ -1,4 +1,6 @@
-﻿public class DoctorListDto
+﻿using medical_app_db.Core.DTOs;
+
+public class DoctorListDto
 {
     public Guid Id { get; set; }
     public string FullName { get; set; } 
@@ -11,4 +13,5 @@
     public string? NextAvailableAppointment { get; set; }
     public decimal Price { get; set; }
     public string? About { get; set; }
+    public SpecializationDto? Specialization { get; set; }
 }
