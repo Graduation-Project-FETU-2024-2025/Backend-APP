@@ -9,4 +9,6 @@
     public int ReviewsCount { get; set; }
     public string? Image { get; set; }
     public string? NextAvailableAppointment { get; set; }
+    public decimal Price { get; set; }
+    public string? About { get; set; }
 }

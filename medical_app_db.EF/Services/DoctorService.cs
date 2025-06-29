@@ -29,6 +29,8 @@ public class DoctorService : IDoctorService
                 ReviewsCount = _context.Reviews
                     .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
                 Image= d.Picture,
+                Price = d.DoctorClinic.Clinic.Price,
+                About = d.About,
                 NextAvailableAppointment = _context.AppointmentDates
                     .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
                     .OrderBy(ad => ad.Date)
@@ -60,6 +62,8 @@ public class DoctorService : IDoctorService
                 ReviewsCount = _context.Reviews
                     .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
                 Image = d.Picture,
+                Price = d.DoctorClinic.Clinic.Price,
+                About = d.About,
                 NextAvailableAppointment = _context.AppointmentDates
                     .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
                     .OrderBy(ad => ad.Date)
@@ -85,6 +89,10 @@ public class DoctorService : IDoctorService
                     .Average(r => (double?)r.Rate) ?? 0,
                 ReviewsCount = _context.Reviews
                     .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
+                Price = d.DoctorClinic.Clinic.Price,
+                PhoneNumber = d.DoctorClinic.Clinic.ClinicPhones.FirstOrDefault().PhoneNumber,
+                Image = d.Picture,
+                About = d.About,
                 NextAvailableAppointment = _context.AppointmentDates
                     .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
                     .OrderBy(ad => ad.Date)
@@ -124,6 +132,8 @@ public class DoctorService : IDoctorService
                     .Average(r => (double?)r.Rate) ?? 0,
                 ReviewsCount = _context.Reviews
                     .Count(r => r.ClinicId == d.DoctorClinic.ClinicId),
+                Price = d.DoctorClinic.Clinic.Price,
+                About = d.About,
                 NextAvailableAppointment = _context.AppointmentDates
                     .Where(ad => ad.ClinicId == d.DoctorClinic.ClinicId && ad.Date > DateTime.Now)
                     .OrderBy(ad => ad.Date)

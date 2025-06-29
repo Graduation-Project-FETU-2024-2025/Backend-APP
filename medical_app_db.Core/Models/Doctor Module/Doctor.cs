@@ -8,5 +8,6 @@
         public ICollection<Prescription>? Prescriptions { get; set; }
         public DoctorClinic? DoctorClinic { get; set; }
         public string FirstName { get; set; }
+        public string? About { get; set; }
     }
 }
