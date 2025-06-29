@@ -1,4 +1,4 @@
-﻿using medical_app_db.EF.Data;
+using medical_app_db.EF.Data;
 using Microsoft.EntityFrameworkCore;
 
 public class DoctorService : IDoctorService
@@ -15,8 +15,6 @@ public class DoctorService : IDoctorService
         var doctors = await _context.Doctors
             .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic).ThenInclude(c => c.ClinicPhones)
             .Include(d => d.Appointments)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
             .ToListAsync();
 
         var clinicIds = doctors.Select(d => d.DoctorClinic.ClinicId).ToList();
@@ -33,7 +31,8 @@ public class DoctorService : IDoctorService
         {
             var clinic = d.DoctorClinic.Clinic;
             var clinicReviews = reviews.Where(r => r.ClinicId == clinic.Id).ToList();
-            var rating = clinicReviews.Any() ? clinicReviews.Average(r => r.Rate) : 0;
+            var rating = clinicReviews.Select(r => (double?)r.Rate).DefaultIfEmpty(0).Average();
+
             var nextDate = appointmentDates
                 .Where(ad => ad.ClinicId == clinic.Id)
                 .OrderBy(ad => ad.Date)
@@ -54,13 +53,15 @@ public class DoctorService : IDoctorService
                 About = d.About,
                 NextAvailableAppointment = nextDate
             };
-        }).ToList();
+        })
+        .Skip((pageNumber - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
 
-        var total = await _context.Doctors.CountAsync();
+        var total = doctors.Count;
 
         return new PaginatedResult<DoctorListDto>(items, total);
     }
-
 
     public async Task<DoctorListDto?> GetDoctorByIdAsync(Guid id)
     {
@@ -76,8 +77,7 @@ public class DoctorService : IDoctorService
             .Where(r => r.ClinicId == clinic.Id)
             .ToListAsync();
 
-        var rating = reviews.Any() ? reviews.Average(r => r.Rate) : 0;
-        var reviewsCount = reviews.Count;
+        var rating = reviews.Select(r => (double?)r.Rate).DefaultIfEmpty(0).Average();
 
         var nextDate = await _context.AppointmentDates
             .Where(ad => ad.ClinicId == clinic.Id && ad.Date > DateTime.Now)
@@ -93,7 +93,7 @@ public class DoctorService : IDoctorService
             ClinicAddress = clinic.Address,
             PhoneNumber = clinic.ClinicPhones.FirstOrDefault()?.PhoneNumber ?? "",
             Rating = rating,
-            ReviewsCount = reviewsCount,
+            ReviewsCount = reviews.Count,
             Image = doctor.Picture,
             Price = clinic.Price,
             About = doctor.About,
@@ -101,15 +101,12 @@ public class DoctorService : IDoctorService
         };
     }
 
-
     public async Task<PaginatedResult<DoctorListDto>> GetDoctorsBySpecializationAsync(Guid specializationId, int pageNumber, int pageSize)
     {
         var doctors = await _context.Doctors
             .Where(d => d.SpecializationId == specializationId)
             .Include(d => d.DoctorClinic).ThenInclude(dc => dc.Clinic).ThenInclude(c => c.ClinicPhones)
             .Include(d => d.Appointments)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
             .ToListAsync();
 
         var clinicIds = doctors.Select(d => d.DoctorClinic.ClinicId).ToList();
@@ -126,7 +123,8 @@ public class DoctorService : IDoctorService
         {
             var clinic = d.DoctorClinic.Clinic;
             var clinicReviews = reviews.Where(r => r.ClinicId == clinic.Id).ToList();
-            var rating = clinicReviews.Any() ? clinicReviews.Average(r => r.Rate) : 0;
+            var rating = clinicReviews.Select(r => (double?)r.Rate).DefaultIfEmpty(0).Average();
+
             var nextDate = appointmentDates
                 .Where(ad => ad.ClinicId == clinic.Id)
                 .OrderBy(ad => ad.Date)
@@ -147,28 +145,37 @@ public class DoctorService : IDoctorService
                 About = d.About,
                 NextAvailableAppointment = nextDate
             };
-        }).ToList();
+        })
+        .Skip((pageNumber - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
 
-        var total = await _context.Doctors.CountAsync(d => d.SpecializationId == specializationId);
+        var total = doctors.Count;
 
         return new PaginatedResult<DoctorListDto>(items, total);
     }
 
     public async Task<PaginatedResult<DoctorListDto>> GetTopRatedDoctorsAsync(int pageNumber, int pageSize)
     {
-        var doctors = await GetAllDoctorsAsync(pageNumber, pageSize);
-        var sorted = doctors.Items.OrderByDescending(d => d.Rating).ToList();
+        var allDoctors = await GetAllDoctorsAsync(1, int.MaxValue); 
+        var sorted = allDoctors.Items
+            .OrderByDescending(d => d.Rating)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
 
-        return new PaginatedResult<DoctorListDto>(sorted, doctors.TotalCount);
+        return new PaginatedResult<DoctorListDto>(sorted, allDoctors.TotalCount);
     }
 
     public async Task<PaginatedResult<DoctorListDto>> GetTopRatedDoctorsBySpecializationAsync(Guid specializationId, int pageNumber, int pageSize)
     {
-        var doctors = await GetDoctorsBySpecializationAsync(specializationId, pageNumber, pageSize);
-        var sorted = doctors.Items.OrderByDescending(d => d.Rating).ToList();
+        var allDoctors = await GetDoctorsBySpecializationAsync(specializationId, 1, int.MaxValue);
+        var sorted = allDoctors.Items
+            .OrderByDescending(d => d.Rating)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
 
-        return new PaginatedResult<DoctorListDto>(sorted, doctors.TotalCount);
+        return new PaginatedResult<DoctorListDto>(sorted, allDoctors.TotalCount);
     }
-
-
 }
