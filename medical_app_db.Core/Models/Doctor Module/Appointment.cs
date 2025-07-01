@@ -14,6 +14,7 @@
         public string DoctorName { get; set; } = null!;
         public decimal Price { get; set; }
         public string? Complaint { get; set; }
+        public string? FileUrl { get; set; }
         public Guid PrescriptionId { get; set; }
         public Prescription? Prescription { get; set; }
 

@@ -195,10 +195,10 @@ namespace medical_app_api.Controllers
             }
         }
 
-		[HttpGet("get-all-appointment-dates")]
-		public async Task<IActionResult> GetAllAppointmentDates(DateTime? appointmentDate)
+		[HttpGet("get-all-appointment-dates/{id}")]
+		public async Task<IActionResult> GetAllAppointmentDates(Guid id, DateTime? appointmentDate)
 		{
-			var appointments = await _appointmentService.GetAppointmentDates();
+			var appointments = await _appointmentService.GetAppointmentDates(id);
 			return Ok(new
 			{
 				message = "Suceess",
@@ -239,7 +239,9 @@ namespace medical_app_api.Controllers
 
 
 		[HttpPost("create")]
-		public async Task<IActionResult> createAppointment(AppointmentDTO appointment)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> createAppointment([FromForm]AppointmentDTO appointment
+			,[FromForm]IFormFile? file)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(new
@@ -251,7 +253,7 @@ namespace medical_app_api.Controllers
 			try
 			{
 
-				var newAppointment = await _appointmentService.createAppointmentAsync(appointment);
+				var newAppointment = await _appointmentService.createAppointmentAsync(appointment,file);
 
 
 				if (newAppointment is null)
@@ -272,7 +274,7 @@ namespace medical_app_api.Controllers
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(new { m = ex.StackTrace, x = ex.Message });
+				return BadRequest(new { m = ex.StackTrace, message = ex.Message });
 			}
 		}
 

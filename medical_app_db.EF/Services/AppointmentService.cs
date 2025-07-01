@@ -17,12 +17,17 @@ public class AppointmentService : IAppointmentService
     private readonly MedicalDbContext _context;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly IMapper _mapper;
+    private readonly IImageService _imageService;
 
-    public AppointmentService(MedicalDbContext context,IHttpContextAccessor contextAccessor,IMapper mapper)
+    public AppointmentService(MedicalDbContext context,
+        IHttpContextAccessor contextAccessor,
+        IMapper mapper,
+        IImageService imageService)
     {
         _context = context;
         _contextAccessor = contextAccessor;
         _mapper = mapper;
+        _imageService = imageService;
     }
     public async Task<IReadOnlyList<AppointmentDTO>> GetAppointmentsAsync(DateTime? appointmentDate, AppointmentStatus? status, AppointmentType? type)
     {
@@ -64,7 +69,8 @@ public class AppointmentService : IAppointmentService
                 Price = a.Price,
                 Type = a.Type.ToString(),
                 Complaint = a.Complaint,
-                UserImage = a.User.Picture
+                UserImage = a.User.Picture,
+                FileUrl = a.FileUrl
             })
             .ToListAsync();
 
@@ -99,7 +105,8 @@ public class AppointmentService : IAppointmentService
                 Price = a.Price,
                 Type = a.Type.ToString(),
                 Complaint = a.Complaint,
-                UserImage = a.User.Picture
+                UserImage = a.User.Picture,
+                FileUrl = a.FileUrl
             })
             .ToListAsync();
 
@@ -284,10 +291,9 @@ public class AppointmentService : IAppointmentService
 
 		return _mapper.Map<AppointmentDateDTO>(oldAppointmentDate);
 	}
-    public async Task<List<AppointmentDateDTO>> GetAppointmentDates()
+    public async Task<List<AppointmentDateDTO>> GetAppointmentDates(Guid clinicId)
     {
-		Guid ClinicId = GetClinicId();
-        var clicnAppointments = await _context.AppointmentDates.Where(ad => ad.ClinicId.Equals(ClinicId)).Select(a => new AppointmentDateDTO
+        var clicnAppointments = await _context.AppointmentDates.Where(ad => ad.ClinicId.Equals(clinicId)).Select(a => new AppointmentDateDTO
         {
             AppointmentMaxNumber = a.AppointmentMaxNumber,
             Date = a.Date,
@@ -321,11 +327,10 @@ public class AppointmentService : IAppointmentService
 			throw new FormatException("Error parsing time: " + ex.Message);
 		}
 	}
-	public async Task<AppointmentDTO> createAppointmentAsync(AppointmentDTO appointmentDTO)
+	public async Task<AppointmentDTO> createAppointmentAsync(AppointmentDTO appointmentDTO,IFormFile? file)
 	{
         var user = await _context.Set<User>()
-            .Where(u => u.Id == appointmentDTO.UserId)
-            .FirstAsync();
+            .FirstOrDefaultAsync(u => u.Id == appointmentDTO.UserId);
 
         if (user is null)
             throw new Exception("User not found.");
@@ -336,13 +341,13 @@ public class AppointmentService : IAppointmentService
 
         if (clinic is null)
             throw new Exception("Clinic not found.");
-
+       
         try
 		{
 
 			var appointmentId = Guid.NewGuid();
-
-			var appointment = new Appointment
+            
+            var appointment = new Appointment
 			{
 			    Id = appointmentId,
 	            Date = appointmentDTO.Date,
@@ -353,10 +358,15 @@ public class AppointmentService : IAppointmentService
 	            UserName = user.UserName,
 	            DoctorName = appointmentDTO.DoctorName,
 	            Price = clinic.Price,
-	            Complaint = appointmentDTO.Complaint,
+	            Complaint = appointmentDTO.Complaint
             };
+            if (file is not null)
+            {
+                var fileUrl = await _imageService.UploadImageAsync(file, appointmentId);
+                appointment.FileUrl = fileUrl;
+            }
 
-			await _context.Appointments.AddAsync(appointment);
+            await _context.Appointments.AddAsync(appointment);
 
 			await _context.SaveChangesAsync();
 
