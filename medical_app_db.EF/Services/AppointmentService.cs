@@ -50,37 +50,64 @@ public class AppointmentService : IAppointmentService
 	public async Task<IReadOnlyList<AppointmentDTO>> GetUserAppointmentsAsync(DateTime? appointmentDate, AppointmentStatus? status, AppointmentType? type, Guid user_id)
 	{
 		var appointmetns = await _context.Set<Appointment>()
-			.Include(a => a.Clinic)
-			.Include(a => a.User)
-			.Where(a => a.UserId == user_id)
-			.ToListAsync();
+            .Where(a => a.UserId == user_id)
+            .Select(a => new AppointmentDTO
+            {
+                Id = a.Id,
+                Date = a.Date,
+                Status = a.Status.ToString(),
+                ClinicId = a.ClinicId,
+                ClinicName = a.Clinic.Name,
+                UserId = a.UserId,
+                UserName = a.User.Name, // Make sure `FullName` exists
+                DoctorName = a.DoctorName,
+                Price = a.Price,
+                Type = a.Type.ToString(),
+                Complaint = a.Complaint,
+                UserImage = a.User.Picture
+            })
+            .ToListAsync();
 
-		if (appointmentDate is not null)
+        if (appointmentDate is not null)
 			appointmetns = appointmetns.Where(a => a.Date.Date == appointmentDate).ToList();
 
 		if (status is not null)
-			appointmetns = appointmetns.Where(a => a.Status == status).ToList();
+            appointmetns = appointmetns.Where(a => a.Status == status.ToString()).ToList();
 
-		if (type is not null)
-			appointmetns = appointmetns.Where(a => a.Type == type).ToList();
+        if (type is not null)
+            appointmetns = appointmetns.Where(a => a.Type == type.ToString()).ToList();
 
 
 
-		return _mapper.Map<IReadOnlyList<AppointmentDTO>>(appointmetns);
+        return _mapper.Map<IReadOnlyList<AppointmentDTO>>(appointmetns);
 	}
 	public async Task<IReadOnlyList<AppointmentDTO>> GetUserInCompleteAppointmentsAsync(DateTime? appointmentDate, AppointmentType? type, Guid user_id)
 	{
-		var appointmetns = await _context.Set<Appointment>()
-			.Include(a => a.Clinic)
-			.Include(a => a.User)
-			.Where(a => a.UserId == user_id && (a.Status == AppointmentStatus.Pending || a.Status == AppointmentStatus.Accepted))
-			.ToListAsync();
 
-		if (appointmentDate is not null)
+        var appointmetns = await _context.Set<Appointment>()
+			.Where(a => a.UserId == user_id && (a.Status == AppointmentStatus.Pending || a.Status == AppointmentStatus.Accepted))
+            .Select(a => new AppointmentDTO
+            {
+                Id = a.Id,
+                Date = a.Date,
+                Status = a.Status.ToString(),
+                ClinicId = a.ClinicId,
+                ClinicName = a.Clinic.Name,
+                UserId = a.UserId,
+                UserName = a.User.Name, // Make sure `FullName` exists
+                DoctorName = a.DoctorName,
+                Price = a.Price,
+                Type = a.Type.ToString(),
+                Complaint = a.Complaint,
+                UserImage = a.User.Picture
+            })
+            .ToListAsync();
+
+        if (appointmentDate is not null)
 			appointmetns = appointmetns.Where(a => a.Date.Date == appointmentDate).ToList();
 
 		if (type is not null)
-			appointmetns = appointmetns.Where(a => a.Type == type).ToList();
+			appointmetns = appointmetns.Where(a => a.Type == type.ToString()).ToList();
 
 
 

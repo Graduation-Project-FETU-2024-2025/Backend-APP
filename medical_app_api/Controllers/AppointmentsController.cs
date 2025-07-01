@@ -68,7 +68,7 @@ namespace medical_app_api.Controllers
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
+				return BadRequest(ex);
 			}
 		}
 
