@@ -43,6 +43,7 @@ builder.Services.AddScoped<ISpecializationService, SpecializationService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddHostedService<StockCheckService>();
 
 
 
