@@ -14,6 +14,7 @@ namespace medical_app_db.Core.DTOs.Order
         public string? UserAddress { get; set; }
         public string? Ar_BranchName { get; set; }
         public string? En_BranchName { get; set; }
+        public bool IsPaid { get; set; }
 
         public required ICollection<OrderItemToReturnDTO> OrderItems { get; set; }
     }

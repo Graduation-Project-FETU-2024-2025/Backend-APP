@@ -12,6 +12,7 @@
         public required string UserAddress { get; set; }
         public Guid BranchId { get; set; }
         public Branch? Branch { get; set; }
+        public bool IsPaid { get; set; }
 
         public required ICollection<OrderItem> OrderItems { get; set; }
     }

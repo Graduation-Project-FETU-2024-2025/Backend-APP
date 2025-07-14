@@ -422,9 +422,9 @@ namespace medical_app_db.EF.Services
                     Message = "Order Cannot Be Paid, Only Pending Orders Can Be Paid",
                     Data = null
                 };
-            //order.Status = OrderStatus.Paid;
-            //_context.Set<Order>().Update(order);
-            //await _context.SaveChangesAsync();
+            order.IsPaid = true;
+            _context.Set<Order>().Update(order);
+            await _context.SaveChangesAsync();
             Console.WriteLine("Order Paid");
             return new OrderServiceResult
             {
