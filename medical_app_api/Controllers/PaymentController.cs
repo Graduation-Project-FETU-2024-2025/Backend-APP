@@ -3,6 +3,7 @@ using medical_app_db.Core.Interfaces;
 using medical_app_db.EF.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace medical_app_api.Controllers
 {
@@ -57,6 +58,15 @@ namespace medical_app_api.Controllers
             {
                 Message = "Payment processed successfully",
                 OrderId = paymentData.merchantOrderId,
+            });
+        }
+        [HttpGet("callback")]
+        public IActionResult GetCallbackInfo()
+        {
+            return Ok(new 
+            { 
+                Message = "This endpoint only accepts POST requests with payment callback data.",
+                StatusCode = HttpStatusCode.OK
             });
         }
     }
