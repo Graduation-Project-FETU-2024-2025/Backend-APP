@@ -34,19 +34,34 @@ public class AppointmentService : IAppointmentService
         Guid ClinicId = GetClinicId();
 
         var appointmetns = await _context.Set<Appointment>()
-            .Include(a => a.Clinic)
-            .Include(a => a.User)
             .Where(a => a.ClinicId == ClinicId)
+            .Select(a => new AppointmentDTO
+            {
+                Id = a.Id,
+                Date = a.Date,
+                Status = a.Status.ToString(),
+                ClinicId = a.ClinicId,
+                ClinicName = a.Clinic.Name,
+                UserId = a.UserId,
+                UserName = a.User.Name, // Make sure `FullName` exists
+                DoctorName = a.DoctorName,
+                Price = a.Price,
+                Type = a.Type.ToString(),
+                Complaint = a.Complaint,
+                UserImage = a.User.Picture,
+                FileUrl = a.FileUrl
+            })
             .ToListAsync();
 
+
         if (appointmentDate is not null)
-            appointmetns = appointmetns.Where(a => a.Date.Date == appointmentDate).ToList();
+            appointmetns = appointmetns.Where(a => a.Date != null && a.Date.Date == appointmentDate).ToList();
 
         if (status is not null)
-            appointmetns = appointmetns.Where(a => a.Status == status).ToList();
+            appointmetns = appointmetns.Where(a => a.Status == status.ToString()).ToList();
 
         if (type is not null)
-            appointmetns = appointmetns.Where(a => a.Type == type).ToList();
+            appointmetns = appointmetns.Where(a => a.Type == type.ToString()).ToList();
 
 
 

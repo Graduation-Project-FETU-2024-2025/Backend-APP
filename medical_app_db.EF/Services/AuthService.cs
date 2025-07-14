@@ -268,7 +268,9 @@ namespace medical_app_db.EF.Services
             {
                 new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new(JwtRegisteredClaimNames.Email, user.Email ?? ""),
-                new(ClaimTypes.Name, user.UserName ?? "")
+                new(ClaimTypes.Name, user.UserName ?? ""),
+                new("Image", user.Picture ?? ""),
+                new("User Name", user.Name ?? ""),
             };
             foreach (var role in userRoles)
             {

@@ -376,7 +376,8 @@ namespace medical_app_api.Controllers
 				return StatusCode(500, new { message = "Failed to delete product", statusCode = (int)HttpStatusCode.InternalServerError, details = ex.Message });
 			}
 		}
-        [HttpGet("with-branches")]
+		[HttpGet]
+		[Route("/api/[controller]/with-branches")]
         public async Task<IActionResult> getSystemProductsWithBranchInfo(int page = 1, int pageSize = 3, string search = "")
         {
             var products = await _productService.GetAllSystemProductsAsync(page, pageSize, search);

@@ -14,7 +14,7 @@ namespace medical_app_db.EF.Services
         {
             _emailSetting = emailSetting.Value;
         }
-        public async Task SendEmailAsync(string? to, string? subject, string? body)
+        public async Task SendEmailAsync(string? to, string? subject, string? body,bool isHtml = false)
         {
             var smtpClient = new SmtpClient
             {
@@ -23,7 +23,10 @@ namespace medical_app_db.EF.Services
                 Port = _emailSetting.Port,
                 Credentials = new NetworkCredential(_emailSetting.Email, _emailSetting.Password)
             };
-            var emailMessage = new MailMessage(_emailSetting.Email!, to!, subject, body);
+            var emailMessage = new MailMessage(_emailSetting.Email!, to!, subject, body)
+            {
+                IsBodyHtml = isHtml
+            };
 
             await smtpClient.SendMailAsync(emailMessage);
         }
