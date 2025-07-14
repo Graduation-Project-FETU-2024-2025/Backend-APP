@@ -7,17 +7,18 @@ namespace medical_app_db.Core.DTOs
     {
         public Guid Id { get; set; }
         public DateTime Date { get; set; }
-        public string Status { get; set; }
+        public string? Status { get; set; }
         public Guid ClinicId { get; set; }
         [Display(Name = "Clinic Name")]
         public string? ClinicName { get; set; }
         public Guid UserId { get; set; }
         [Display(Name = "User Name")]
-        public string UserName { get; set; } = null!;
+        public string? UserName { get; set; }
         [Display(Name = "Doctor Name")]
         public string DoctorName { get; set; } = null!;
         public decimal Price { get; set; }
         public string? UserImage { get; set; }
+        public string? FileUrl { get; set; }
         public string? Type { get; set; }
         public string? Complaint { get; set; }
         public PrescriptionDTO? Prescription { get; set; }

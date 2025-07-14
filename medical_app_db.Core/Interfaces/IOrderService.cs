@@ -12,5 +12,6 @@ namespace medical_app_db.Core.Interfaces
         Task<IReadOnlyList<OrderToReturnDTO>?> GetBranchOrdersAsync(Guid branchId, int pageSize = 5, int pageIndex = 1);
         Task<OrderServiceResult?> UpdateOrderAsync(Guid id, OrderDTO orderDto);
         Task<OrderServiceResult?> DeleteOrderAsync(Guid id);
+        Task<OrderServiceResult?> MarkAsPaid(Guid id);
     }
 }

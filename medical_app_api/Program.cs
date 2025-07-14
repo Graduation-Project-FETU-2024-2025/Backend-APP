@@ -27,8 +27,9 @@ builder.Services.InjectIdentity<ApplicationUser>()
     .AddAuthService()
     .AddHttpContextAccessor()
     .AddEmailService()
-    .AddEmailConfiguration(builder.Configuration, builder.Environment);
-
+    .AddEmailConfiguration(builder.Configuration, builder.Environment)
+    .AddPaymentConfiguration(builder.Configuration, builder.Environment);
+builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IUserFactory, UserFactory>();
 
 builder.Services.AddScoped<IBranchService, BranchService>();
@@ -43,6 +44,7 @@ builder.Services.AddScoped<ISpecializationService, SpecializationService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IPaymentService, PaymobService>();
 
 
 

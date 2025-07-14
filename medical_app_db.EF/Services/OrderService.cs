@@ -404,7 +404,36 @@ namespace medical_app_db.EF.Services
             }
 
         }
-
+        public async Task<OrderServiceResult?> MarkAsPaid(Guid id)
+        {
+            var order = await _context.Set<Order>()
+                .FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null)
+                return new OrderServiceResult
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "Order Not Found",
+                    Data = null
+                };
+            if (order.Status != OrderStatus.Pending)
+                return new OrderServiceResult
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Order Cannot Be Paid, Only Pending Orders Can Be Paid",
+                    Data = null
+                };
+            //order.Status = OrderStatus.Paid;
+            //_context.Set<Order>().Update(order);
+            //await _context.SaveChangesAsync();
+            Console.WriteLine("Order Paid");
+            return new OrderServiceResult
+            {
+                StatusCode = HttpStatusCode.OK,
+                Message = "Order Marked As Paid Successfully",
+                Data = _mapper.Map<OrderToReturnDTO>(order),
+                Succeded = true
+            };
+        }
         public async Task<OrderServiceResult?> DeleteOrderAsync(Guid id)
         {
             var order = await _context.Set<Order>().Include(o => o.OrderItems)
