@@ -70,6 +70,7 @@ public class ClinicService : IClinicService
 			Long = clinic.Long,
 			Lat = clinic.Lat,
 			Specialization = doctor?.Specialization?.EnName ?? "",
+			About = doctor?.About ?? "",
 			AppointmentDates = _mapper.Map<List<AppointmentDateDTO>>(clinic.AppointmentDates),
 			ClinicPhones = _mapper.Map<List<ClinicPhonesDTO>>(clinic.ClinicPhones),
 			Reviews = _mapper.Map<List<ReviewDto>>(reviews)

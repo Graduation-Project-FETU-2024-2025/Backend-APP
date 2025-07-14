@@ -47,6 +47,7 @@ public class DoctorService : IDoctorService
                 FullName = d.Name,
                 ClinicName = clinic.Name,
                 ClinicAddress = clinic.Address,
+                ClinicId = clinic.Id,
                 PhoneNumber = clinic.ClinicPhones.FirstOrDefault()?.PhoneNumber ?? "",
                 Rating = rating,
                 ReviewsCount = clinicReviews.Count,
@@ -98,6 +99,7 @@ public class DoctorService : IDoctorService
         return new DoctorListDto
         {
             Id = doctor.Id,
+            ClinicId = clinic.Id,
             FullName = doctor.Name,
             ClinicName = clinic.Name,
             ClinicAddress = clinic.Address,
@@ -152,6 +154,7 @@ public class DoctorService : IDoctorService
             return new DoctorListDto
             {
                 Id = d.Id,
+                ClinicId = clinic.Id,
                 FullName = d.Name,
                 ClinicName = clinic.Name,
                 ClinicAddress = clinic.Address,

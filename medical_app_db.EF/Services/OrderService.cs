@@ -28,7 +28,7 @@ namespace medical_app_db.EF.Services
 
         public OrderService(MedicalDbContext context, 
             IMapper mapper, 
-            UserManager<ApplicationUser> userManager, 
+            UserManager<ApplicationUser> userManager,
             IHttpContextAccessor httpContextAccessor)
         {
             _context = context;

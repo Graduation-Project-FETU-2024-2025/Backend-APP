@@ -22,6 +22,12 @@ namespace medical_app_db.EF.Services
         {
             var appointments = await _context.Appointments
                 .Where(a => a.ClinicId == clinicId)
+                .Select(a => new
+                {
+                    a.Type,
+                    a.Status,
+                    a.Price
+                })
                 .ToListAsync();
             return new ClinicStatisticsDTO
             {

@@ -93,9 +93,10 @@ public class ProductsServices : IProductService
                 BranchLocation = lang == "ar" ? bp.Branch.AR_Address : bp.Branch.EN_Address,
                 Stock = bp.stock,
                 Price = bp.price,
-				ProductName=lang =="ar"?bp.SystemProduct.AR_Name:bp.SystemProduct.EN_Name
-          
-
+				ProductName=lang =="ar"?bp.SystemProduct.AR_Name:bp.SystemProduct.EN_Name,
+				BranchId = bp.BranchId,
+				SystemProductCode = bp.SystemProductCode,
+				ProductImage = bp.SystemProduct.Image
             })
             .ToListAsync();
 

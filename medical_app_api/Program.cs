@@ -45,6 +45,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPaymentService, PaymobService>();
+builder.Services.AddHostedService<StockCheckService>();
 
 
 

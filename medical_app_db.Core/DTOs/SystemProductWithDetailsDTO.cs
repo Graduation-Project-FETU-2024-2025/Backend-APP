@@ -8,6 +8,9 @@
         public int Stock { get; set; }
         public float Price { get; set; }
        public string ProductName { get; set; } = null!;
+        public Guid BranchId { get; set; }
+        public Guid SystemProductCode { get; set; }
+        public string? ProductImage { get; set; }
     }
 
 }

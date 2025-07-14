@@ -3,6 +3,7 @@
 public class DoctorListDto
 {
     public Guid Id { get; set; }
+    public Guid ClinicId { get; set; }
     public string FullName { get; set; } 
     public string? ClinicName { get; set; }
     public string? ClinicAddress { get; set; }
